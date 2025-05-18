@@ -1,5 +1,4 @@
-import React, { useState } from 'react'
-import { useEffect } from 'react'
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import BackButton from '../../components/BackButton'
 import axios from 'axios'
@@ -32,10 +31,22 @@ const RegisterAccount = () => {
       password: password,
     }
 
-    axios.post(`http://localhost:3001/register/${accountType}`, data)
- 
-
-
+    axios.post(`http://localhost:3001/register/${accountType}`, data).then((res) => {
+      console.log(res.data);
+      if (res.status === 201) {
+        alert("Account created successfully")
+        navigate('/login')
+      }else {
+        alert("Account creation failed")
+      }
+    })
+    .catch((error) => {
+      if (error.response && error.response.status === 409) {
+        alert("Username already exists");
+      } else {
+        alert("Account creation failed");
+      }
+    });
     console.log(JSON.stringify(data));
   }
 
@@ -52,7 +63,7 @@ const RegisterAccount = () => {
             <form onSubmit={handleRegister} className='flex justify-center items-center p-5 rounded bg-blue-300 flex-col w-2xl '>
 
                 <label htmlFor="username" className='mt-2'>User Name</label>
-                <input onChange={(e) => setName(e.target.value)} value={username} name='name' id='name' type="text" className='outline-none border'/>
+                <input  onChange={(e) => setName(e.target.value)} value={username} name='name' id='name' type="email" className='outline-none border'/>
 
                 <label htmlFor="password" className='mt-2'>Enter password</label>
                 <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" className='outline-none border'/>
