@@ -10,6 +10,7 @@ router.post("/jobseeker", (req, res) => {
         username: req.body.username,
         password: req.body.password,
     }
+    
     console.log(data);
 
     res.status(400).json({
