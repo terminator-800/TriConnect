@@ -1,4 +1,4 @@
-const { createUserJobseeker } = require('../service/RegisterAccount');
+const { createJobseeker } = require('../service/JobseekerQuery');
 const register = async (req, res) => {
     const { username, password } = req.body;
 
@@ -9,7 +9,7 @@ const register = async (req, res) => {
     }
 
     try {
-        const result = await createUserJobseeker(username, password)
+        const result = await createJobseeker(username, password)
         console.log("New user ID:", result.insertId);
         return res.status(201).json({
             message: "Account created successfully",
@@ -17,7 +17,7 @@ const register = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Error creating account:", error.message);
+        console.error("Error creating jobseeker account:", error.message);
 
        
         if (error.code === 'ER_DUP_ENTRY') {

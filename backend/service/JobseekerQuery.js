@@ -1,10 +1,10 @@
 const dbPromise = require("../config/DatabaseConnection");
 
-async function createUserJobseeker(username, password) {
+async function createJobseeker(username, password) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
-            "INSERT INTO jobseekers (username, password) VALUES (?, ?)",
+            "INSERT INTO jobseeker (username, password) VALUES (?, ?)",
             [username, password]
         );
         return { success: true, insertId: result.insertId };
@@ -13,4 +13,4 @@ async function createUserJobseeker(username, password) {
     }
 }
 
-module.exports = { createUserJobseeker };
+module.exports = { createJobseeker };
