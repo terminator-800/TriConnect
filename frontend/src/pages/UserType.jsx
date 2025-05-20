@@ -1,4 +1,3 @@
-import React from 'react'
 import BackButton from '../components/BackButton'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
@@ -17,11 +16,7 @@ const Register = () => {
   }
 
   const handleNext = () => {
-    if(isSelected){
-      navigate(`/register/${isSelected}`)
-    }
-
-
+    navigate(`/register/${isSelected}`)
   }
 
   return (
@@ -32,30 +27,27 @@ const Register = () => {
 
       <div className='flex flex-col border p-5 mt-2  gap-3'>
 
-        <div className={`p-5 bg-red-300 rounded ${isSelected === jobseeker ? "bg-red-500" : "bg-red-300"}`}
-        onClick={() => handleSelect(jobseeker)}>
+        <div className={`p-5 cursor-pointer bg-red-300 rounded ${isSelected === jobseeker ? "bg-red-500" : "bg-red-300"}`}
+          onClick={() => handleSelect(jobseeker)}>
           <h1>Job Seeker</h1>
         </div>
 
-        <div className={`p-5 bg-pink-300 rounded ${isSelected === employer ? "bg-pink-500" : "bg-pink300"}`}
-        onClick={() => handleSelect(employer)}>
+        <div className={`p-5 cursor-pointer bg-pink-300 rounded ${isSelected === employer ? "bg-pink-500" : "bg-pink300"}`}
+          onClick={() => handleSelect(employer)}>
           <h1>Employer</h1>
         </div>
 
-        <div className={`p-5 bg-violet-300 rounded ${isSelected === manpowerProvider ? "bg-violet-500" : "bg-violet-300"}`}
-        onClick={() => handleSelect(manpowerProvider)}>
+        <div className={`p-5 cursor-pointer bg-violet-300 rounded ${isSelected === manpowerProvider ? "bg-violet-500" : "bg-violet-300"}`}
+          onClick={() => handleSelect(manpowerProvider)}>
           <h1>Manpower Provider</h1>
         </div>
 
         <div>
-        <BackButton to='/' className='text-white rounded bg-blue-500 p-5 mr-2'/>
-        <button onClick={() => handleNext()} className='p-5 bg-green-300 rounded'>next</button>
+          <BackButton to='/' className='text-white rounded bg-blue-500 p-5 mr-2' />
+          <button onClick={() => handleNext()} className='p-5 bg-green-300 rounded'>next</button>
         </div>
-        
+
       </div>
-
-
-
     </div>
   )
 }
