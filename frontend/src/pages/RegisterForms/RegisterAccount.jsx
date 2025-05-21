@@ -16,39 +16,72 @@ const RegisterAccount = () => {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
 
-  const handleRegister = (e) => {
-    e.preventDefault()
+  const handleRegister = async (e) => {
+  e.preventDefault();
 
-    if (password !== confirmPassword) {
-      alert("Passwords do not match")
-      return
-    }
-
-    console.log(name, password, confirmPassword);
-
-    const data = {
-      username: username,
-      password: password,
-    }
-
-    axios.post(`http://localhost:3001/register/${accountType}`, data).then((res) => {
-      console.log(res.data);
-      if (res.status === 201) {
-        alert("Account created successfully")
-        navigate('/login')
-      } else {
-        alert("Account creation failed")
-      }
-    })
-      .catch((error) => {
-        if (error.response && error.response.status === 409) {
-          alert("Username already exists");
-        } else {
-          alert("Account creation failed");
-        }
-      });
-    console.log(JSON.stringify(data));
+  if (password !== confirmPassword) {
+    alert("Passwords do not match");
+    return;
   }
+
+  const data = {
+    username: username,
+    password: password,
+  };
+
+  try {
+    // First register the account (general registration)
+    const res = await axios.post(`http://localhost:3001/register/${accountType}`, data);
+    console.log(username, password);
+    
+    if (res.status === 201) {
+      if (accountType === "employer") {
+        if (type === "business") {
+          try {
+            const businessRes = await axios.post('http://localhost:3001/register/employer/business/register', data);
+                console.log(username, password);
+            if (businessRes.status === 201) {
+              alert("Business employer account created successfully");
+            } else {
+              alert("Business employer account creation failed");
+            }
+          } catch (error) {
+            console.error("Business registration failed:", error);
+            alert("Business employer registration failed");
+          }
+
+        // For individual-type employer
+        } else if (type === "individual") {
+          try {
+            const individualRes = await axios.post('http://localhost:3001/register/employer/individual/register', data);
+                console.log(username, password);
+            if (individualRes.status === 201) {
+              alert("Individual employer account created successfully");
+            } else {
+              alert("Individual employer account creation failed");
+            }
+          } catch (error) {
+            console.error("Individual registration failed:", error);
+            alert("Individual employer registration failed");
+          }
+        }
+      }
+
+      alert("Account created successfully");
+      navigate('/login');
+    } else {
+      alert("Account creation failed");
+    }
+  } catch (error) {
+    if (error.response && error.response.status === 409) {
+      alert("Username already exists");
+    } else {
+      console.error(error);
+      alert("Account creation failed");
+    }
+  }
+};
+
 
 
 
