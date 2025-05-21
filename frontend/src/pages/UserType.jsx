@@ -16,6 +16,10 @@ const Register = () => {
   }
 
   const handleNext = () => {
+      if (!isSelected) {
+      alert("Please select a role before continuing.")
+      return
+    }
     navigate(`/register/${isSelected}`)
   }
 

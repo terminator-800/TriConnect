@@ -3,15 +3,15 @@ const cors = require("cors");
 const app = express()
 const dbPromise = require("./config/DatabaseConnection")
 const { createJobseekerTable } = require("./Schema/JobseekerSchema")
-const { createEmployerTable } = require("./Schema/EmployerSchema")
-const jobseekerRoute = require("./routes/jobseekerRoute/jobseekerRoute")
-const employerRoute = require("./routes/employerRoute/employerRoute")
+const { createEmployerTable } = require("./Schema/BusinessEmployerSchema")
+const jobseekerRoute = require("./routes/jobseekerRoute")
+const businessEmployerRoute = require("./routes/businessEmployerRoute")
 
 app.use(express.json());
 app.use(cors());
 require('dotenv').config();
 app.use("/register", jobseekerRoute)
-app.use("/register", employerRoute)
+app.use("/register", businessEmployerRoute)
 
 
 async function startServer() {

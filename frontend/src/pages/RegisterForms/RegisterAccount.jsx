@@ -3,43 +3,36 @@ import { useParams, useNavigate } from 'react-router-dom'
 import BackButton from '../../components/BackButton'
 import axios from 'axios'
 
-
-
-
 const RegisterAccount = () => {
 
   const { accountType, type } = useParams()
-
-
   const navigate = useNavigate()
   const [username, setName] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
+  const individual = "individual"
+  const business = "business"
 
   const handleRegister = async (e) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  if (password !== confirmPassword) {
-    alert("Passwords do not match");
-    return;
-  }
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
 
-  const data = {
-    username: username,
-    password: password,
-  };
+    const data = {
+      username: username,
+      password: password,
+    };
 
-  try {
-    // First register the account (general registration)
-    const res = await axios.post(`http://localhost:3001/register/${accountType}`, data);
-    console.log(username, password);
-    
-    if (res.status === 201) {
+    try {
       if (accountType === "employer") {
-        if (type === "business") {
+        if (type === business) {
           try {
-            const businessRes = await axios.post('http://localhost:3001/register/employer/business/register', data);
-                console.log(username, password);
+            const businessRes = await axios.post(`http://localhost:3001/register/${accountType}/${type}/register`, data);
+            console.log(data);
+            navigate('/login');
             if (businessRes.status === 201) {
               alert("Business employer account created successfully");
             } else {
@@ -50,13 +43,15 @@ const RegisterAccount = () => {
             alert("Business employer registration failed");
           }
 
-        // For individual-type employer
-        } else if (type === "individual") {
+          // For individual-type employer
+        } else if (type === individual) {
           try {
-            const individualRes = await axios.post('http://localhost:3001/register/employer/individual/register', data);
-                console.log(username, password);
+            const individualRes = await axios.post(`http://localhost:3001/register/${accountType}/${type}/register`, data);
+            console.log(data);
+            navigate('/login');
             if (individualRes.status === 201) {
               alert("Individual employer account created successfully");
+              
             } else {
               alert("Individual employer account creation failed");
             }
@@ -65,22 +60,30 @@ const RegisterAccount = () => {
             alert("Individual employer registration failed");
           }
         }
-      }
+      } else {
+        const res = await axios.post(`http://localhost:3001/register/${accountType}`, data);
+        console.log(data);
+        if (res.status === 201) {
+          alert(
+            accountType === "jobseeker"
+              ? "Jobseeker account created successfully"
+              : "Manpower Provider account created successfully"
+          );
+          navigate('/login');
+        } else {
+          alert("Account creation failed");
+        }
 
-      alert("Account created successfully");
-      navigate('/login');
-    } else {
-      alert("Account creation failed");
+      }
+    } catch (error) {
+      if (error.response && error.response.status === 409) {
+        alert("Username already exists");
+      } else {
+        console.error(error);
+        alert("Account creation failed");
+      }
     }
-  } catch (error) {
-    if (error.response && error.response.status === 409) {
-      alert("Username already exists");
-    } else {
-      console.error(error);
-      alert("Account creation failed");
-    }
-  }
-};
+  };
 
 
 
@@ -90,19 +93,19 @@ const RegisterAccount = () => {
 
     <div className='flex justify-center items-center h-screen bg-gray-400 flex-col'>
 
-      {(type === "business" || type === "individual") ?
+      {(type === business || type === individual) ?
         (
           <h1 className="font-bold">
-            Create an account as {type === "business" ? "Business Type Employer" : "Individual Type Employer"}
+            Create an account as {type === business ? "Business Type Employer" : "Individual Type Employer"}
           </h1>
         ) :
         (
           <h1 className="font-bold">
-          Create an account as  
-          {
-            accountType === "jobseeker" ? " Job Seeker" :
-            accountType === "manpowerProvider" ? " Manpower Provider" : ""
-          }
+            Create an account as
+            {
+              accountType === "jobseeker" ? " Job Seeker" :
+                accountType === "manpowerProvider" ? " Manpower Provider" : ""
+            }
           </h1>
         )}
 
@@ -110,7 +113,7 @@ const RegisterAccount = () => {
       <form onSubmit={handleRegister} className='flex justify-center items-center p-5 rounded bg-blue-300 flex-col w-2xl '>
 
         <label htmlFor="username" className='mt-2'>User Name</label>
-        <input onChange={(e) => setName(e.target.value)} value={username} name='name' id='name' type="email" className='outline-none border' />
+        <input onChange={(e) => setName(e.target.value)} value={username} name='username' id='name' type="email" className='outline-none border' />
 
         <label htmlFor="password" className='mt-2'>Enter password</label>
         <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" className='outline-none border' />
