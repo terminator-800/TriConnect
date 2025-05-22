@@ -15,7 +15,7 @@ function App() {
           <Route path="/register" element={<RegisterType />} />
           <Route path="/register/:accountType" element={<ConditionalRouting />} />
           <Route path="/register/:accountType/:type" element={<EmployerType />} />
-          <Route path="/register/:accountType/:type/register" element={<RegisterAccount />} />
+          <Route path="/register/:accountType/:type/account" element={<RegisterAccount />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </Router>

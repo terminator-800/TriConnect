@@ -1,4 +1,4 @@
-const { createBusinessEmployer, findBusinessEmployerUsername } = require("../service/BusinessEmployerQuery");
+const { createIndividualEmployer, findIndividualEmployerUsername } = require("../service/IndividualEmployerQuery");
 
 const register = async (req, res) => {
     const { username, password } = req.body;
@@ -10,19 +10,18 @@ const register = async (req, res) => {
     }
 
     try {
-        const existingEmployer = await findBusinessEmployerUsername(username);
+        const existingEmployer = await findIndividualEmployerUsername(username);
         if (existingEmployer) {
             return res.status(409).json({ message: "Username already exists" });
         }
 
-        const result = await createBusinessEmployer(username, password);
+        const result = await createIndividualEmployer(username, password);
         if (result && result.insertId) {
-             console.log(`New Business User : ${result.insertId}`)
+            console.log(`New Individual User : ${result.insertId}`);
             return res.status(201).json({
                 message: "Account created successfully",
                 userId: result.insertId,
-            }
-        );
+            });
         } else {
             return res.status(500).json({ message: "Account creation failed" });
         }

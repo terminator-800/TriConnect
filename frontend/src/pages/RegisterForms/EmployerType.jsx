@@ -6,7 +6,7 @@ const EmployerType = () => {
   const business = "business"
   const individual = "individual"
   const navigate = useNavigate()
-  const { accountType, type} = useParams()
+  const { accountType } = useParams()
   const [isSelected, setSelectOption] = useState("")
 
   const handleSelect = (option) => {
@@ -14,7 +14,7 @@ const EmployerType = () => {
   }
 
   const handleNext = () => {
-      navigate(`/register/${accountType}/${isSelected}/register`)
+      navigate(`/register/${accountType}/${isSelected}/account`)
   }
 
   return (

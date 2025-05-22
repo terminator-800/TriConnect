@@ -1,4 +1,5 @@
-const { createJobseeker } = require('../service/JobseekerQuery');
+const { createJobseeker, findJobseekerByUsername } = require('../service/JobseekerQuery');
+
 const register = async (req, res) => {
     const { username, password } = req.body;
 
@@ -9,8 +10,14 @@ const register = async (req, res) => {
     }
 
     try {
-        const result = await createJobseeker(username, password)
-        console.log("New user ID:", result.insertId);
+        const existingUser = await findJobseekerByUsername(username);
+        if (existingUser) {
+            return res.status(409).json({ message: "Username already exists" });
+        }
+
+        const result = await createJobseeker(username, password);
+        console.log("New jobseeker ID:", result.insertId);
+
         return res.status(201).json({
             message: "Account created successfully",
             userId: result.insertId,
@@ -18,12 +25,6 @@ const register = async (req, res) => {
 
     } catch (error) {
         console.error("Error creating jobseeker account:", error.message);
-
-       
-        if (error.code === 'ER_DUP_ENTRY') {
-            return res.status(409).json({ message: "Username already exists" });
-        }
-
         return res.status(500).json({ message: "Server error" });
     }
 };

@@ -1,10 +1,10 @@
 const dbPromise = require("../config/DatabaseConnection");
 
-async function createJobseeker(username, password) {
+async function createBusinessEmployer(username, password) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
-            "INSERT INTO jobseeker (username, password) VALUES (?, ?)",
+            "INSERT INTO business_employer (username, password) VALUES (?, ?)",
             [username, password]
         );
         return { success: true, insertId: result.insertId };
@@ -13,18 +13,18 @@ async function createJobseeker(username, password) {
     }
 }
 
-async function findJobseekerByUsername(username) {
+async function findBusinessEmployerUsername(username) {
     try {
         const db = await dbPromise;
         const [rows] = await db.execute(
-            "SELECT * FROM jobseeker WHERE username = ?",
+            "SELECT * FROM business_employer WHERE username = ?",
             [username]
         );
         return rows.length > 0 ? rows[0] : null;
     } catch (error) {
-        console.error("Error finding jobseeker by username:", error);
         return null;
     }
 }
 
-module.exports = { createJobseeker, findJobseekerByUsername };
+
+module.exports = { createBusinessEmployer, findBusinessEmployerUsername };
