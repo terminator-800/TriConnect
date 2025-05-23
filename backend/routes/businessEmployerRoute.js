@@ -1,7 +1,9 @@
 const express = require("express");
-const register  = require("../controllers/BusinessEmployerController");
+const { register, verifyEmail } = require("../controllers/BusinessEmployerController");
+const validateRegisterInput = require("../middleware/validateRegisterInput");
 const router = express.Router();
 
-router.post("/account", register);
+router.post("/account", validateRegisterInput, register);
+router.get("/verify", verifyEmail);
 
 module.exports = router;

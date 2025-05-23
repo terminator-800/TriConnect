@@ -15,6 +15,7 @@ async function createEmployerTable(connection) {
             government_id VARCHAR(255),
             selfie_with_id VARCHAR(255),
             nbi_barangray_clearance VARCHAR(255),
+            is_verified BOOLEAN DEFAULT FALSE,
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
     `;

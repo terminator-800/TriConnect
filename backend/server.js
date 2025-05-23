@@ -13,9 +13,9 @@ const validateRegisterInput = require("./middleware/validateRegisterInput")
 app.use(express.json());
 app.use(cors());
 require('dotenv').config();
-app.use("/register", validateRegisterInput, jobseekerRoute)
-app.use("/register/employer/business", validateRegisterInput, businessEmployerRoute)
-app.use("/register/employer/individual", validateRegisterInput, indivualEmployerRoute)
+app.use("/register", jobseekerRoute)
+app.use("/register/employer/business", businessEmployerRoute)
+app.use("/register/employer/individual", indivualEmployerRoute)
 
 async function startServer() {
     try {

@@ -5,6 +5,7 @@ import Login from "./pages/Login"
 import EmployerType from "./pages/RegisterForms/EmployerType"
 import ConditionalRouting from "./pages/ConditionalRouting"
 import RegisterAccount from "./pages/RegisterForms/RegisterAccount"
+import VerifyEmail from "./components/VerifyEmail"
 function App() {
 
   return (
@@ -16,6 +17,7 @@ function App() {
           <Route path="/register/:accountType" element={<ConditionalRouting />} />
           <Route path="/register/:accountType/:type" element={<EmployerType />} />
           <Route path="/register/:accountType/:type/account" element={<RegisterAccount />} />
+          <Route path="/register/:accountType/:type/account/verify" element={<VerifyEmail />} />
           <Route path="/login" element={<Login />} />
         </Routes>
       </Router>

@@ -35,11 +35,11 @@ const RegisterAccount = () => {
               data
             );
             console.log(data);
-            navigate('/login');
-
             if (businessRes.status === 201) {
+              navigate('/register/employer/business/account/verify');
               alert("Business employer account created successfully");
             } else {
+              console.log(businessRes.status);
               alert("Business employer account creation failed");
             }
           } catch (error) {
