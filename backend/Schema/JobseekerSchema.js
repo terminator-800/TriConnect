@@ -2,7 +2,9 @@ async function createJobseekerTable(connection) {
     const query = `
         CREATE TABLE IF NOT EXISTS jobseeker (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(100) NOT NULL UNIQUE,
+            role ENUM('jobseeker') NOT NULL DEFAULT 'jobseeker',
+            is_verified BOOLEAN DEFAULT FALSE,            
+            email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             full_name VARCHAR(100), 
             date_of_birth DATE,

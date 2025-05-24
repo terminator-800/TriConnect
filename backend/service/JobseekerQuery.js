@@ -1,11 +1,11 @@
 const dbPromise = require("../config/DatabaseConnection");
 
-async function createJobseeker(username, password) {
+async function createJobseeker(email, password) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
-            "INSERT INTO jobseeker (username, password) VALUES (?, ?)",
-            [username, password]
+            "INSERT INTO jobseeker (email, password) VALUES (?, ?)",
+            [email, password]
         );
         return { success: true, insertId: result.insertId };
     } catch (error) {
@@ -13,18 +13,18 @@ async function createJobseeker(username, password) {
     }
 }
 
-async function findJobseekerByUsername(username) {
+async function findJobseekerEmail(email) {
     try {
         const db = await dbPromise;
         const [rows] = await db.execute(
-            "SELECT * FROM jobseeker WHERE username = ?",
-            [username]
+            "SELECT * FROM jobseeker WHERE email = ?",
+            [email]
         );
         return rows.length > 0 ? rows[0] : null;
     } catch (error) {
-        console.error("Error finding jobseeker by username:", error);
+        console.error("Error finding jobseeker by email:", error);
         return null;
     }
 }
 
-module.exports = { createJobseeker, findJobseekerByUsername };
+module.exports = { createJobseeker, findJobseekerEmail };

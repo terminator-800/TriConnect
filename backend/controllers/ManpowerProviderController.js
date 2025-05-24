@@ -1,11 +1,10 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { findIndividualEmployerEmail, createIndividualEmployer } = require("../service/IndividualEmployerQuery");
+const { findManpowerProviderEmail, createManpowerProvider } = require("../service/ManpowerProviderQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
-
     if (!email || !password) {
         return res.status(400).json({
             message: "Account creation failed: Missing email or password",
@@ -13,13 +12,13 @@ const register = async (req, res) => {
     }
 
     try {
-        const existingEmployer = await findIndividualEmployerEmail(email);
-
-        if (existingEmployer) {
+        const existingProvider = await findManpowerProviderEmail(email);
+        if (existingProvider) {
             return res.status(409).json({ message: "Email already exists" });
         }
         const token = jwt.sign({ email, password }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        const verificationLink = `http://localhost:${process.env.PORT}/register/employer/individual/verify?token=${token}`;
+        const verificationLink = `http://localhost:${process.env.PORT}/register/manpowerProvider/verify?token=${token}`;
+
         const transporter = nodemailer.createTransport({
             service: "gmail",
             auth: {
@@ -31,7 +30,7 @@ const register = async (req, res) => {
         await transporter.sendMail({
             from: process.env.EMAIL_USER,
             to: email,
-            subject: "Verify your individual employer email",
+            subject: "Verify your manpower provider email",
             html: `<p>Click <a href="${verificationLink}">here</a> to verify your email and complete registration.</p>`,
         });
 
@@ -46,18 +45,16 @@ const register = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     const { token } = req.query;
-
+    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
-        const existingEmployer = await findIndividualEmployerEmail(email);
-        
-        if (existingEmployer) {
+        const existingProvider = await findManpowerProviderEmail(email);
+        if (existingProvider) {
             return res.send("Account already verified or exists.");
         }
-
-        await createIndividualEmployer(email, password);
-        console.log("Individual employer account created successfully!");
+        await createManpowerProvider(email, password);
+        console.log("Manpower provider account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {
         res.status(400).send("Invalid or expired verification link.");

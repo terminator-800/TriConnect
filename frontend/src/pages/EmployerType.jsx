@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import BackButton from '../../components/BackButton'
+import BackButton from '../components/BackButton'
 import { useNavigate, useParams } from 'react-router-dom'
 
 const EmployerType = () => {

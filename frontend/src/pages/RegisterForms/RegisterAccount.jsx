@@ -7,7 +7,7 @@ const RegisterAccount = () => {
 
   const { accountType, type } = useParams()
   const navigate = useNavigate()
-  const [username, setName] = useState('')
+  const [email, setName] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const individual = "individual"
@@ -22,7 +22,7 @@ const RegisterAccount = () => {
     }
 
     const data = {
-      username: username,
+      email: email,
       password: password,
     };
 
@@ -63,7 +63,7 @@ const RegisterAccount = () => {
 
             if (individualRes.status === 201) {
               alert("Individual employer account created successfully");
-              navigate('/login');
+              navigate('/register/employer/business/account/verify');
             } else {
               alert("Individual employer account creation failed");
             }
@@ -87,7 +87,7 @@ const RegisterAccount = () => {
                 ? "Jobseeker account created successfully"
                 : "Manpower Provider account created successfully"
             );
-            navigate('/login');
+             navigate(`/register/${accountType}/verify`);
           } else {
             alert("Account creation failed");
           }
@@ -137,8 +137,8 @@ const RegisterAccount = () => {
 
       <form onSubmit={handleRegister} className='flex justify-center items-center p-5 rounded bg-blue-300 flex-col w-2xl '>
 
-        <label htmlFor="username" className='mt-2'>User Name</label>
-        <input onChange={(e) => setName(e.target.value)} value={username} name='username' id='name' type="email" className='outline-none border' />
+        <label htmlFor="email" className='mt-2'>User Name</label>
+        <input onChange={(e) => setName(e.target.value)} value={email} name='email' id='name' type="email" className='outline-none border' />
 
         <label htmlFor="password" className='mt-2'>Enter password</label>
         <input onChange={(e) => setPassword(e.target.value)} value={password} type="password" className='outline-none border' />

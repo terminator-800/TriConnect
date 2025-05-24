@@ -2,7 +2,9 @@ async function createIndividualEmployerTable(connection) {
     const query2 = `
         CREATE TABLE IF NOT EXISTS individual_employer (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            username VARCHAR(100) NOT NULL UNIQUE,
+            role ENUM('individual_employer') NOT NULL DEFAULT 'individual_employer',            
+            is_verified BOOLEAN DEFAULT FALSE,
+            email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             full_name VARCHAR(100), 
             date_of_birth DATE,

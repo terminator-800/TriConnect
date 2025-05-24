@@ -3,28 +3,31 @@ const cors = require("cors");
 const app = express()
 const dbPromise = require("./config/DatabaseConnection")
 const { createJobseekerTable } = require("./Schema/JobseekerSchema")
-const { createEmployerTable } = require("./Schema/BusinessEmployerSchema")
+const { createBusinessEmployerTable } = require("./Schema/BusinessEmployerSchema")
 const { createIndividualEmployerTable } = require("./Schema/IndividualEmployerSchema")
+const { createManpowerProviderTable } = require("./Schema/ManpowerProviderSchema")
 const jobseekerRoute = require("./routes/JobseekerRoute")
 const businessEmployerRoute = require("./routes/BusinessEmployerRoute")
-const indivualEmployerRoute = require("./routes/IndividualEmployerRoute")
-const validateRegisterInput = require("./middleware/validateRegisterInput")
+const individualEmployerRoute = require("./routes/IndividualEmployerRoute")
+const manpowerProviderRoute = require("./routes/ManpowerproviderRoute")
 
 app.use(express.json());
 app.use(cors());
 require('dotenv').config();
-app.use("/register", jobseekerRoute)
-app.use("/register/employer/business", businessEmployerRoute)
-app.use("/register/employer/individual", indivualEmployerRoute)
+app.use("/", jobseekerRoute)
+app.use("/", businessEmployerRoute)
+app.use("/", individualEmployerRoute)
+app.use("/", manpowerProviderRoute)
 
 async function startServer() {
     try {
         const db = await dbPromise
         await createJobseekerTable(db);
-        await createEmployerTable(db);
+        await createBusinessEmployerTable(db);
         await createIndividualEmployerTable(db);
+        await createManpowerProviderTable(db);
+        
         app.locals.db = db;
-
         app.listen(process.env.PORT, () => {
             console.log(`✅ Server is running on port ${process.env.PORT}`);
         });
