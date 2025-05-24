@@ -1,7 +1,8 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { findBusinessEmployerEmail, createBusinessEmployer } = require("../service/BusinessEmployerQuery");
+const { createBusinessEmployer } = require("../service/BusinessEmployerQuery");
+const { findUsersEmail, createUsers } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -11,7 +12,7 @@ const register = async (req, res) => {
         });
     }
     try {
-        const existingEmployer = await findBusinessEmployerEmail(email);
+        const existingEmployer = await findUsersEmail(email);
         if (existingEmployer) {
             return res.status(409).json({ message: "Email already exists" });
         }
@@ -44,12 +45,10 @@ const verifyEmail = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
-        
-        const existingEmployer = await findBusinessEmployerEmail(email);
-        if (existingEmployer) {
-            return res.send("Account already verified or exists.");
-        }
+        const role = "business_employer";
+
         await createBusinessEmployer(email, password);
+        await createUsers(email, password, role);
         console.log("Business employer account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {

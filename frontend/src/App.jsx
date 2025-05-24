@@ -13,13 +13,21 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<Home />} />
+
+          {/* Login */}
+          <Route path="/login" element={<Login />} />
+
+          {/* Registration Flow */}
           <Route path="/register" element={<RegisterType />} />
           <Route path="/register/:accountType" element={<ConditionalRouting />} />
           <Route path="/register/:accountType/verify" element={<VerifyAccount />} />
+
+          {/* Employer Registration */}
           <Route path="/register/:accountType/:type" element={<EmployerType />} />
           <Route path="/register/:accountType/:type/account" element={<RegisterAccount />} />
           <Route path="/register/:accountType/:type/account/verify" element={<VerifyAccount />} />
-          <Route path="/login" element={<Login />} />
+
+          
         </Routes>
       </Router>
     </>

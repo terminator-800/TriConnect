@@ -17,7 +17,7 @@ async function findManpowerProviderEmail(email) {
     try {
         const db = await dbPromise;
         const [rows] = await db.execute(
-            "SELECT * FROM manpower_provider WHERE email = ?",
+            "SELECT * FROM users WHERE email = ?",
             [email]
         );
         return rows.length > 0 ? rows[0] : null;

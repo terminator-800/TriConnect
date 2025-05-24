@@ -17,7 +17,7 @@ async function findBusinessEmployerEmail(email) {
     try {
         const db = await dbPromise;
         const [rows] = await db.execute(
-            "SELECT * FROM business_employer WHERE username = ?",
+            "SELECT * FROM users WHERE email = ?",
             [email]
         );
         return rows.length > 0 ? rows[0] : null;

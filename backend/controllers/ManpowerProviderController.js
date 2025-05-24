@@ -2,6 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { findManpowerProviderEmail, createManpowerProvider } = require("../service/ManpowerProviderQuery");
+const { findUsersEmail, createUsers } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -12,7 +13,7 @@ const register = async (req, res) => {
     }
 
     try {
-        const existingProvider = await findManpowerProviderEmail(email);
+        const existingProvider = await findUsersEmail(email);
         if (existingProvider) {
             return res.status(409).json({ message: "Email already exists" });
         }
@@ -49,11 +50,10 @@ const verifyEmail = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
-        const existingProvider = await findManpowerProviderEmail(email);
-        if (existingProvider) {
-            return res.send("Account already verified or exists.");
-        }
+        const role = "manpower_provider";
+
         await createManpowerProvider(email, password);
+        await createUsers(email, password, role);
         console.log("Manpower provider account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {

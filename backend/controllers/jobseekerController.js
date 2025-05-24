@@ -1,7 +1,8 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { findJobseekerEmail, createJobseeker } = require("../service/JobseekerQuery");
+const { createJobseeker } = require("../service/JobseekerQuery");
+const { findUsersEmail, createUsers } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -13,7 +14,7 @@ const register = async (req, res) => {
     }
 
     try {
-        const existingJobseeker = await findJobseekerEmail(email);
+        const existingJobseeker = await findUsersEmail(email);
         if (existingJobseeker) {
             return res.status(409).json({ message: "Email already exists" });
         }
@@ -47,13 +48,10 @@ const verifyEmail = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
-        const existingJobseeker = await findJobseekerEmail(email);
-
-        if (existingJobseeker) {
-            return res.send("Account already verified or exists.");
-        }
+        const role = "jobseeker";
 
         await createJobseeker(email, password);
+        await createUsers(email, password, role);
         console.log("Jobseeker account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {

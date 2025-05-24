@@ -17,7 +17,7 @@ async function findJobseekerEmail(email) {
     try {
         const db = await dbPromise;
         const [rows] = await db.execute(
-            "SELECT * FROM jobseeker WHERE email = ?",
+            "SELECT * FROM users WHERE email = ?",
             [email]
         );
         return rows.length > 0 ? rows[0] : null;

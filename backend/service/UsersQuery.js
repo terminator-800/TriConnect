@@ -1,11 +1,11 @@
 const dbPromise = require("../config/DatabaseConnection");
 
-async function createIndividualEmployer(email, password) {
+async function createUsers(email, password, role) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
-            "INSERT INTO individual_employer (email, password) VALUES (?, ?)",
-            [email, password]
+            "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+            [email, password, role]
         );
         return { success: true, insertId: result.insertId };
     } catch (error) {
@@ -13,7 +13,7 @@ async function createIndividualEmployer(email, password) {
     }
 }
 
-async function findIndividualEmployerEmail(email) {
+async function findUsersEmail(email) {
     try {
         const db = await dbPromise;
         const [rows] = await db.execute(
@@ -27,4 +27,6 @@ async function findIndividualEmployerEmail(email) {
 }
 
 
-module.exports = { createIndividualEmployer, findIndividualEmployerEmail };
+
+
+module.exports = { findUsersEmail, createUsers };
