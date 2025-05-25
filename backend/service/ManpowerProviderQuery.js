@@ -27,4 +27,18 @@ async function findManpowerProviderEmail(email) {
     }
 }
 
-module.exports = { createManpowerProvider, findManpowerProviderEmail };
+async function updateManpowerProviderPassword(email, password) {
+    try {
+        const db = await dbPromise;
+        const [result] = await db.execute(
+            "UPDATE manpower_provider SET password = ? WHERE email = ?",
+            [password, email]
+        );
+        return result; 
+    } catch (error) {
+        console.error("Error updating password:", error);
+        throw error;
+    }
+}
+
+module.exports = { createManpowerProvider, findManpowerProviderEmail, updateManpowerProviderPassword };

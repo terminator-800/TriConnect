@@ -26,7 +26,18 @@ async function findUsersEmail(email) {
     }
 }
 
+async function updateUserPassword(email, password) {
+    try {
+        const db = await dbPromise;
+        const [result] = await db.execute(
+            "UPDATE users SET password = ? WHERE email = ?",
+            [password, email]
+        );
+        return result; 
+    } catch (error) {
+        console.error("Error updating password:", error);
+        throw error;
+    }
+}
 
-
-
-module.exports = { findUsersEmail, createUsers };
+module.exports = { findUsersEmail, createUsers, updateUserPassword };

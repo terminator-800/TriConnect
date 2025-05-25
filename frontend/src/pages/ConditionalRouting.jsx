@@ -1,5 +1,5 @@
 import { useParams, Navigate } from "react-router-dom";
-import RegisterAccount from "./RegisterForms/RegisterAccount"
+import RegisterAccount from "./VerifciationForms/RegisterAccount"
 
 const ConditionalRegisterRoute = () => {
   const { accountType } = useParams();

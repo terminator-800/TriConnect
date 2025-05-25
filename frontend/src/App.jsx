@@ -1,37 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"
-import Home from "./pages/Home"
-import RegisterType from "./pages/UserType"
-import Login from "./pages/Login"
-import EmployerType from "./pages/EmployerType"
-import ConditionalRouting from "./pages/ConditionalRouting"
-import RegisterAccount from "./pages/RegisterForms/RegisterAccount"
-import VerifyAccount from "./components/VerifyAccount"
-
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import RegisterRoutes from "./pages/RegisterRoutes"; // <-- import grouped routes
+import UserDashboard from "./pages/Dashboards/UserDashboard"; // <-- import user dashboard routes
+import ForgotPassword from "./pages/ForgotPassword";
+import ResetPassword from "./pages/ResetPassword";
 function App() {
   return (
-    <>
-      <Router>
-        <Routes>
-          <Route path="/" element={<Home />} />
-
-          {/* Login */}
-          <Route path="/login" element={<Login />} />
-
-          {/* Registration Flow */}
-          <Route path="/register" element={<RegisterType />} />
-          <Route path="/register/:accountType" element={<ConditionalRouting />} />
-          <Route path="/register/:accountType/verify" element={<VerifyAccount />} />
-
-          {/* Employer Registration */}
-          <Route path="/register/:accountType/:type" element={<EmployerType />} />
-          <Route path="/register/:accountType/:type/account" element={<RegisterAccount />} />
-          <Route path="/register/:accountType/:type/account/verify" element={<VerifyAccount />} />
-
-          
-        </Routes>
-      </Router>
-    </>
-  )
+    <Router>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
+        <Route path="/forgot-password/reset-password" element={<ResetPassword/>}></Route>
+        <Route path="/dashboard/*" element={<UserDashboard/>}></Route>
+        <Route path="/register/*" element={<RegisterRoutes />} />
+      </Routes>
+    </Router>
+  );
 }
 
-export default App
+export default App;

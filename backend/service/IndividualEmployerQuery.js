@@ -26,5 +26,18 @@ async function findIndividualEmployerEmail(email) {
     }
 }
 
+async function updateIndividualEmployerPassword(email, password) {
+    try {
+        const db = await dbPromise;
+        const [result] = await db.execute(
+            "UPDATE individual_employer SET password = ? WHERE email = ?",
+            [password, email]
+        );
+        return result; 
+    } catch (error) {
+        console.error("Error updating password:", error);
+        throw error;
+    }
+}
 
-module.exports = { createIndividualEmployer, findIndividualEmployerEmail };
+module.exports = { createIndividualEmployer, findIndividualEmployerEmail, updateIndividualEmployerPassword };

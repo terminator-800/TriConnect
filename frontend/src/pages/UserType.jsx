@@ -6,7 +6,7 @@ const Register = () => {
 
   const jobseeker = "jobseeker"
   const employer = "employer"
-  const manpowerProvider = "manpowerProvider"
+  const manpower_provider = "manpower-provider"
 
   const [isSelected, setSelectOption] = useState(null)
   const navigate = useNavigate()
@@ -41,8 +41,8 @@ const Register = () => {
           <h1>Employer</h1>
         </div>
 
-        <div className={`p-5 cursor-pointer bg-violet-300 rounded ${isSelected === manpowerProvider ? "bg-violet-500" : "bg-violet-300"}`}
-          onClick={() => handleSelect(manpowerProvider)}>
+        <div className={`p-5 cursor-pointer bg-violet-300 rounded ${isSelected === manpower_provider ? "bg-violet-500" : "bg-violet-300"}`}
+          onClick={() => handleSelect(manpower_provider)}>
           <h1>Manpower Provider</h1>
         </div>
 

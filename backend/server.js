@@ -8,10 +8,11 @@ const { createIndividualEmployerTable } = require("./Schema/IndividualEmployerSc
 const { createManpowerProviderTable } = require("./Schema/ManpowerProviderSchema")
 const { createUsersTable } = require("./Schema/UsersSchema")
 const jobseekerRoute = require("./routes/JobseekerRoute")
-const businessEmployerRoute = require("./routes/BusinessEmployerRoute")
+const businessEmployerRoute = require("./routes/businessEmployerRoute")
 const individualEmployerRoute = require("./routes/IndividualEmployerRoute")
 const manpowerProviderRoute = require("./routes/ManpowerproviderRoute")
 const loginRoute = require("./routes/loginRoute")
+const forgotPasswordRoute = require("./routes/ForgotPasswordRoute")
 
 app.use(express.json());
 app.use(cors());
@@ -21,6 +22,9 @@ app.use("/", businessEmployerRoute)
 app.use("/", individualEmployerRoute)
 app.use("/", manpowerProviderRoute)
 app.use("/", loginRoute);
+app.use("/", forgotPasswordRoute)
+
+
 
 async function startServer() {
     try {

@@ -27,4 +27,18 @@ async function findJobseekerEmail(email) {
     }
 }
 
-module.exports = { createJobseeker, findJobseekerEmail };
+async function updateJobseekerPassword(email, password) {
+    try {
+        const db = await dbPromise;
+        const [result] = await db.execute(
+            "UPDATE jobseeker SET password = ? WHERE email = ?",
+            [password, email]
+        );
+        return result; 
+    } catch (error) {
+        console.error("Error updating password:", error);
+        throw error;
+    }
+}
+
+module.exports = { createJobseeker, findJobseekerEmail, updateJobseekerPassword };

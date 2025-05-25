@@ -1,7 +1,7 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { findManpowerProviderEmail, createManpowerProvider } = require("../service/ManpowerProviderQuery");
+const { createManpowerProvider } = require("../service/ManpowerProviderQuery");
 const { findUsersEmail, createUsers } = require("../service/UsersQuery");
 
 const register = async (req, res) => {

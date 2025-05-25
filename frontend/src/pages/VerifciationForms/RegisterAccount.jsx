@@ -129,7 +129,7 @@ const RegisterAccount = () => {
             Create an account as
             {
               accountType === "jobseeker" ? " Job Seeker" :
-                accountType === "manpowerProvider" ? " Manpower Provider" : ""
+                accountType === "manpower-provider" ? " Manpower Provider" : ""
             }
           </h1>
         )}

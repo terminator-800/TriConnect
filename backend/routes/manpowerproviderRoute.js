@@ -3,7 +3,7 @@ const { register, verifyEmail } = require("../controllers/ManpowerProviderContro
 const validateRegisterInput = require("../middleware/validateRegisterInput");
 const router = express.Router();
 
-router.post("/register/manpowerProvider", validateRegisterInput, register);
-router.get("/register/manpowerProvider/verify", verifyEmail);
+router.post("/register/manpower-provider", validateRegisterInput, register);
+router.get("/register/manpower-provider/verify", verifyEmail);
 
 module.exports = router;
