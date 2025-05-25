@@ -11,30 +11,28 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post('http://localhost:3001/login', { email, password });
-            // Optionally: localStorage.setItem('token', res.data.token);
+            const res = await axios.post('http://localhost:3001/login',
+                { email, password },
+                { withCredentials: true });
 
-            console.log({ email, password });
             if (res.status === 200) {
                 console.log('Login successful:', res.data);
-                localStorage.setItem("token", res.data.token);
-                localStorage.setItem("role", res.data.role);
 
                 switch (res.data.role) {
                     case "jobseeker":
-                        navigate("/dashboard/jobseeker");
+                        navigate("/jobseeker");
                         break;
                     case "business_employer":
-                        navigate("/dashboard/business-employer");
+                        navigate("/business-employer");
                         break;
                     case "individual_employer":
-                        navigate("/dashboard/individual-employer");
+                        navigate("/individual-employer");
                         break;
                     case "manpower_provider":
-                        navigate("/dashboard/manpower-provider");
+                        navigate("/manpower-provider");
                         break;
                     case "admin":
-                        navigate("/dashboard/admin");
+                        navigate("/admin");
                         break;
                     default:
                         navigate("/");
@@ -76,11 +74,11 @@ const Login = () => {
                 />
                 <button type="submit" className='bg-green-700 text-white mt-2 mb-2 rounded pt-2 pb-2 cursor-pointer'>Login</button>
                 <button type="button" className='text-sm text-blue-800 underline self-start mt-1 hover:text-blue-600 cursor-pointer'
-                        onClick={() => navigate('/forgot-password')}
+                    onClick={() => navigate('/forgot-password')}
                 >Forgot password?</button>
 
             </form>
-          
+
             <BackButton to='/' className='bg-blue-400 p-3 rounded mt-2 cursor-pointer' />
         </div>
     );

@@ -5,15 +5,16 @@ import RegisterRoutes from "./pages/RegisterRoutes"; // <-- import grouped route
 import UserDashboard from "./pages/Dashboards/UserDashboard"; // <-- import user dashboard routes
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route path="" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/*" element={<UserDashboard/>}></Route>
         <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
         <Route path="/forgot-password/reset-password" element={<ResetPassword/>}></Route>
-        <Route path="/dashboard/*" element={<UserDashboard/>}></Route>
         <Route path="/register/*" element={<RegisterRoutes />} />
       </Routes>
     </Router>

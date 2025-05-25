@@ -1,5 +1,8 @@
+require('dotenv').config();
 const express = require("express")
 const cors = require("cors");
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const app = express()
 const dbPromise = require("./config/DatabaseConnection")
 const { createJobseekerTable } = require("./Schema/JobseekerSchema")
@@ -13,17 +16,35 @@ const individualEmployerRoute = require("./routes/IndividualEmployerRoute")
 const manpowerProviderRoute = require("./routes/ManpowerproviderRoute")
 const loginRoute = require("./routes/loginRoute")
 const forgotPasswordRoute = require("./routes/ForgotPasswordRoute")
+const requireLogin = require("./middleware/RequireLogin")
 
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true
+}));
+
+app.use(cookieParser());
 app.use(express.json());
-app.use(cors());
-require('dotenv').config();
+
+app.use(session({
+    secret: process.env.SESSION_SECRET,// Use a strong secret in production!
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        secure: false, // set to true if using HTTPS
+        httpOnly: true,
+        maxAge: 1000 * 60 * 60 // 1 hour
+    }
+}));
+
+
+
 app.use("/", jobseekerRoute)
 app.use("/", businessEmployerRoute)
 app.use("/", individualEmployerRoute)
 app.use("/", manpowerProviderRoute)
 app.use("/", loginRoute);
 app.use("/", forgotPasswordRoute)
-
 
 
 async function startServer() {
