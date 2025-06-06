@@ -1,6 +1,7 @@
 import BackButton from '../components/BackButton'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Navbar from './Navbar'
 
 const Register = () => {
 
@@ -26,7 +27,7 @@ const Register = () => {
   return (
 
     <div className='flex justify-center items-center h-screen flex-col bg-gray-500'>
-
+      <Navbar />
       <h1 className='text-center'>Register Page</h1>
 
       <div className='flex flex-col border p-5 mt-2  gap-3'>

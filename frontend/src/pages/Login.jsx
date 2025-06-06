@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
-
+import Navbar from './Navbar';
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -47,6 +47,7 @@ const Login = () => {
 
     return (
         <div className='flex justify-center items-center h-screen flex-col bg-gray-500'>
+            <Navbar text="Home" className="text-black" />
             <h1 className='font-bold'>Login your account</h1>
             <form onSubmit={handleLogin} className='flex flex-col border rounded p-5 bg-blue-300 w-xl'>
                 <label htmlFor="email" className="sr-only">Email</label>

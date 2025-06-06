@@ -18,7 +18,7 @@ const register = async (req, res) => {
             return res.status(409).json({ message: "Email already exists" });
         }
         const token = jwt.sign({ email, password }, process.env.JWT_SECRET, { expiresIn: "1h" });
-        const verificationLink = `http://localhost:${process.env.PORT}/register/manpowerProvider/verify?token=${token}`;
+        const verificationLink = `http://localhost:${process.env.PORT}/register/manpower-provider/verify?token=${token}`;
 
         const transporter = nodemailer.createTransport({
             service: "gmail",

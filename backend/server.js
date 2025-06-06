@@ -8,15 +8,16 @@ const dbPromise = require("./config/DatabaseConnection")
 const { createJobseekerTable } = require("./Schema/JobseekerSchema")
 const { createBusinessEmployerTable } = require("./Schema/BusinessEmployerSchema")
 const { createIndividualEmployerTable } = require("./Schema/IndividualEmployerSchema")
-const { createManpowerProviderTable } = require("./Schema/ManpowerProviderSchema")
+const { createManpowerProviderTable } = require("./Schema/manpowerProviderSchema")
 const { createUsersTable } = require("./Schema/UsersSchema")
-const jobseekerRoute = require("./routes/JobseekerRoute")
+const jobseekerRoute = require("./routes/jobseekerRoute")
 const businessEmployerRoute = require("./routes/businessEmployerRoute")
 const individualEmployerRoute = require("./routes/IndividualEmployerRoute")
 const manpowerProviderRoute = require("./routes/ManpowerproviderRoute")
 const loginRoute = require("./routes/loginRoute")
 const forgotPasswordRoute = require("./routes/ForgotPasswordRoute")
-const requireLogin = require("./middleware/RequireLogin")
+const authRoute = require("./routes/authRoute")
+const logoutRoute = require("./routes/logoutRoute")
 
 app.use(cors({
     origin: 'http://localhost:5173',
@@ -45,7 +46,8 @@ app.use("/", individualEmployerRoute)
 app.use("/", manpowerProviderRoute)
 app.use("/", loginRoute);
 app.use("/", forgotPasswordRoute)
-
+app.use("/", authRoute)
+app.use("/", logoutRoute)
 
 async function startServer() {
     try {

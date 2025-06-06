@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import BackButton from '../components/BackButton';
+import BackButton from '../../components/BackButton';
 
 const ForgotPassword = () => {
     const [email, setEmail] = useState('');

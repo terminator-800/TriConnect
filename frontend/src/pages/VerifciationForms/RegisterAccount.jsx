@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import BackButton from '../../components/BackButton'
 import axios from 'axios'
-
+import Navbar from '../Navbar'
 const RegisterAccount = () => {
 
   const { accountType, type } = useParams()
@@ -12,6 +12,8 @@ const RegisterAccount = () => {
   const [confirmPassword, setConfirmPassword] = useState('')
   const individual = "individual"
   const business = "business"
+
+  
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -114,10 +116,8 @@ const RegisterAccount = () => {
 
 
   return (
-
-
     <div className='flex justify-center items-center h-screen bg-gray-400 flex-col'>
-
+      <Navbar text="Register Account" className="text-black" />
       {(type === business || type === individual) ?
         (
           <h1 className="font-bold">

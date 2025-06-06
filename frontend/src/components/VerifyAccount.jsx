@@ -1,28 +1,6 @@
-import { useEffect } from "react";
-import { useSearchParams } from "react-router-dom";
-import axios from "axios";
 import BackButton from "./BackButton";
 
 function VerifyAccount() {
-//   const [searchParams] = useSearchParams();
-//   const token = searchParams.get("token");
-
-  // useEffect(() => {
-  //   if (token) {
-  //     axios.get(`/register/employer/business/verify?token=${token}`)
-  //       .then(res => {
-  //         // Show success message or redirect
-  //         console.log(token);
-          
-  //       })
-  //       .catch(err => {
-  //         // Show error message
-  //         console.log(err);
-          
-  //       });
-  //   }
-  // }, [token]);
-
   return (
     <div className="bg-gray-400 flex flex-col items-center justify-center h-screen">
 

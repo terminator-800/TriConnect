@@ -1,10 +1,15 @@
-import React, { useState } from 'react'
+import { Outlet } from "react-router-dom";
+import { useState } from 'react'
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import Navbar from '../Navbar';
 
-const SIDEBAR_WIDTH = 15; // 10rem (w-40 in Tailwind)
+const SIDEBAR_WIDTH = 15;
 
 const JobseekerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarFullyClosed, setSidebarFullyClosed] = useState(true);
+  const navigate = useNavigate();
 
   const handleSidebarOpen = () => {
     setSidebarOpen(true);
@@ -13,23 +18,38 @@ const JobseekerDashboard = () => {
 
   const handleSidebarClose = () => {
     setSidebarOpen(false);
-    // Hamburger will reappear after transition ends
+
   };
+
+  const handleLogout = async () => {
+    try {
+
+      const response = await axios.post('http://localhost:3001/logout', {}, {
+        withCredentials: true,
+      });
+
+      if (response.status === 200) {
+        console.log('Logged out successfully');
+        navigate("/login");
+      }
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
+  const handleProfileClick = () => {
+    navigate("/"); // Use relative path for navigation
+
+  }
+
+  const handlefeedback = async () => {
+
+  }
 
   return (
     <div className="relative min-h-screen bg-gray-100">
       {/* Navbar */}
-       <div
-        className={`
-          fixed top-0 left-0 right-0 h-16 bg-blue-300 flex items-center px-6 shadow z-40
-          transition-all duration-300
-          ${sidebarOpen ? 'ml-80' : 'ml-0'}
-        `}
-        style={{ marginLeft: sidebarOpen ? `${SIDEBAR_WIDTH}rem` : 0 }}
-      >
-        <span className="text-lg font-semibold">Navbar</span>
-      </div>
-
+      <Navbar text="Profile" className="text-black" onClick={handleProfileClick} />
       {/* Sidebar */}
       <div
         className={`
@@ -53,37 +73,54 @@ const JobseekerDashboard = () => {
         </button>
 
         <h2 className="text-2xl font-bold mb-6 mt-30 ml-5">Dashboard</h2>
-        <ul className="list-none p-0 space-y-4 flex-1 flex flex-col ml-5">
-          <li><a href="#" className="text-white hover:text-gray-300">Find Agencies</a></li>
-          <li><a href="#" className="text-white hover:text-gray-300">Messages</a></li>
+        <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
+          <li><a href="#" className="text-white hover:text-gray-300 ml-5">Find Jobs</a></li>
+          <li><a href="#" className="text-white hover:text-gray-300 ml-5">Find Agencies</a></li>
+          <li><a href="#" className="text-white hover:text-gray-300 ml-5">Messages</a></li>
+
           <li className="mt-auto flex justify-center">
-            <a href="#" className="text-white hover:text-gray-300">Sign out</a>
+            <button
+              onClick={handlefeedback}
+              className="text-white hover:text-gray-300 bg-transparent border-none cursor-pointer"
+            >
+              Add Feedback
+            </button>
           </li>
+
+          <li className="mt-0 flex justify-center">
+            <button
+              onClick={handleLogout}
+              className="text-white hover:text-gray-300 bg-transparent border-none cursor-pointer"
+            >
+              Sign out
+            </button>
+          </li>
+
         </ul>
-      </div>  
+      </div>
 
       {/* Hamburger Icon to open Sidebar */}
-     {!sidebarOpen && sidebarFullyClosed && (
-  <button
-    onClick={handleSidebarOpen}
-    className="absolute top-20 left-5 text-3xl bg-transparent border-none cursor-pointer z-50"
-    aria-label="Open sidebar"
-  >
-    &#9776;
-  </button>
-)}
+      {!sidebarOpen && sidebarFullyClosed && (
+        <button
+          onClick={handleSidebarOpen}
+          className="absolute top-20 left-5 text-3xl bg-transparent border-none cursor-pointer z-50"
+          aria-label="Open sidebar"
+        >
+          &#9776;
+        </button>
+      )}
 
       {/* Main Content */}
-      
-      <div  className={` transition-all duration-300 ${sidebarOpen ? 'ml-60' : 'ml-0'} flex justify-center items-center h-screen `}>
-
-        
+      <div className="transition-all duration-300 ml-0 flex justify-center items-center h-screen">
         <div>
           <h1 className="text-3xl font-bold mb-4">Jobseeker Dashboard</h1>
-           <p className="text-gray-700">Welcome to your dashboard!</p>
+          <p className="text-gray-700">Welcome to your dashboard!</p>
         </div>
-        
       </div>
+
+      {/* Nested Routes */}
+
+       <Outlet />
     </div>
   )
 }

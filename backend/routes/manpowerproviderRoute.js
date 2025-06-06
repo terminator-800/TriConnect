@@ -1,6 +1,6 @@
 const express = require("express");
-const { register, verifyEmail } = require("../controllers/ManpowerProviderController");
-const validateRegisterInput = require("../middleware/validateRegisterInput");
+const { register, verifyEmail } = require("../controllers/manpowerProviderController");
+const validateRegisterInput = require("../middleware/ValidateRegisterInput");
 const router = express.Router();
 
 router.post("/register/manpower-provider", validateRegisterInput, register);

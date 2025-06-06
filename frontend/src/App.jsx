@@ -1,21 +1,82 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import RegisterRoutes from "./pages/RegisterRoutes"; // <-- import grouped routes
-import UserDashboard from "./pages/Dashboards/UserDashboard"; // <-- import user dashboard routes
-import ForgotPassword from "./pages/ForgotPassword";
-import ResetPassword from "./pages/ResetPassword";
+import RegisterRoutes from "./pages/Register/RegisterRoutes";
+import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
+import ResetPassword from "./pages/ForgotPassword/ResetPassword";
+import PrivateRoute from "./pages/Dashboards/PrivateRoute";
+import ProtectedRoute from "./pages/ProtectedRoute";
 
+import JobseekerDashboard from "./pages/Dashboards/JobseekerDashboard";
+import BusinessEmployerDashboard from "./pages/Dashboards/BusinessEmployerDashboard";
+import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployerDashboard";
+import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProviderDashboard";
+import AdminDashboard from "./pages/Dashboards/AdminDashboard";
+import FindJob from "./pages/Dashboards/FindJob";
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/*" element={<UserDashboard/>}></Route>
-        <Route path="/forgot-password" element={<ForgotPassword/>}></Route>
-        <Route path="/forgot-password/reset-password" element={<ResetPassword/>}></Route>
-        <Route path="/register/*" element={<RegisterRoutes />} />
+
+        {/* Public Routes */}
+        <Route
+          path="/"
+          element={
+            <ProtectedRoute>
+              <Home />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/login"
+          element={
+            <ProtectedRoute>
+              <Login />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/forgot-password"
+          element={
+            <ProtectedRoute>
+              <ForgotPassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/forgot-password/reset-password"
+          element={
+            <ProtectedRoute>
+              <ResetPassword />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/register/*"
+          element={
+            <ProtectedRoute>
+              <RegisterRoutes />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Private Routes for Dashboards */}
+        <Route path="/jobseeker/*" element={<PrivateRoute />}>
+          <Route index element={<JobseekerDashboard />} />
+          <Route path="find-job" element={<FindJob />} />
+        </Route>
+        <Route path="/business-employer/*" element={<PrivateRoute />}>
+          <Route index element={<BusinessEmployerDashboard />} />
+        </Route>
+        <Route path="/individual-employer/*" element={<PrivateRoute />}>
+          <Route index element={<IndividualEmployerDashboard />} />
+        </Route>
+        <Route path="/manpower-provider/*" element={<PrivateRoute />}>
+          <Route index element={<ManpowerProviderDashboard />} />
+        </Route>
+        <Route path="/admin/*" element={<PrivateRoute />}>
+          <Route index element={<AdminDashboard />} />
+        </Route>
       </Routes>
     </Router>
   );
