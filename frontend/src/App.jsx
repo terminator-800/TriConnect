@@ -7,12 +7,12 @@ import ResetPassword from "./pages/ForgotPassword/ResetPassword";
 import PrivateRoute from "./pages/Dashboards/PrivateRoute";
 import ProtectedRoute from "./pages/ProtectedRoute";
 
-import JobseekerDashboard from "./pages/Dashboards/JobseekerDashboard";
+import JobseekerDashboard from "./pages/Dashboards/Jobseeker/JobseekerDashboard";
 import BusinessEmployerDashboard from "./pages/Dashboards/BusinessEmployerDashboard";
 import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployerDashboard";
 import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProviderDashboard";
 import AdminDashboard from "./pages/Dashboards/AdminDashboard";
-import FindJob from "./pages/Dashboards/FindJob";
+import JobseekerProfile from "./pages/Dashboards/Jobseeker/JobseekerProfile";
 function App() {
   return (
     <Router>
@@ -63,8 +63,9 @@ function App() {
         {/* Private Routes for Dashboards */}
         <Route path="/jobseeker/*" element={<PrivateRoute />}>
           <Route index element={<JobseekerDashboard />} />
-          <Route path="find-job" element={<FindJob />} />
+          <Route path="profile/*" element={<JobseekerProfile />} />
         </Route>
+        
         <Route path="/business-employer/*" element={<PrivateRoute />}>
           <Route index element={<BusinessEmployerDashboard />} />
         </Route>

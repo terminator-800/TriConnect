@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import BackButton from '../components/BackButton';
 import Navbar from './Navbar';
+
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -46,10 +47,17 @@ const Login = () => {
     };
 
     return (
-        <div className='flex justify-center items-center h-screen flex-col bg-gray-500'>
-            <Navbar text="Home" className="text-black" />
-            <h1 className='font-bold'>Login your account</h1>
-            <form onSubmit={handleLogin} className='flex flex-col border rounded p-5 bg-blue-300 w-xl'>
+        <div className='flex justify-center items-center h-screen bg-white'>
+
+            <div className='w-xl h-[576px] bg-gradient-to-b from-cyan-400 to-gray-100 p-15 border border-blue-900 '>
+                <h1 className='text-white text-5xl font-bold mb-2'>Welcome to TriConnect Portal</h1>
+                <p className='text-blue-900 text-[20px]'>Login to access your account</p>
+            </div>
+
+            <div>
+            <form onSubmit={handleLogin} className='flex flex-col border border-blue-900 p-15 bg-white w-xl h-[576px]'>
+                <h1 className='font-bold text-5xl text-blue-900'>Login</h1>
+                <p className='text-[20px] text-blue-900 mb-10 mt-2'>Enter your account details</p>
                 <label htmlFor="email" className="sr-only">Email</label>
                 <input
                     type="email"
@@ -57,7 +65,7 @@ const Login = () => {
                     name="email"
                     placeholder="Email"
                     required
-                    className='border rounded outline-none p-2 mt-2 mb-2'
+                    className='border rounded outline-none p-2 mb-5 border-gray-400'
                     value={email}
                     onChange={e => setEmail(e.target.value)}
                 />
@@ -69,18 +77,23 @@ const Login = () => {
                     name="password"
                     placeholder="Password"
                     required
-                    className='border rounded outline-none p-2'
+                    className='border rounded outline-none p-2 mb-5 border-gray-400'
                     value={password}
                     onChange={e => setPassword(e.target.value)}
                 />
-                <button type="submit" className='bg-green-700 text-white mt-2 mb-2 rounded pt-2 pb-2 cursor-pointer'>Login</button>
-                <button type="button" className='text-sm text-blue-800 underline self-start mt-1 hover:text-blue-600 cursor-pointer'
+                <button type="submit" className='bg-blue-900 text-white mt-2 mb-2 rounded pt-2 pb-2 cursor-pointer text-[20px]'>Login</button>
+                <button type="button" className='text-[20px] text-gray-600 self-start mt-1 hover:text-blue-600 cursor-pointer '
                     onClick={() => navigate('/forgot-password')}
                 >Forgot password?</button>
-
+                
+                <div className='mt-25'>
+                    <p className='text-gray-600 text-[20px]'>Don't have an account? 
+                        <button className='text-blue-900 cursor-pointer ml-3 text-[20px]'>Sign up</button>
+                    </p>
+                </div>
+                
             </form>
-
-            <BackButton to='/' className='bg-blue-400 p-3 rounded mt-2 cursor-pointer' />
+            </div>
         </div>
     );
 };

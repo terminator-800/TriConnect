@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, Outlet } from 'react-router-dom';
 import axios from 'axios';
 
 const ProtectedRoute = ({ children, redirectTo }) => {
@@ -11,7 +11,7 @@ const ProtectedRoute = ({ children, redirectTo }) => {
         const res = await axios.get('http://localhost:3001/auth/verify-session', {
           withCredentials: true,
         });
-
+        
         if (res.data.authenticated) {
           setAuthStatus(res.data.role); // Store the user's role
         } else {

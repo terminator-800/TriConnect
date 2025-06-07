@@ -5,6 +5,7 @@ const { findUsersEmail } = require("../service/UsersQuery");
 const login = async (req, res) => {
     const { email, password } = req.body;
 
+
     try {
         const db = await dbPromise;
         const user = await findUsersEmail(email);

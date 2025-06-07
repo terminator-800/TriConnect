@@ -2,12 +2,11 @@ const verifySession = async (req, res) => {
     try {
         if (req.session && req.session.userId && req.session.role) {
             let roleMessage;
-            // Determine the role and set a message
-            console.log("this is from authController", req.session);
-            
+          
             return res.status(200).json({
                 authenticated: true,
                 message: roleMessage,
+                
                 role: req.session.role,
                 user: req.session.userId,
             });

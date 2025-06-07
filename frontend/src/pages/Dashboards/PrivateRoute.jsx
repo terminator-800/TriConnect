@@ -16,12 +16,13 @@ const PrivateRoute = () => {
                 const { data } = await axios.get("http://localhost:3001/auth/verify-session", {
                     withCredentials: true,
                 });
+                
                 setAuthData({ authenticated: data.authenticated, role: data.role }); 
             } catch {
                 setAuthData({ authenticated: false, role: null });
             }
         };
-
+        
         checkAuth();
     }, []);
 

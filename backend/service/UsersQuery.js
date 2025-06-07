@@ -40,4 +40,22 @@ async function updateUserPassword(email, password) {
     }
 }
 
-module.exports = { findUsersEmail, createUsers, updateUserPassword };
+async function getJobseekerInfo(id){
+    try {
+        const db = await dbPromise;
+        const [rows] = await db.execute(
+            "SELECT * FROM users WHERE id = ?",
+            [id]
+        );
+        return rows.length > 0 ? rows[0] : null;
+    } catch (error) {
+        console.error("Error fetching jobseeker by ID:", error);
+        return null;
+    }
+}
+
+module.exports = { findUsersEmail, 
+                    createUsers, 
+                    updateUserPassword, 
+                    getJobseekerInfo
+                };

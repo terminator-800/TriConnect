@@ -11,33 +11,33 @@ const ResetPassword = () => {
   const token = params.get('token');
   const navigate = useNavigate();
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  console.log(message);
+    e.preventDefault();
+    console.log(message);
 
-  if (password !== confirmPassword) {
-    setMessage("Passwords do not match.");
-    return;
-  }
-
-  try {
-    await axios.post('http://localhost:3001/forgot-password/reset-password', { token, password });
-    alert('Password changed successfully! You can now log in.');
-    navigate('/login');
-  } catch (error) {
-    if (error.response && error.response.status === 401) {
-      const serverMessage = error.response.data.message;
-      if (serverMessage.includes("expired")) {
-        alert("Your reset link has expired. Please request a new one.");
-        setMessage("The reset link has expired.");
-      } else {
-        alert("Invalid reset token. Please request a new one.");
-        setMessage("Invalid reset token.");
-      }
-    } else {
-      setMessage('Failed to change password. Please try again later.');
+    if (password !== confirmPassword) {
+      setMessage("Passwords do not match.");
+      return;
     }
-  }
-};
+
+    try {
+      await axios.post('http://localhost:3001/forgot-password/reset-password', { token, password });
+      alert('Password changed successfully! You can now log in.');
+      navigate('/login');
+    } catch (error) {
+      if (error.response && error.response.status === 401) {
+        const serverMessage = error.response.data.message;
+        if (serverMessage.includes("expired")) {
+          alert("Your reset link has expired. Please request a new one.");
+          setMessage("The reset link has expired.");
+        } else {
+          alert("Invalid reset token. Please request a new one.");
+          setMessage("Invalid reset token.");
+        }
+      } else {
+        setMessage('Failed to change password. Please try again later.');
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-500 p-4">

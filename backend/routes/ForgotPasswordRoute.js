@@ -1,5 +1,5 @@
 const express = require("express");
-const { forgotPassword, resetPassword } = require("../controllers/ForgotPasswordController");
+const { forgotPassword, resetPassword } = require("../controllers/forgotPasswordController");
 const router = express.Router();
 
 router.post("/forgot-password", forgotPassword);

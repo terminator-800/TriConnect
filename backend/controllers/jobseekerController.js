@@ -2,7 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { createJobseeker } = require("../service/JobseekerQuery");
-const { findUsersEmail, createUsers } = require("../service/UsersQuery");
+const { findUsersEmail, createUsers, getJobseekerInfo } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -37,7 +37,6 @@ const register = async (req, res) => {
             message: "Verification email sent. Please check your inbox to complete registration.",
         });
     } catch (error) {
-        console.error("Error sending verification email:", error.message);
         return res.status(500).json({ message: "Server error" });
     }
 };
@@ -59,4 +58,31 @@ const verifyEmail = async (req, res) => {
     }
 };
 
-module.exports = { register, verifyEmail };
+const getJobseekerProfile = async (req, res) => {
+    const token = req.cookies.jwt; // Get JWT from cookies
+
+    if (!token) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify JWT
+        const userId = decoded.id;
+        console.log(decoded.id);
+        console.log(userId);
+
+        // Fetch user profile from the database
+        const userProfile = await getJobseekerInfo(userId);
+
+        if (!userProfile) {
+            return res.status(404).json({ error: 'Profile not found' });
+        }
+
+        res.json(userProfile); // Send profile data
+    } catch (err) {
+        console.error('Error fetching profile:', err.message);
+        res.status(401).json({ error: 'Invalid token' });
+    }
+};
+
+module.exports = { register, verifyEmail, getJobseekerProfile };

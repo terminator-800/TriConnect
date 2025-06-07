@@ -41,4 +41,7 @@ async function updateJobseekerPassword(email, password) {
     }
 }
 
-module.exports = { createJobseeker, findJobseekerEmail, updateJobseekerPassword };
+module.exports = { createJobseeker, 
+                    findJobseekerEmail, 
+                    updateJobseekerPassword,
+                };

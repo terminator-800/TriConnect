@@ -1,7 +1,6 @@
 import BackButton from '../components/BackButton'
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Navbar from './Navbar'
 
 const Register = () => {
 
@@ -26,33 +25,34 @@ const Register = () => {
 
   return (
 
-    <div className='flex justify-center items-center h-screen flex-col bg-gray-500'>
-      <Navbar />
-      <h1 className='text-center'>Register Page</h1>
+    <div className='flex justify-center items-center h-screen flex-col bg-white'>
+    
+      <h1 className='text-center text-5xl'>SELECT USER TYPE</h1>
+      <p className='text-blue-900 text-2xl mb-5'>Select your user type to get started</p>
 
-      <div className='flex flex-col border p-5 mt-2  gap-3'>
+      <div className='flex p-5 gap-20 text-2xl'>
 
-        <div className={`p-5 cursor-pointer bg-red-300 rounded ${isSelected === jobseeker ? "bg-red-500" : "bg-red-300"}`}
+        <div className={`cursor-pointer bg-red-300 rounded ${isSelected === jobseeker ? "bg-red-500" : "bg-red-300"} w-60 text-center pt-60 pb-5 italic shadow-xl`}
           onClick={() => handleSelect(jobseeker)}>
           <h1>Job Seeker</h1>
         </div>
 
-        <div className={`p-5 cursor-pointer bg-pink-300 rounded ${isSelected === employer ? "bg-pink-500" : "bg-pink300"}`}
+        <div className={`cursor-pointer bg-pink-300 rounded ${isSelected === employer ? "bg-pink-500" : "bg-pink300"} w-60 text-center pt-60 pb-5 italic shadow-xl`}
           onClick={() => handleSelect(employer)}>
           <h1>Employer</h1>
         </div>
 
-        <div className={`p-5 cursor-pointer bg-violet-300 rounded ${isSelected === manpower_provider ? "bg-violet-500" : "bg-violet-300"}`}
+        <div className={`cursor-pointer bg-violet-300 rounded ${isSelected === manpower_provider ? "bg-violet-500" : "bg-violet-300"} w-60 text-center pt-60 pb-5 italic shadow-xl`}
           onClick={() => handleSelect(manpower_provider)}>
           <h1>Manpower Provider</h1>
         </div>
 
-        <div>
-          <BackButton to='/' className='text-white rounded bg-blue-500 p-5 mr-2' />
-          <button onClick={() => handleNext()} className='p-5 bg-green-300 rounded'>next</button>
-        </div>
-
       </div>
+
+      <div className='flex justify-center items-center mt-5 gap-25'>
+          <BackButton to='/' className='bg-white text-blue-900 pt-1 pb-1 pl-15 pr-15 rounded-3xl mt-15 text-2xl cursor-pointer border border-blue-900' />
+          <button onClick={() => handleNext()} className='bg-blue-900 text-white pt-1 pb-1 pl-10 pr-10 rounded-3xl mt-15 text-2xl cursor-pointer'>Next Step</button>
+        </div>
     </div>
   )
 }
