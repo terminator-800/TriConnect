@@ -1,14 +1,14 @@
 const verifySession = async (req, res) => {
     try {
-        if (req.session && req.session.userId && req.session.role) {
+        if (req.session && req.session.user.id && req.session.user.role) {
             let roleMessage;
           
             return res.status(200).json({
                 authenticated: true,
                 message: roleMessage,
                 
-                role: req.session.role,
-                user: req.session.userId,
+                role: req.session.user.role,
+                user: req.session.user.id,
             });
 
         } else {

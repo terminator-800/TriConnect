@@ -8,7 +8,7 @@ import PrivateRoute from "./pages/Dashboards/PrivateRoute";
 import ProtectedRoute from "./pages/ProtectedRoute";
 
 import JobseekerDashboard from "./pages/Dashboards/Jobseeker/JobseekerDashboard";
-import BusinessEmployerDashboard from "./pages/Dashboards/BusinessEmployerDashboard";
+import BusinessEmployerDashboard from "./pages/Dashboards/BusinessEmployer/BusinessEmployerDashboard";
 import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployerDashboard";
 import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProviderDashboard";
 import AdminDashboard from "./pages/Dashboards/AdminDashboard";
