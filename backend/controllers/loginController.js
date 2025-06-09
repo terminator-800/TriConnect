@@ -17,32 +17,28 @@ const login = async (req, res) => {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        // Set user data in the session
         req.session.user = {
-            id: user.id, // User ID
-            role: user.role, // User role
-            email: user.email, // User email
+            id: user.user_id, 
+            role: user.role, 
+            email: user.email, 
         };
 
-        // Generate a JWT token
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.user_id, email: user.email, role: user.role },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
 
-        // Set the token as a cookie
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // Use secure cookies in production
-            maxAge: 24 * 60 * 60 * 1000, // 1 day
+            secure: process.env.NODE_ENV === "production",
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
-        // Respond to the client
         res.status(200).json({
             message: "Login successful",
             role: user.role,
-            userId: user.id,
+            userId: user.user_id,
         });
     } catch (error) {
         console.error("Error during login:", error);

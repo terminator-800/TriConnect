@@ -18,6 +18,7 @@ const register = async (req, res) => {
         if (existingJobseeker) {
             return res.status(409).json({ message: "Email already exists" });
         }
+
         const token = jwt.sign({ email, password }, process.env.JWT_SECRET, { expiresIn: "1h" });
         const verificationLink = `http://localhost:${process.env.PORT}/register/jobseeker/verify?token=${token}`;
         const transporter = nodemailer.createTransport({
@@ -43,12 +44,10 @@ const register = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     const { token } = req.query;
-
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
-        const role = "jobseeker";
-
+        const role = "jobseeker"
         await createJobseeker(email, password);
         await createUsers(email, password, role);
         console.log("Jobseeker account created successfully!");
@@ -68,8 +67,6 @@ const getJobseekerProfile = async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify JWT
         const userId = decoded.id;
-        console.log(decoded.id);
-        console.log(userId);
 
         // Fetch user profile from the database
         const userProfile = await getJobseekerInfo(userId);

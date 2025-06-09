@@ -1,7 +1,7 @@
 async function createBusinessEmployerTable(connection) {
     const query = `
         CREATE TABLE IF NOT EXISTS business_employer (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            business_employer_id INT AUTO_INCREMENT PRIMARY KEY,
             role ENUM('business_employer') NOT NULL DEFAULT 'business_employer',            
             is_verified BOOLEAN DEFAULT FALSE,
             email VARCHAR(100) NOT NULL UNIQUE,

@@ -1,7 +1,7 @@
 async function createManpowerProviderTable(connection) {
     const query = `
         CREATE TABLE IF NOT EXISTS manpower_provider (
-            id INT AUTO_INCREMENT PRIMARY KEY,
+            manpower_provider_id INT AUTO_INCREMENT PRIMARY KEY,
             role ENUM('manpower_provider') NOT NULL DEFAULT 'manpower_provider',
             is_verified BOOLEAN DEFAULT FALSE,
             email VARCHAR(100) NOT NULL UNIQUE,

@@ -16,6 +16,7 @@ const Navbar = ({ userType }) => {
       {/* Guest */}
       {userType === "guest" && (
         <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900">TriConnect</Link>
           <Link className="text-2xl font-bold">Features</Link>
           <Link className="text-2xl font-bold">How it Works</Link>
           <Link className="text-2xl font-bold">Why Us</Link>
@@ -24,6 +25,18 @@ const Navbar = ({ userType }) => {
             <Link to={"/login"} className="text-blue-600 pl-3 p-1 pr-3 font-bold rounded m-2">Login</Link>
             <Link to={"/register"} className="bg-blue-900 font-bold p-1 rounded-3xl pl-3 pr-3 text-white m-2">Sign Up</Link>
           </div>
+        </div>
+      )}
+
+      {/* Login */}
+       {userType === "login" && (
+        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900">TriConnect</Link>
+          <Link className="text-2xl font-bold">Features</Link>
+          <Link className="text-2xl font-bold">How it Works</Link>
+          <Link className="text-2xl font-bold">Why Us</Link>
+          <Link className="text-2xl font-bold">Feedbacks</Link>
+         
         </div>
       )}
 
@@ -121,11 +134,15 @@ const Navbar = ({ userType }) => {
 
       {/* Admininistrator */}
       {userType === "admin" && (
-        <>
-          <Link to="/users" className="text-2xl font-bold">Manage Users</Link>
-          <Link to="/reports" className="text-2xl font-bold">Reports</Link>
-          <Link to="/settings" className="text-2xl font-bold">Settings</Link>
-        </>
+        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900">TriConnect</Link>
+           <div className="relative flex">
+              <button className="flex items-center text-2xl font-bold cursor-pointer">
+                <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+                Notifications
+              </button>
+            </div>
+        </div>
       )}
     </div>
   );

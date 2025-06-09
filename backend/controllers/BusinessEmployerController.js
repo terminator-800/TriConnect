@@ -66,57 +66,33 @@ const createJobPost = async (req, res) => {
         job_description,
     } = req.body;
 
-    console.log("this is line 69: ", req.body);
-    console.log("this is line 70", job_title);
-    console.log("this is line 70", job_type);
-    console.log("this is line 70", salary_range);
-    console.log("this is line 70", location);
-    console.log("this is line 70", required_skill);
-    console.log("this is line 70", job_description);
     try {
-        // Check if the user is authenticated
         if (!req.session.user) {
             return res.status(401).json({ error: "Unauthorized: User not logged in." });
         }
-
         const { id: user_id, role } = req.session.user;
-
-        // Ensure the user has the correct role
         if (role !== "business_employer") {
             return res.status(403).json({ error: "Forbidden: Only business employers can create job posts." });
         }
-
-        // Validate the data
         if (!job_title || !job_type || !salary_range || !location || !job_description || !required_skill) {
             return res.status(400).json({ error: "All required fields must be filled out." });
         }
 
-        console.log("this is line 93");
-
-        // Additional validation
         const validJobTypes = ["full-time", "part-time", "contract"];
         if (!validJobTypes.includes(job_type)) {
             return res.status(400).json({ error: "Invalid job type." });
         }
 
-        // const [min, max] = salary_range.split("-").map(Number);
-        // if (!min || !max || min > max) {
-        //     return res.status(400).json({ error: "Invalid salary range format or values." });
-        // }
-
-        // Call the query function to insert the job post
         const result = await createJobPostQuery(
             user_id, role, job_title, job_type, salary_range, location, required_skill, job_description
         );
 
-        // Respond to the client
         res.status(201).json({
             message: "Job post created successfully!",
-            job_post_id: result.jobId, // assuming you return result.jobId from your query
+            job_post_id: result.jobId,
         });
     } catch (error) {
         console.error("Error creating job post:", error.stack);
-
         if (error.name === "ValidationError") {
             return res.status(400).json({ error: "Invalid input data." });
         }

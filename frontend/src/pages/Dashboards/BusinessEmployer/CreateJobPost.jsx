@@ -9,6 +9,7 @@ const CreateJobPost = () => {
   const [required_skill, setRequiredSkill] = useState("");
   const [job_description, setJobDescription] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [agreeToReview, setAgreeToReview] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -24,18 +25,18 @@ const CreateJobPost = () => {
 
     try {
       const response = await axios.post(
-  "http://localhost:3001/job-post",
-  data,
-  {
-    withCredentials: true, // Include cookies in the request
-    headers: {
-      'Content-Type': 'application/json' // ✅ This tells the server to expect JSON
-    }
-  }
-);
+        "http://localhost:3001/job-post",
+        data,
+        {
+          withCredentials: true, // Include cookies in the request
+          headers: {
+            'Content-Type': 'application/json' // ✅ This tells the server to expect JSON
+          }
+        }
+      );
 
       if (response.status === 201) {
-        console.log(data)
+        console.log("this is line 38: ", data)
         alert("Job post created successfully!");
         // Reset form fields
         setJobTitle("");
@@ -44,14 +45,12 @@ const CreateJobPost = () => {
         setLocation("");
         setRequiredSkill("");
         setJobDescription("");
-      } else if (response.status === 403){
-        console.log(response.message);
-        
+        setAgreeToReview(false)
       }
-      console.log(data)
+
     } catch (error) {
-  console.error("Error creating job post:", error.response?.data || error.message);
-} finally {
+      console.error("Error creating job post:", error.response?.data || error.message);
+    } finally {
       setIsLoading(false); // Reset loading state
     }
   }
@@ -141,7 +140,12 @@ const CreateJobPost = () => {
           </div>
 
           <div className="flex mb-10">
-            <input type="checkbox" className="mr-3" />
+            <input
+              type="checkbox"
+              className="mr-3"
+              checked={agreeToReview}
+              onChange={(e) => setAgreeToReview(e.target.checked)}
+            />
             <p>By selecting <strong>Confirm</strong>, you agree that this job post will be reviewed by the system administrator. You will be notified once the job post is verified.</p>
           </div>
 
@@ -153,6 +157,7 @@ const CreateJobPost = () => {
             {isLoading ? "Submitting..." : "Confirm"}
           </button>
         </form>
+
       </div>
     </div>
   );

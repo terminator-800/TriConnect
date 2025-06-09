@@ -54,12 +54,13 @@ app.use("/", logoutRoute)
 async function startServer() {
     try {
         const db = await dbPromise
+        await createUsersTable(db);
         await createJobPostTable(db);
         await createJobseekerTable(db);
         await createBusinessEmployerTable(db);
         await createIndividualEmployerTable(db);
         await createManpowerProviderTable(db);
-        await createUsersTable(db);
+        
         app.locals.db = db;
         app.listen(process.env.PORT, () => {
             console.log(`✅ Server is running on port ${process.env.PORT}`);

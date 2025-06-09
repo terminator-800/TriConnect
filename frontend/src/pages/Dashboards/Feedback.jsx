@@ -5,8 +5,6 @@ const Feedback = ({ onClose }) => {
         <div className="fixed inset-0 flex items-center justify-center z-50 ">
             {/* Semi-transparent background overlay */}
 
-
-
             {/* Feedback modal */}
             <div className="relative bg-white pl-7 pr-7 pt-5 pb-5 rounded-xl shadow-lg w-[550px] z-10">
 

@@ -11,7 +11,7 @@ import JobseekerDashboard from "./pages/Dashboards/Jobseeker/JobseekerDashboard"
 import BusinessEmployerDashboard from "./pages/Dashboards/BusinessEmployer/BusinessEmployerDashboard";
 import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployerDashboard";
 import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProviderDashboard";
-import AdminDashboard from "./pages/Dashboards/AdminDashboard";
+import AdminDashboard from "./pages/Dashboards/Administrator/AdminDashboard";
 import JobseekerProfile from "./pages/Dashboards/Jobseeker/JobseekerProfile";
 function App() {
   return (
