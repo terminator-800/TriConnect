@@ -13,6 +13,7 @@ import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployerDa
 import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProviderDashboard";
 import AdminDashboard from "./pages/Dashboards/Administrator/AdminDashboard";
 import JobseekerProfile from "./pages/Dashboards/Jobseeker/JobseekerProfile";
+
 function App() {
   return (
     <Router>

@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Navbar';
 import icons from '../../../assets/svg/Icons';
 import Feedback from '../Feedback';
+
 const SIDEBAR_WIDTH = 15;
 
 const AdminDashboard = () => {
@@ -32,6 +33,7 @@ const AdminDashboard = () => {
   const handleFeedbackClose = () => {
     setFeedbackModalVisible(false);
   };
+
   const handleLogout = async () => {
     try {
 
@@ -50,13 +52,14 @@ const AdminDashboard = () => {
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400">
+
       {/* Navbar */}
       <Navbar userType={"admin"} />
 
       {/* Sidebar */}
       <div
         className={`
-          fixed top-0 left-0 h-full  bg-gray-400 text-white z-50 p-6
+          fixed top-0 left-0 h-full  bg-gray-400 text-white z-50
           transition-all duration-300
           ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
           w-40 flex flex-col
@@ -80,43 +83,43 @@ const AdminDashboard = () => {
         </div>
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
-          <li className={`${activeComponent === 'JobPostDetail' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'UserVerification' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.job_post_details} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => setActiveComponent('JobPostDetail')}
+              onClick={() => setActiveComponent('UserVerification')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
-              Job Post Details
+              User Verification
             </button>
           </li>
 
-          <li className={`${activeComponent === 'ManageJobPost' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'VerifiedUser' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.manage_job_post} alt="" className='ml-5' />
             <button
-              onClick={() => setActiveComponent('ManageJobPost')}
+              onClick={() => setActiveComponent('VerifiedUser')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
-              Manage Job Post
+             Verified User
             </button>
           </li>
 
-          <li className={`${activeComponent === 'CreateJobPost' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'JobPostVerification' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.create_job_post} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => setActiveComponent('CreateJobPost')}
-              className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+              onClick={() => setActiveComponent('JobPostVerification')}
+              className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-md font-medium"
             >
-              Create Job Post
+              Job Post Verification
             </button>
           </li>
 
-          <li className={`${activeComponent === 'ViewApplicant' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'VerifiedJobPost' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.view_applicant} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => setActiveComponent('ViewApplicant')}
+              onClick={() => setActiveComponent('VerifiedJobPost')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
-              View Applicant
+              Verified Job Post
             </button>
           </li>
 
