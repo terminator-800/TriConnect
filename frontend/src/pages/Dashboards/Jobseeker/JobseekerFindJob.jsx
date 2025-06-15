@@ -1,4 +1,4 @@
-const FindJob = () => {
+const JobseekerFindJob = () => {
   return (
     <div className="pl-60 pr-60 pt-20">
 
@@ -17,4 +17,4 @@ const FindJob = () => {
   )
 }
 
-export default FindJob
+export default JobseekerFindJob

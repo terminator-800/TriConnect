@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import BackButton from '../../components/BackButton'
 import axios from 'axios'
+import Navbar from '../Navbar'
 
 const RegisterAccount = () => {
 
@@ -113,47 +114,47 @@ const RegisterAccount = () => {
   };
 
   return (
-    <div className='flex justify-center items-center h-screen bg-white flex-col'>
+    <>
+      <Navbar userType={"register"}/>
+      <div className='flex justify-center items-center h-screen bg-gradient-to-b from-white to-cyan-400 flex-col'>
+        {type === business || type === individual ? (
+          <h1 className="font-bold text-3xl text-left mb-5">
+            Create an account as ({type === business ? "Business Type Employer" : "Individual Type Employer"})
+          </h1>
+        ) : (
+          <h1 className="font-bold text-2xl text-left mb-5">
+            Create an account as ({
+              accountType === "jobseeker" ? "Job Seeker" :
+                accountType === "manpower-provider" ? "Manpower Provider" : ""
+            })
+          </h1>
+        )}
 
+        <div className='border pt-10 pb-10 pl-15 pr-15 rounded-md flex flex-col bg-white'>
+          <form onSubmit={handleRegister} className='flex  rounded-md bg-white flex-col w-3xl'>
 
-      {type === business || type === individual ? (
-        <h1 className="font-bold text-3xl text-left mb-5">
-          Create an account as ({type === business ? "Business Type Employer" : "Individual Type Employer"})
-        </h1>
-      ) : (
-        <h1 className="font-bold text-2xl text-left mb-5">
-          Create an account as ({
-            accountType === "jobseeker" ? "Job Seeker" :
-              accountType === "manpower-provider" ? "Manpower Provider" : ""
-          })
-        </h1>
-      )}
+            <label htmlFor="email" className='mt-2 font-bold '>Email Address</label>
+            <input onChange={(e) => setName(e.target.value)} value={email} required name='email' id='name' type="email" placeholder='Enter your email address' className='outline-none border border-gray-400 rounded p-1 pl-3' />
 
-      <div className='border pt-10 pb-10 pl-15 pr-15 rounded-md flex flex-col'>
-        <form onSubmit={handleRegister} className='flex  rounded-md bg-white flex-col w-3xl'>
+            <label htmlFor="password" className='mt-2 font-bold'>Enter password</label>
+            <input onChange={(e) => setPassword(e.target.value)} value={password} required type="password" placeholder='Enter your password' className='outline-none border border-gray-400 rounded p-1 pl-3' />
 
-          <label htmlFor="email" className='mt-2 font-bold '>Email Address</label>
-          <input onChange={(e) => setName(e.target.value)} value={email} required name='email' id='name' type="email" placeholder='Enter your email address' className='outline-none border border-gray-400 rounded p-1 pl-3' />
+            <label htmlFor="confirmpassword" className='mt-2 font-bold'>Confirm password</label>
+            <input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required type="password" placeholder='Enter your password again' className='outline-none border border-gray-400 rounded p-1 pl-3' />
 
-          <label htmlFor="password" className='mt-2 font-bold'>Enter password</label>
-          <input onChange={(e) => setPassword(e.target.value)} value={password} required type="password" placeholder='Enter your password' className='outline-none border border-gray-400 rounded p-1 pl-3' />
+            <div className="flex justify-center mt-5 gap-10">
+              <button type='submit' className='bg-blue-900 text-white pt-1 pb-1 pl-10 pr-10 rounded-3xl w-50 text-2xl cursor-pointer'>Proceed</button>
+            </div>
 
-          <label htmlFor="confirmpassword" className='mt-2 font-bold'>Confirm password</label>
-          <input onChange={(e) => setConfirmPassword(e.target.value)} value={confirmPassword} required type="password" placeholder='Enter your password again' className='outline-none border border-gray-400 rounded p-1 pl-3' />
+          </form>
+
 
           <div className="flex justify-center mt-5 gap-10">
-            <button type='submit' className='bg-blue-900 text-white pt-1 pb-1 pl-10 pr-10 rounded-3xl w-50 text-2xl cursor-pointer'>Proceed</button>
+            <BackButton to='/register' className='bg-white text-blue-900 pt-1 pb-1 pl-10 pr-10 rounded-3xl w-50 text-2xl cursor-pointer border border-blue-900' />
           </div>
-
-        </form>
-
-
-        <div className="flex justify-center mt-5 gap-10">
-          <BackButton to='/register' className='bg-white text-blue-900 pt-1 pb-1 pl-10 pr-10 rounded-3xl w-50 text-2xl cursor-pointer border border-blue-900' />
         </div>
       </div>
-    </div>
-
+    </>
   )
 }
 

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Navbar';
-import FindJob from './FindJob';
-import FindAgency from '../FindAgency';
+import JobseekerFindJob from './JobseekerFindJob';
+import JobseekerFindAgency from './JobseekerFindAgency';
 import Message from './JobseekerMessage';
 import Feedback from '../Feedback';
 import icons from '../../../assets/svg/Icons';
@@ -28,9 +28,12 @@ const JobseekerDashboard = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await axios.post('http://localhost:3001/logout', {}, {
-        withCredentials: true,
-      });
+      const response = await axios.post('http://localhost:3001/logout', {},  {
+          withCredentials: true, // Include cookies in the request
+          headers: {
+            'Content-Type': 'application/json' // ✅ This tells the server to expect JSON
+          }
+        });
 
       if (response.status === 200) {
         console.log('Logged out successfully');
@@ -86,20 +89,20 @@ const JobseekerDashboard = () => {
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
 
-          <li className={`${activeComponent === 'FindJob' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'JobseekerFindJob' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_job} alt="" className='ml-5 w-[27px]'/>
             <button
-              onClick={() => setActiveComponent('FindJob')}
+              onClick={() => setActiveComponent('JobseekerFindJob')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Find Jobs
             </button>
           </li>
 
-          <li className={`${activeComponent === 'FindAgency' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'JobseekerFindAgency' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_agency} alt="" className='ml-5 w-[27px]'/>
             <button
-              onClick={() => setActiveComponent('FindAgency')}
+              onClick={() => setActiveComponent('JobseekerFindAgency')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Find Agencies
@@ -150,10 +153,10 @@ const JobseekerDashboard = () => {
 
       {/* Main Content */}
       <div>
-        {activeComponent === 'FindJob' ? (
-          <FindJob />
-        ) : activeComponent === 'FindAgency' ? (
-          <FindAgency />
+        {activeComponent === 'JobseekerFindJob' ? (
+          <JobseekerFindJob />
+        ) : activeComponent === 'JobseekerFindAgency' ? (
+          <JobseekerFindAgency />
         ) : activeComponent === 'Message' ? (
           <Message />
         ) : (

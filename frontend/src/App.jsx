@@ -9,10 +9,13 @@ import ProtectedRoute from "./pages/ProtectedRoute";
 
 import JobseekerDashboard from "./pages/Dashboards/Jobseeker/JobseekerDashboard";
 import BusinessEmployerDashboard from "./pages/Dashboards/BusinessEmployer/BusinessEmployerDashboard";
-import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployerDashboard";
-import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProviderDashboard";
+import IndividualEmployerDashboard from "./pages/Dashboards/IndividualEmployer/IndividualEmployerDashboard";
+import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProvider/ManpowerProviderDashboard";
 import AdminDashboard from "./pages/Dashboards/Administrator/AdminDashboard";
 import JobseekerProfile from "./pages/Dashboards/Jobseeker/JobseekerProfile";
+import BusinessProfile from './pages/Dashboards/BusinessEmployer/BusinessProfile'
+import ManpowerProviderProfile from "./pages/Dashboards/ManpowerProvider/ManpowerProviderProfile";
+import Profile from './pages/Dashboards/IndividualEmployer/Profile'
 
 function App() {
   return (
@@ -66,15 +69,18 @@ function App() {
           <Route index element={<JobseekerDashboard />} />
           <Route path="profile/*" element={<JobseekerProfile />} />
         </Route>
-        
+
         <Route path="/business-employer/*" element={<PrivateRoute />}>
           <Route index element={<BusinessEmployerDashboard />} />
+          <Route path="profile/*" element={<BusinessProfile />} />
         </Route>
         <Route path="/individual-employer/*" element={<PrivateRoute />}>
           <Route index element={<IndividualEmployerDashboard />} />
+          <Route path="profile/*" element={<Profile />} />
         </Route>
         <Route path="/manpower-provider/*" element={<PrivateRoute />}>
           <Route index element={<ManpowerProviderDashboard />} />
+          <Route path="profile/*" element={<ManpowerProviderProfile />} />
         </Route>
         <Route path="/admin/*" element={<PrivateRoute />}>
           <Route index element={<AdminDashboard />} />

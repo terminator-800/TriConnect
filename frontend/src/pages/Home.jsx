@@ -1,19 +1,26 @@
 import Navbar from './Navbar'
 import Footer from './Footer'
+import icons from '../assets/svg/Icons'
+import { Link } from 'react-router-dom'
+
 const Home = () => {
 
   return (
 
-    <div className=''>
-      <Navbar userType={'guest'}/>
+    <div className='items-center'>
+      <Navbar userType={'guest'} />
+      <div className='flex pl-50 pr-0 mt-50 items-center'>
+        <div>
+          <h1 className='text-7xl font-bold'>Connecting Jobs, People, <br />And Oppurtunities</h1>
+          <p className='mt-5 text-2xl text-gray-600 mb-15'>TriConnect is your all-in-one solution that seamlessly <br />
+            connects job seekers, employers, and manpower <br />
+            providers on a single, smart, and secure platform.</p>
 
-      <div className='pl-20 pr-15 mt-50'>
-        <h1 className='text-7xl font-bold'>Connecting Jobs, People, <br />And Oppurtunities</h1>
-        <p className='mt-5 text-2xl text-gray-600'>TriConnect is your all-in-one solution that seamlessly <br />
-          connects job seekers, employers, and manpower <br />
-          providers on a single, smart, and secure platform.</p>
+          <Link to={"/register"} className='bg-blue-900 text-white pt-1 pb-1 pl-15 pr-15 rounded-3xl text-2xl cursor-pointer'>Get Started</Link>
+        </div>
 
-        <button className='bg-blue-900 text-white pt-1 pb-1 pl-15 pr-15 rounded-3xl mt-15 text-2xl cursor-pointer'>Get Started</button>
+
+        <img src={icons.landing_page} alt="landing_page" className='pl-50 h-120'/>
       </div>
 
 
@@ -55,7 +62,7 @@ const Home = () => {
       </div>
 
 
-      <div className='text-center mt-60'>
+      <div id='how_it_works' className='text-center mt-60'>
         <h1 className='text-7xl font-bold'>How TriConnect Works</h1>
         <p className='text-2xl text-gray-600 mt-10'>Our platform makes it easy to connect job opportunities with the right talent <br /> through a simple process.</p>
       </div>
@@ -148,21 +155,21 @@ const Home = () => {
       </div>
 
       <div className='m-10 drop-shadow-xl shadow-xl pt-10 pb-10 pl-30 rounded-2xl flex flex-col ml-20 mt-20'>
-          <p className='text-gray-600 italic text-2xl'>
-            "Our manpower agency has expanded our client base significantly since joining TriConnect. The platform makes it easy to connect job seekers with employers efficiently."
-          </p>
+        <p className='text-gray-600 italic text-2xl'>
+          "Our manpower agency has expanded our client base significantly since joining TriConnect. The platform makes it easy to connect job seekers with employers efficiently."
+        </p>
 
 
-          <div className='flex items-center gap-4 mt-5 mr-5'>
-            <div className="bg-gray-300 w-16 h-16 rounded-full text-blue-900 flex justify-center items-center text-lg font-bold">
-              DM
-            </div>
-
-            <div className='flex flex-col'>
-              <h1 className='font-semibold mt-2 text-2xl'>Dennese Keith Membrano</h1>
-              <p className='text-gray-600'>Manpower Provider</p>
-            </div>
+        <div className='flex items-center gap-4 mt-5 mr-5'>
+          <div className="bg-gray-300 w-16 h-16 rounded-full text-blue-900 flex justify-center items-center text-lg font-bold">
+            DM
           </div>
+
+          <div className='flex flex-col'>
+            <h1 className='font-semibold mt-2 text-2xl'>Dennese Keith Membrano</h1>
+            <p className='text-gray-600'>Manpower Provider</p>
+          </div>
+        </div>
       </div>
 
       <Footer />

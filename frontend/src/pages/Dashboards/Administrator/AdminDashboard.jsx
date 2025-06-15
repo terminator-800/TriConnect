@@ -4,6 +4,12 @@ import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Navbar';
 import icons from '../../../assets/svg/Icons';
 import Feedback from '../Feedback';
+import UserVerification from './UserVerification';
+import VerifiedUser from './VerifiedUser';
+import JobPostVerification from './JobPostVerification';
+import VerifiedJobPost from './VerifiedJobPost';
+import UserFeedback from './UserFeedback';
+import ReportedUser from './ReportedUser';
 
 const SIDEBAR_WIDTH = 15;
 
@@ -24,10 +30,6 @@ const AdminDashboard = () => {
   const handleSidebarClose = () => {
     setSidebarOpen(false);
 
-  };
-
-  const handleFeedbackOpen = () => {
-    setFeedbackModalVisible(true);
   };
 
   const handleFeedbackClose = () => {
@@ -77,14 +79,22 @@ const AdminDashboard = () => {
         >
           &times;
         </button>
-        <div className='flex'>
-          <img src={icons.dashboard} alt="" className='mb-6 mt-30 ml-5' />
-          <h2 className="text-2xl font-bold mb-6 mt-30 ml-5 text-black">Dashboard</h2>
+
+        <div className=' flex flex-col items-center mt-25'>
+          <div className="bg-gray-900 w-16 h-16 rounded-full flex justify-center items-center text-lg font-bold mb-5">
+            {/* Name of admin */}
+          </div>
+          <p className='text-blue-900 font-bold'>Administrator</p>
+        </div>
+
+        <div className='flex mt-15'>
+          <img src={icons.dashboard} alt="" className='mb-6 ml-5' />
+          <h2 className="text-2xl font-bold mb-6 ml-5 text-black">Dashboard</h2>
         </div>
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
           <li className={`${activeComponent === 'UserVerification' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.job_post_details} alt="" className='ml-5 w-[27px]' />
+            <img src={icons.user_verification} alt="" className='ml-5 w-[27px]' />
             <button
               onClick={() => setActiveComponent('UserVerification')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
@@ -94,17 +104,17 @@ const AdminDashboard = () => {
           </li>
 
           <li className={`${activeComponent === 'VerifiedUser' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.manage_job_post} alt="" className='ml-5' />
+            <img src={icons.verified_user} alt="" className='ml-5' />
             <button
               onClick={() => setActiveComponent('VerifiedUser')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
-             Verified User
+              Verified User
             </button>
           </li>
 
           <li className={`${activeComponent === 'JobPostVerification' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.create_job_post} alt="" className='ml-5 w-[27px]' />
+            <img src={icons.job_post_verification} alt="" className='ml-5 w-[27px]' />
             <button
               onClick={() => setActiveComponent('JobPostVerification')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-md font-medium"
@@ -114,7 +124,7 @@ const AdminDashboard = () => {
           </li>
 
           <li className={`${activeComponent === 'VerifiedJobPost' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.view_applicant} alt="" className='ml-5 w-[27px]' />
+            <img src={icons.verified_job_post} alt="" className='ml-5 w-[27px]' />
             <button
               onClick={() => setActiveComponent('VerifiedJobPost')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
@@ -123,36 +133,27 @@ const AdminDashboard = () => {
             </button>
           </li>
 
-          <li className={`${activeComponent === 'FindAgency' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
+          <li className={`${activeComponent === 'ReportedUser' ? 'bg-gray-500' : ''} flex`}>
+            <img src={icons.reported_user} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => setActiveComponent('FindAgency')}
+              onClick={() => setActiveComponent('ReportedUser')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
-              Find Agencies
+              Reported User
             </button>
           </li>
 
-          <li className={`${activeComponent === 'BusinessEmployerMessage' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.message} alt="" className='ml-5 w-[27px]' />
+          <li className={`${activeComponent === 'UserFeedback' ? 'bg-gray-500' : ''} flex`}>
+            <img src={icons.user_feedback} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => setActiveComponent('BusinessEmployerMessage')}
+              onClick={() => setActiveComponent('UserFeedback')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
-              Messages
+              User Feedback
             </button>
           </li>
 
           <li className="mt-auto flex justify-center">
-            <button
-              onClick={handleFeedbackOpen}
-              className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
-            >
-              Add Feedback
-            </button>
-          </li>
-
-          <li className="mt-0 flex justify-center">
             <button
               onClick={handleLogout}
               className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
@@ -176,13 +177,25 @@ const AdminDashboard = () => {
       )}
 
       {/* Main Content */}
-
-
-      <div className="transition-all duration-300 ml-0 flex justify-center items-center h-screen">
-        <div>
-          <h1 className="text-3xl font-bold mb-4">Admin Dashboard</h1>
-          <p className="text-gray-700">Welcome to your dashboard!</p>
-        </div>
+      <div>
+        {activeComponent === 'UserVerification' ? (
+          <UserVerification />
+        ) : activeComponent === 'VerifiedUser' ? (
+          <VerifiedUser />
+        ) : activeComponent === 'JobPostVerification' ? (
+          <JobPostVerification />
+        ) : activeComponent === 'VerifiedJobPost' ? (
+          <VerifiedJobPost />
+        ) : activeComponent === 'ReportedUser' ? (
+          <ReportedUser />
+        ) : activeComponent === 'UserFeedback' ? (
+          <UserFeedback />
+        ) : (
+          <div className="flex flex-col items-center justify-center min-h-screen">
+            <h1 className="text-3xl font-bold mb-4 text-center">Admin Dashboard</h1>
+            <p className="text-gray-700 text-center">Welcome to your dashboard!</p>
+          </div>
+        )}
       </div>
 
       {/* Feedback Modal */}

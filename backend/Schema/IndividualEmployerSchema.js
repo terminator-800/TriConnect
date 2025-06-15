@@ -2,8 +2,10 @@ async function createIndividualEmployerTable(connection) {
     const query2 = `
         CREATE TABLE IF NOT EXISTS individual_employer (
             individual_employer_id INT AUTO_INCREMENT PRIMARY KEY,
+            user_id INT NOT NULL,
             role ENUM('individual_employer') NOT NULL DEFAULT 'individual_employer',            
             is_verified BOOLEAN DEFAULT FALSE,
+            is_submitted BOOLEAN DEFAULT FALSE,
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             full_name VARCHAR(100), 
@@ -14,8 +16,10 @@ async function createIndividualEmployerTable(connection) {
             permanent_address VARCHAR(255),        
             government_id VARCHAR(255),
             selfie_with_id VARCHAR(255),
-            nbi_barangray_clearance VARCHAR(255),
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            nbi_barangay_clearance VARCHAR(255),
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+
         );
     `;
     await connection.execute(query2);

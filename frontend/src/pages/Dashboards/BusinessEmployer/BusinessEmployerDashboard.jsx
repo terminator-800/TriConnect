@@ -3,16 +3,15 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '../../Navbar';
 import Feedback from '../Feedback';
-import FindAgency from '../FindAgency';
+import BusinessEmployerFindAgency from './BusinessEmployerFindAgency';
 import ViewApplicant from './ViewApplicant';
-import CreateJobPost from './CreateJobPost';
-import ManageJobPost from './ManageJobPost';
+import BusinessEmployerCreateJobPost from './BusinessEmployerCreateJobPost';
+import BusinessEmployerManageJobPost from './BusinessEmployerManageJobPost';
 import JobPostDetails from './JobPostDetails';
 import BusinessEmployerMessage from './BusinessEmployerMessage';
 import icons from '../../../assets/svg/Icons'
 
 const SIDEBAR_WIDTH = 15;
-
 const BusinessEmployerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarFullyClosed, setSidebarFullyClosed] = useState(true);
@@ -107,10 +106,10 @@ const BusinessEmployerDashboard = () => {
             </button>
           </li>
 
-          <li className={`${activeComponent === 'CreateJobPost' ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${activeComponent === 'BusinessEmployerCreateJobPost' ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.create_job_post} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => setActiveComponent('CreateJobPost')}
+              onClick={() => setActiveComponent('BusinessEmployerCreateJobPost')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Create Job Post
@@ -184,13 +183,13 @@ const BusinessEmployerDashboard = () => {
         {activeComponent === 'JobPostDetail' ? (
           <JobPostDetails />
         ) : activeComponent === 'ManageJobPost' ? (
-          <ManageJobPost />
-        ) : activeComponent === 'CreateJobPost' ? (
-          <CreateJobPost />
+          <BusinessEmployerManageJobPost />
+        ) : activeComponent === 'BusinessEmployerCreateJobPost' ? (
+          <BusinessEmployerCreateJobPost />
         ) : activeComponent === 'ViewApplicant' ? (
           <ViewApplicant />
         ) : activeComponent === 'FindAgency' ? (
-          <FindAgency />
+          <BusinessEmployerFindAgency />
         ) : activeComponent === 'BusinessEmployerMessage' ? (
           <BusinessEmployerMessage />
         ) : (

@@ -7,4 +7,4 @@ function validateRegisterInput(req, res, next) {
     next(); 
 }
 
-module.exports = validateRegisterInput;
+module.exports =  validateRegisterInput ;

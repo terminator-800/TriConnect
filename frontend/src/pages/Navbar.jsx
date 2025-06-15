@@ -16,9 +16,13 @@ const Navbar = ({ userType }) => {
       {/* Guest */}
       {userType === "guest" && (
         <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900">TriConnect</Link>
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
+
           <Link className="text-2xl font-bold">Features</Link>
-          <Link className="text-2xl font-bold">How it Works</Link>
+          <a href="#how_it_works" className="text-2xl font-bold">How it Works</a>
           <Link className="text-2xl font-bold">Why Us</Link>
           <Link className="text-2xl font-bold">Feedbacks</Link>
           <div className="flex">
@@ -28,22 +32,43 @@ const Navbar = ({ userType }) => {
         </div>
       )}
 
-      {/* Login */}
-       {userType === "login" && (
+      {/* Guest */}
+      {userType === "register" && (
         <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900">TriConnect</Link>
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
           <Link className="text-2xl font-bold">Features</Link>
           <Link className="text-2xl font-bold">How it Works</Link>
           <Link className="text-2xl font-bold">Why Us</Link>
           <Link className="text-2xl font-bold">Feedbacks</Link>
-         
+
+        </div>
+      )}
+
+      {/* Login */}
+      {userType === "login" && (
+        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
+          <Link className="text-2xl font-bold">Features</Link>
+          <Link className="text-2xl font-bold">How it Works</Link>
+          <Link className="text-2xl font-bold">Why Us</Link>
+          <Link className="text-2xl font-bold">Feedbacks</Link>
+
         </div>
       )}
 
       {/* Jobseeker */}
       {userType === "jobseeker" && (
         <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
-          <h1 className="font-bold text-2xl text-blue-900">TriConnect</h1>
+          <Link to={"/jobseeker"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
@@ -85,16 +110,19 @@ const Navbar = ({ userType }) => {
       {/* Business Employer */}
       {userType === "business_employer" && (
         <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
-          <h1 className="font-bold text-2xl text-blue-900">TriConnect</h1>
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
           <div className="flex justify-end items-center gap-15">
 
-             <div className="relative flex">
+            <div className="relative flex">
               <button className="flex items-center text-2xl font-bold cursor-pointer">
                 <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
                 Notifications
               </button>
             </div>
-            
+
             <div className="relative flex">
               <img src={icons.profile} alt="" className="mr-3" />
               <button
@@ -106,7 +134,7 @@ const Navbar = ({ userType }) => {
 
               {dropdownVisible && (
                 <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <Link to="/jobseeker/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                  <Link to="/business-employer/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
                     View Profile
                   </Link>
                   <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
@@ -125,23 +153,105 @@ const Navbar = ({ userType }) => {
 
       {/* Individual Employer */}
       {userType === "individual_employer" && (
-        <>
-          <Link to="/post-job" className="text-2xl font-bold">Post a Job</Link>
-          <Link to="/candidates" className="text-2xl font-bold">Candidates</Link>
-          <Link to="/analytics" className="text-2xl font-bold">Analytics</Link>
-        </>
-      )}
-
-      {/* Admininistrator */}
-      {userType === "admin" && (
         <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900">TriConnect</Link>
-           <div className="relative flex">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
+          <div className="flex justify-end items-center gap-15">
+
+            <div className="relative flex">
               <button className="flex items-center text-2xl font-bold cursor-pointer">
                 <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
                 Notifications
               </button>
             </div>
+
+            <div className="relative flex">
+              <img src={icons.profile} alt="" className="mr-3" />
+              <button
+                onClick={toggleDropdown}
+                className="text-2xl font-bold focus:outline-none cursor-pointer"
+              >
+                Profile
+              </button>
+
+              {dropdownVisible && (
+                <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
+                  <Link to="/individual-employer/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                    View Profile
+                  </Link>
+                  <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
+                    Message
+                  </Link>
+                  <Link to="/settings" className="block px-4 py-2 text-black hover:bg-gray-100">
+                    Settings
+                  </Link>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Manpower Provider */}
+      {userType === "manpower_provider" && (
+        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
+          <div className="flex justify-end items-center gap-15">
+
+            <div className="relative flex">
+              <button className="flex items-center text-2xl font-bold cursor-pointer">
+                <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+                Notifications
+              </button>
+            </div>
+
+            <div className="relative flex">
+              <img src={icons.profile} alt="" className="mr-3" />
+              <button
+                onClick={toggleDropdown}
+                className="text-2xl font-bold focus:outline-none cursor-pointer"
+              >
+                Profile
+              </button>
+
+              {dropdownVisible && (
+                <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
+                  <Link to="/manpower-provider/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                    View Profile
+                  </Link>
+                  <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
+                    Message
+                  </Link>
+                  <Link to="/settings" className="block px-4 py-2 text-black hover:bg-gray-100">
+                    Settings
+                  </Link>
+                </div>
+              )}
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Admininistrator */}
+      {userType === "admin" && (
+        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+            <img src={icons.logo_triconnect} alt="" className="h-10" />
+            TriConnect
+          </Link>
+          <div className="relative flex">
+            <button className="flex items-center text-2xl font-bold cursor-pointer">
+              <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+              Notifications
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -1,6 +1,6 @@
 async function createJobPostTable(connection) {
   const query = `
-    CREATE TABLE IF NOT EXISTS business_job_post (
+    CREATE TABLE IF NOT EXISTS job_post (
       job_post_id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL, -- Foreign key to reference the user
       role VARCHAR(50) DEFAULT NULL,

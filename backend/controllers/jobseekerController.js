@@ -1,8 +1,8 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { createJobseeker } = require("../service/JobseekerQuery");
-const { findUsersEmail, createUsers, getJobseekerInfo } = require("../service/UsersQuery");
+const { createJobseeker, uploadJobseekerRequirement } = require("../service/JobseekerQuery");
+const { findUsersEmail, createUsers, getJobseekerInfo, uploadUserRequirement } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -48,38 +48,113 @@ const verifyEmail = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
         const role = "jobseeker"
-        await createJobseeker(email, password);
-        await createUsers(email, password, role);
+
+        // Create the user
+        const createdUser = await createUsers(email, password, role);
+        const user_id = createdUser.user_id;
+        await createJobseeker(user_id, role, email, password);
+
         console.log("Jobseeker account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {
+        console.error(err); // Log the error for debugging
         res.status(400).send("Invalid or expired verification link.");
     }
 };
 
+
 const getJobseekerProfile = async (req, res) => {
-    const token = req.cookies.jwt; // Get JWT from cookies
-
-    if (!token) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
-
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET); // Verify JWT
-        const userId = decoded.id;
+        const token = req.cookies.token;
 
-        // Fetch user profile from the database
-        const userProfile = await getJobseekerInfo(userId);
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized: No token provided' });
+        }
 
-        if (!userProfile) {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user_id = decoded.user_id;
+        const role = decoded.role;
+
+        if (role !== 'jobseeker') {
+            return res.status(403).json({ error: 'Forbidden: Not a jobseeker' });
+        }
+
+        const jobseekerProfile = await getJobseekerInfo(user_id);
+        if (!jobseekerProfile) {
             return res.status(404).json({ error: 'Profile not found' });
         }
 
-        res.json(userProfile); // Send profile data
+        return res.status(200).json(jobseekerProfile);
     } catch (err) {
         console.error('Error fetching profile:', err.message);
-        res.status(401).json({ error: 'Invalid token' });
+        return res.status(401).json({ error: 'Invalid or expired token' });
     }
 };
 
-module.exports = { register, verifyEmail, getJobseekerProfile };
+const uploadRequirements = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized: No token found" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { user_id } = decoded;
+
+        const {
+            full_name,
+            date_of_birth,
+            contact_number,
+            gender,
+            present_address,
+            permanent_address,
+            education,
+            skills
+        } = req.body;
+
+        // ✅ Extract uploaded file paths from req.files
+        const government_id = req.files?.government_id?.[0]?.filename || null;
+        const selfie_with_id = req.files?.selfie_with_id?.[0]?.filename || null;
+        const nbi_barangay_clearance = req.files?.nbi_barangay_clearance?.[0]?.filename || null;
+
+        
+        // ✅ Save data (call your DB function)
+        await uploadJobseekerRequirement({
+            user_id,
+            full_name,
+            date_of_birth,
+            contact_number,
+            gender,
+            present_address,
+            permanent_address,
+            education,
+            skills,
+            government_id,
+            selfie_with_id,
+            nbi_barangay_clearance
+        });
+
+        await uploadUserRequirement({
+            user_id,
+            full_name,
+            date_of_birth,
+            contact_number,
+            gender,
+            present_address,
+            permanent_address,
+            education,
+            skills,
+            government_id,
+            selfie_with_id,
+            nbi_barangay_clearance
+        })
+        
+        res.status(200).json({ message: "Requirements uploaded successfully" });
+    } catch (error) {
+        console.error("Upload error:", error);
+        res.status(401).json({ message: "Unauthorized or invalid token" });
+    }
+};
+
+
+module.exports = { register, verifyEmail, getJobseekerProfile, uploadRequirements };

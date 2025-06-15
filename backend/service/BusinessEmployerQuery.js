@@ -1,17 +1,18 @@
 const dbPromise = require("../config/DatabaseConnection");
 
-async function createBusinessEmployer(email, password) {
+async function createBusinessEmployer(user_id, role, email, password) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
-            "INSERT INTO business_employer (email, password) VALUES (?, ?)",
-            [email, password]
+            "INSERT INTO business_employer (user_id, role, email, password) VALUES (?, ?, ?, ?)",
+            [user_id, role, email, password]
         );
         return { success: true, insertId: result.insertId };
     } catch (error) {
         return { success: false, error };
     }
 }
+
 
 async function findBusinessEmployerEmail(email) {
     try {
@@ -40,27 +41,46 @@ async function updateBusinessEmployerPassword(email, password) {
     }
 }
 
-const createJobPostQuery = async (user_id, role, job_title, job_type, salary_range, location, required_skill, job_description) => {
+const uploadBusinessEmployerRequirement = async (data) => {
     try {
         const db = await dbPromise;
 
-        // Insert query with parameters
-        const [result] = await db.execute(
-            `INSERT INTO business_job_post (user_id, role, job_title, job_type, salary_range, location, required_skill, job_description)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-            [user_id, role, job_title, job_type, salary_range, location, required_skill, job_description]
+        // Check if the business employer entry exists for the user
+        const [existing] = await db.execute(
+            "SELECT business_employer_id FROM business_employer WHERE user_id = ?",
+            [data.user_id]
         );
 
-        // Return the result
-        return { success: true, jobId: result.insertId };
-    } catch (error) {
-        console.error("Error creating job post:", error);
-        throw new Error("Failed to create job post");
+        const fields = [
+            data.business_name, data.business_address, data.industry, data.business_size,
+            data.authorized_person, data.authorized_person_id,
+            data.business_permit_BIR, data.DTI, data.business_establishment
+        ];
+
+        if (existing.length) {
+            // Update the record if it exists
+            const updateQuery = `
+                UPDATE business_employer SET
+                    business_name = ?, business_address = ?, industry = ?, business_size = ?,
+                    authorized_person = ?, authorized_person_id = ?,
+                    business_permit_BIR = ?, DTI = ?, business_establishment = ?, is_submitted = ?
+                WHERE user_id = ?
+            `;
+            await db.execute(updateQuery, [...fields, true, data.user_id]);
+            return { success: true, message: "Business employer data updated successfully." };
+        }
+
+        // Do not insert if not found
+        return { success: false, message: "Business employer not found. Cannot insert new record." };
+
+    } catch (err) {
+        console.error("Upload error:", err);
+        return { success: false, error: err.message };
     }
 };
 
 module.exports = { createBusinessEmployer, 
                 findBusinessEmployerEmail, 
-                updateBusinessEmployerPassword ,
-                createJobPostQuery
+                updateBusinessEmployerPassword,
+                uploadBusinessEmployerRequirement
             };

@@ -1,8 +1,8 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const { createManpowerProvider } = require("../service/ManpowerProviderQuery");
-const { findUsersEmail, createUsers } = require("../service/UsersQuery");
+const { createManpowerProvider, uploadManpowerProviderRequirement } = require("../service/ManpowerProviderQuery");
+const { findUsersEmail, createUsers, getManpowerProviderInfo, uploadUserRequirement } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -46,19 +46,103 @@ const register = async (req, res) => {
 
 const verifyEmail = async (req, res) => {
     const { token } = req.query;
-    
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
         const role = "manpower_provider";
+        const createdUser = await createUsers(email, password, role);
 
-        await createManpowerProvider(email, password);
-        await createUsers(email, password, role);
-        console.log("Manpower provider account created successfully!");
+        if (!createdUser || !createdUser.user_id) {
+            return res.status(500).send("Failed to create user account.");
+        }
+
+        const user_id = createdUser.user_id;
+        await createManpowerProvider(user_id, email, password, role);
+        console.log("Business employer account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {
+        console.error("Verification error:", err);
         res.status(400).send("Invalid or expired verification link.");
     }
 }
 
-module.exports = { register, verifyEmail };
+const getManpowerProviderProfile = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({ error: 'Unauthorized: No token provided' });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user_id = decoded.user_id;
+        const role = decoded.role;
+
+        if (role !== 'manpower_provider') {
+            return res.status(403).json({ error: 'Forbidden: Not a manpower provider' });
+        }
+
+        const manpowerProviderProfile = await getManpowerProviderInfo(user_id);
+
+        if (!manpowerProviderProfile) {
+            return res.status(404).json({ error: 'Profile not found' });
+        }
+
+        return res.status(200).json(manpowerProviderProfile);
+    } catch (err) {
+        console.error('Error fetching profile:', err.message);
+        return res.status(401).json({ error: 'Invalid or expired token' });
+    }
+};
+
+const uploadRequirements = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ message: "Unauthorized: No token found" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { user_id } = decoded;
+
+        const {
+            agency_name,
+            agency_address,
+            agency_services,
+            agency_authorized_person
+        } = req.body;
+
+        const dole_registration_number = req.files?.dole_registration_number?.[0]?.filename || null;
+        const mayors_permit            = req.files?.mayors_permit?.[0]?.filename || null;
+        const agency_certificate       = req.files?.agency_certificate?.[0]?.filename || null;
+        const authorized_person_id     = req.files?.authorized_person_id?.[0]?.filename || null;
+
+        const payload = {
+            user_id,
+            agency_name,
+            agency_address,
+            agency_services,
+            agency_authorized_person,
+            dole_registration_number,
+            mayors_permit,
+            agency_certificate,
+            authorized_person_id
+        };
+
+        await uploadManpowerProviderRequirement(payload);
+        await uploadUserRequirement(payload);
+
+        return res.status(200).json({
+            message: "Manpower provider requirements uploaded successfully"
+        });
+
+    } catch (error) {
+        console.error("Upload error:", error);
+        return res.status(401).json({
+            message: "Unauthorized or invalid token",
+            error: error.message
+        });
+    }
+};
+
+module.exports = { register, verifyEmail, getManpowerProviderProfile, uploadRequirements };

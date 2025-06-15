@@ -10,7 +10,7 @@ const { createBusinessEmployerTable } = require("./Schema/BusinessEmployerSchema
 const { createIndividualEmployerTable } = require("./Schema/IndividualEmployerSchema")
 const { createManpowerProviderTable } = require("./Schema/manpowerProviderSchema")
 const { createUsersTable } = require("./Schema/UsersSchema")
-const { createJobPostTable } = require("./Schema/businessEmployerJobPostSchema")
+const { createJobPostTable } = require("./Schema/JobPostSchema")
 const jobseekerRoute = require("./routes/jobseekerRoute")
 const businessEmployerRoute = require("./routes/businessEmployerRoute")
 const individualEmployerRoute = require("./routes/IndividualEmployerRoute")
@@ -29,6 +29,9 @@ app.use(cors({
 app.use(cookieParser());
 app.use(express.json());
 
+app.use('/uploads', express.static('uploads'));
+
+
 app.use(session({
     secret: process.env.SESSION_SECRET,// Use a strong secret in production!
     resave: false,
@@ -40,8 +43,6 @@ app.use(session({
     }
 }));
 
-
-
 app.use("/", jobseekerRoute)
 app.use("/", businessEmployerRoute)
 app.use("/", individualEmployerRoute)
@@ -50,6 +51,7 @@ app.use("/", loginRoute);
 app.use("/", forgotPasswordRoute)
 app.use("/", authRoute)
 app.use("/", logoutRoute)
+
 
 async function startServer() {
     try {
@@ -60,14 +62,14 @@ async function startServer() {
         await createBusinessEmployerTable(db);
         await createIndividualEmployerTable(db);
         await createManpowerProviderTable(db);
-        
+
         app.locals.db = db;
         app.listen(process.env.PORT, () => {
             console.log(`✅ Server is running on port ${process.env.PORT}`);
         });
     } catch (error) {
         console.error("❌ Failed to start server:", error.message);
-        process.exit(1); 
+        process.exit(1);
     }
 }
 

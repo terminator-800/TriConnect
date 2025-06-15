@@ -51,7 +51,7 @@ const CreateJobPost = () => {
     } catch (error) {
       console.error("Error creating job post:", error.response?.data || error.message);
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   }
 
