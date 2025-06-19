@@ -55,11 +55,13 @@ const AdminDashboard = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400">
 
-      {/* Navbar */}
-      <Navbar userType={"admin"} />
+       {/* Navbar */}
+      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
+                <Navbar userType={"admin"} />
+      </div>
 
-      {/* Sidebar */}
-      <div
+      {/* Hamburger Sidebar */}
+      {/* <div
         className={`
           fixed top-0 left-0 h-full  bg-gray-400 text-white z-50
           transition-all duration-300
@@ -70,16 +72,17 @@ const AdminDashboard = () => {
         onTransitionEnd={() => {
           if (!sidebarOpen) setSidebarFullyClosed(true);
         }}
-      >
+      > */}
         {/* Close Icon */}
-        <button
+        {/* <button
           onClick={handleSidebarClose}
           className="absolute top-5 right-5 text-3xl bg-transparent border-none cursor-pointer text-white"
           aria-label="Close sidebar"
         >
           &times;
-        </button>
+        </button> */}
 
+      <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
         <div className=' flex flex-col items-center mt-25'>
           <div className="bg-gray-900 w-16 h-16 rounded-full flex justify-center items-center text-lg font-bold mb-5">
             {/* Name of admin */}
@@ -166,7 +169,7 @@ const AdminDashboard = () => {
       </div>
 
       {/* Hamburger Icon to open Sidebar */}
-      {!sidebarOpen && sidebarFullyClosed && (
+      {/* {!sidebarOpen && sidebarFullyClosed && (
         <button
           onClick={handleSidebarOpen}
           className="absolute top-5 left-10  text-3xl bg-transparent border-none cursor-pointer z-50"
@@ -174,10 +177,10 @@ const AdminDashboard = () => {
         >
           &#9776;
         </button>
-      )}
+      )} */}
 
       {/* Main Content */}
-      <div>
+      <div className="pt-[80px] pl-60">
         {activeComponent === 'UserVerification' ? (
           <UserVerification />
         ) : activeComponent === 'VerifiedUser' ? (

@@ -2,7 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { createManpowerProvider, uploadManpowerProviderRequirement } = require("../service/ManpowerProviderQuery");
-const { findUsersEmail, createUsers, getManpowerProviderInfo, uploadUserRequirement } = require("../service/UsersQuery");
+const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -82,8 +82,7 @@ const getManpowerProviderProfile = async (req, res) => {
             return res.status(403).json({ error: 'Forbidden: Not a manpower provider' });
         }
 
-        const manpowerProviderProfile = await getManpowerProviderInfo(user_id);
-
+        const manpowerProviderProfile = await getUserInfo(user_id);
         if (!manpowerProviderProfile) {
             return res.status(404).json({ error: 'Profile not found' });
         }

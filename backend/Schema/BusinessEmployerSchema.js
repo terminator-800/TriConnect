@@ -6,6 +6,8 @@ async function createBusinessEmployerTable(connection) {
             role ENUM('business_employer') NOT NULL DEFAULT 'business_employer',            
             is_verified BOOLEAN DEFAULT FALSE,
             is_submitted BOOLEAN DEFAULT FALSE,
+            is_rejected BOOLEAN DEFAULT FALSE,
+            verified_at DATETIME NULL DEFAULT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             business_name VARCHAR(100),
@@ -17,7 +19,6 @@ async function createBusinessEmployerTable(connection) {
             business_permit_BIR VARCHAR(255),
             DTI VARCHAR(255),
             business_establishment VARCHAR(255),
-
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
         );

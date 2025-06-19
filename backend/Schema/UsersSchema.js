@@ -2,9 +2,11 @@ async function createUsersTable(connection) {
     const query = `
         CREATE TABLE IF NOT EXISTS users (
             user_id INT AUTO_INCREMENT PRIMARY KEY,
-            role ENUM('jobseeker', 'business_employer', 'individual_employer', 'manpower_provider') NOT NULL,
+            role ENUM('jobseeker', 'business_employer', 'individual_employer', 'manpower_provider', 'admin') NOT NULL,
             is_verified BOOLEAN DEFAULT FALSE,
             is_submitted BOOLEAN DEFAULT FALSE,
+            is_rejected BOOLEAN DEFAULT FALSE,
+            verified_at DATETIME NULL DEFAULT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
 

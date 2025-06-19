@@ -14,7 +14,7 @@ const JobseekerDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarFullyClosed, setSidebarFullyClosed] = useState(true);
   const [activeComponent, setActiveComponent] = useState(null);
-  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false); // State for feedback modal
+  const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
   const navigate = useNavigate();
 
   const handleSidebarOpen = () => {
@@ -29,9 +29,9 @@ const JobseekerDashboard = () => {
   const handleLogout = async () => {
     try {
       const response = await axios.post('http://localhost:3001/logout', {},  {
-          withCredentials: true, // Include cookies in the request
+          withCredentials: true,
           headers: {
-            'Content-Type': 'application/json' // ✅ This tells the server to expect JSON
+            'Content-Type': 'application/json'
           }
         });
 
@@ -45,22 +45,24 @@ const JobseekerDashboard = () => {
   };
 
  const handleFeedbackOpen = () => {
-    setFeedbackModalVisible(true); // Show the feedback modal
+    setFeedbackModalVisible(true);
   };
 
   const handleFeedbackClose = () => {
-    setFeedbackModalVisible(false); // Hide the feedback modal
+    setFeedbackModalVisible(false);
   };
 
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400">
 
       {/* Navbar */}
-      <Navbar userType={"jobseeker"}/>
+      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
+          <Navbar userType={"jobseeker"}/>
+      </div>
   
 
       {/* Sidebar */}
-      <div
+      {/* <div
         className={`
           fixed top-0 left-0 h-full bg-gray-400 text-white z-50 p-0
           transition-all duration-300
@@ -71,17 +73,18 @@ const JobseekerDashboard = () => {
         onTransitionEnd={() => {
           if (!sidebarOpen) setSidebarFullyClosed(true);
         }}
-      >
+      > */}
 
         {/* Close Icon */}
-        <button
+        {/* <button
           onClick={handleSidebarClose}
           className="absolute top-5 right-5 text-3xl bg-transparent border-none cursor-pointer text-white"
           aria-label="Close sidebar"
         >
           &times;
-        </button>
-        
+        </button> */}
+      <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
+
          <div className='flex'>
           <img src={icons.dashboard} alt="" className='mb-6 mt-30 ml-5' />
           <h2 className="text-2xl font-bold mt-30 ml-5 text-black">Dashboard</h2>
@@ -141,7 +144,7 @@ const JobseekerDashboard = () => {
       </div>
 
       {/* Hamburger Icon to open Sidebar */}
-      {!sidebarOpen && sidebarFullyClosed && (
+      {/* {!sidebarOpen && sidebarFullyClosed && (
         <button
           onClick={handleSidebarOpen}
           className="absolute top-5 left-10 text-3xl bg-transparent border-none cursor-pointer z-50"
@@ -149,10 +152,10 @@ const JobseekerDashboard = () => {
         >
           &#9776;
         </button>
-      )}
+      )} */}
 
       {/* Main Content */}
-      <div>
+      <div className="pt-[80px] pl-60">
         {activeComponent === 'JobseekerFindJob' ? (
           <JobseekerFindJob />
         ) : activeComponent === 'JobseekerFindAgency' ? (
@@ -166,7 +169,6 @@ const JobseekerDashboard = () => {
           </div>
         )}
       </div>
-
 
           {/* Feedback Modal */}
       {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}

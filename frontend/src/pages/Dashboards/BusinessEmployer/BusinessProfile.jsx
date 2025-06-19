@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import BusinessEmployerForm from './BusinessEmployerForm';
 import Navbar from '../../Navbar';
+import Sidebar from './Sidebar';
+import icons from '../../../assets/svg/Icons';
 
-const JobseekerProfile = () => {
+const BusinessEmployerProfile = () => {
   const [profileData, setProfileData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -49,52 +51,132 @@ const JobseekerProfile = () => {
 
   return (
     <>
-      <Navbar userType={"business_employer"} />
-      <div className="min-h-screen bg-gradient-to-b from-white to-cyan-400 flex flex-col items-center">
-        <h1 className="text-3xl font-bold mb-4">Business Employer Profile</h1>
-        <div className="bg-white shadow-md rounded p-6 w-96">
-          <p><strong>Name:</strong> {profileData.business_name}</p>
-          <p><strong>Business Address:</strong> {profileData.business_address}</p>
-          <p><strong>Verified:</strong> {profileData.is_verified ? 'Yes' : 'No'}</p>
-          <p><strong>Industry:</strong> {profileData.industry}</p>
-          <p><strong>Business Size:</strong> {profileData.business_size}</p>
-          <p><strong>Auhtorized Person:</strong> {profileData.authorized_person}</p>
-          <p><strong>Authorized Person ID:</strong></p><img src={`http://localhost:3001/uploads/business_employer/${profileData.authorized_person_id}`} />
-          <p><strong>Email:</strong> {profileData.email}</p>
-          <p><strong>Registered at:</strong> {profileData.created_at}</p>
-          <p><strong>Role:</strong> {profileData.role}</p>
+      <Sidebar />
+      <div className="relative min-h-[140vh]  bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-40 ">
+        <div className="bg-white shadow-md rounded p-6 w-full max-w-7xl border border-gray-300">
 
-          {/* ✅ Conditional rendering based on submission status */}
-          {profileData.is_verified ? (
-            <p className="text-green-600 font-semibold mt-4">Verified ✅</p>
-          ) : profileData.is_submitted ? (
-            <p className="text-yellow-600 font-semibold mt-4">Waiting for verification...</p>
-          ) : (
-            <button
-              className="bg-blue-900 text-white px-5 py-1 rounded-xl mt-4 cursor-pointer"
-              onClick={openFormm}
-            >
-              Submit your requirements
-            </button>
-          )}
+          <div>
+            {/* ✅ Conditional rendering based on submission status */}
+            {profileData.is_verified ? (
+              <>
+
+              
+                <p className="text-green-600 font-semibold mt-4">Verified ✅</p>
+              </>
+            ) : profileData.is_rejected ? (
+
+              <div className="flex items-center justify-between w-full">
+                {/* Yellow Box */}
+                <div className="bg-yellow-200 p-6 rounded-md shadow-md flex justify-between items-center w-full max-w-5xl">
+                  {/* Left Section: Icon + Text */}
+                  <div className="flex gap-4 items-center">
+                    {/* ✅ Icon Vertically Centered */}
+                    <img src={icons.not_verified} alt="Not Verified" className="w-11" />
+
+                    <div>
+                      <h1 className="font-bold text-2xl text-yellow-900">Submitted Requirements Rejected</h1>
+                      <p className="text-yellow-900 max-w-md">
+                        Your verification details was rejected due to inaccurate information or invalid documents, please review and resubmit the correct details and files.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Button */}
+                  <button
+                    className="bg-green-600 text-white px-5 py-2 rounded-2xl cursor-pointer"
+                    onClick={openFormm}
+                  >
+                    Verify Now
+                  </button>
+                </div>
+
+                {/* Profile Circle - Far Right */}
+                <div className="ml-6">
+                  <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
+                    Profile
+                  </div>
+                </div>
+              </div>
+
+            ) : profileData.is_submitted ? (
+              <div className="flex items-center justify-between w-full">
+                {/* Yellow Box */}
+                <div className="bg-yellow-200 p-6 rounded-md shadow-md flex justify-between items-center w-full max-w-5xl">
+                  {/* Left Section: Icon + Text */}
+                  <div className="flex gap-4 items-center">
+                    {/* ✅ Icon Vertically Centered */}
+                    <img src={icons.not_verified} alt="Not Verified" className="w-11" />
+
+                    <div>
+                      <h1 className="font-bold text-2xl text-yellow-900">Waiting for verification...</h1>
+                      <p className="text-yellow-900 max-w-md">
+                        Wait for 3 days for the administrator to verify
+                      </p>
+                    </div>
+                  </div>                 
+                </div>
+
+                {/* Profile Circle - Far Right */}
+                <div className="ml-6">
+                  <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
+                    Profile
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between w-full">
+                {/* Yellow Box */}
+                <div className="bg-yellow-200 p-6 rounded-md shadow-md flex justify-between items-center w-full max-w-5xl">
+                  {/* Left Section: Icon + Text */}
+                  <div className="flex gap-4 items-center">
+                    {/* ✅ Icon Vertically Centered */}
+                    <img src={icons.not_verified} alt="Not Verified" className="w-11" />
+
+                    <div>
+                      <h1 className="font-bold text-2xl text-yellow-900">Account Not Verified</h1>
+                      <p className="text-yellow-900 max-w-md">
+                        Please verify your email and complete your profile to unlock all features.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Button */}
+                  <button
+                    className="bg-green-600 text-white px-5 py-2 rounded-2xl cursor-pointer"
+                    onClick={openFormm}
+                  >
+                    Verify Now
+                  </button>
+                </div>
+
+                {/* Profile Circle - Far Right */}
+                <div className="ml-6">
+                  <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
+                    Profile
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+
+
         </div>
-
-
 
         {showForm && (
           <BusinessEmployerForm
             onClose={() => setShowForm(false)}
             onSubmitSuccess={() => {
-              setShowForm(false);        // 👈 close the modal
-              setRefreshTrigger(prev => prev + 1); // 👈 trigger re-fetch
+              setShowForm(false);
+              setRefreshTrigger(prev => prev + 1);
             }}
           />
         )}
 
-       
+
       </div>
     </>
   );
 };
 
-export default JobseekerProfile;
+export default BusinessEmployerProfile;

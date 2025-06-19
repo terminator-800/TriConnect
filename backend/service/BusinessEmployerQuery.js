@@ -45,7 +45,6 @@ const uploadBusinessEmployerRequirement = async (data) => {
     try {
         const db = await dbPromise;
 
-        // Check if the business employer entry exists for the user
         const [existing] = await db.execute(
             "SELECT business_employer_id FROM business_employer WHERE user_id = ?",
             [data.user_id]
@@ -58,19 +57,18 @@ const uploadBusinessEmployerRequirement = async (data) => {
         ];
 
         if (existing.length) {
-            // Update the record if it exists
             const updateQuery = `
                 UPDATE business_employer SET
                     business_name = ?, business_address = ?, industry = ?, business_size = ?,
                     authorized_person = ?, authorized_person_id = ?,
-                    business_permit_BIR = ?, DTI = ?, business_establishment = ?, is_submitted = ?
+                    business_permit_BIR = ?, DTI = ?, business_establishment = ?, is_submitted = ?,
+                    is_rejected = FALSE
                 WHERE user_id = ?
             `;
             await db.execute(updateQuery, [...fields, true, data.user_id]);
             return { success: true, message: "Business employer data updated successfully." };
         }
 
-        // Do not insert if not found
         return { success: false, message: "Business employer not found. Cannot insert new record." };
 
     } catch (err) {
@@ -79,8 +77,76 @@ const uploadBusinessEmployerRequirement = async (data) => {
     }
 };
 
+const verifyBusinessEmployer = async (user_id) => {
+    const db = await dbPromise;
+
+    const [businessEmployerRows] = await db.execute(
+        `SELECT user_id FROM business_employer WHERE user_id = ?`,
+        [user_id]
+    );
+
+    if (businessEmployerRows.length === 0) {
+        throw new Error('Business Employer not found.');
+    }
+
+    const [updateResult] = await db.execute(
+        `UPDATE business_employer 
+        SET is_verified = TRUE, 
+        verified_at = NOW(), 
+        is_rejected = FALSE
+         WHERE user_id = ?`,
+        [user_id]
+    );
+
+    if (updateResult.affectedRows === 0) {
+        throw new Error('Update failed - no rows affected.');
+    }
+
+    return { message: 'Business Employer verified successfully.' };
+};
+
+const rejectBusinessEmployer = async (user_id) => {
+    const db = await dbPromise;
+
+    const resetFields = [
+        "business_name", "business_address", "industry", "business_size",
+        "authorized_person", "authorized_person_id",
+        "business_permit_BIR", "DTI", "business_establishment"
+    ];
+
+    const [existingRows] = await db.execute(
+        `SELECT user_id FROM business_employer WHERE user_id = ?`,
+        [user_id]
+    );
+
+    if (existingRows.length === 0) {
+        throw new Error('Business employer not found.');
+    }
+
+    const nullifyFields = resetFields.map(f => `${f} = NULL`).join(", ");
+    const query = `
+        UPDATE business_employer
+        SET ${nullifyFields},
+            is_verified = FALSE,
+            is_rejected = TRUE,
+            is_submitted = FALSE,
+            verified_at = NULL
+        WHERE user_id = ?
+    `;
+
+    const [updateResult] = await db.execute(query, [user_id]);
+
+    if (updateResult.affectedRows === 0) {
+        throw new Error('Reject failed - no rows affected.');
+    }
+
+    return { success: true, message: "Business employer rejected and fields reset (files not deleted)." };
+};
+
 module.exports = { createBusinessEmployer, 
                 findBusinessEmployerEmail, 
                 updateBusinessEmployerPassword,
-                uploadBusinessEmployerRequirement
+                uploadBusinessEmployerRequirement,
+                verifyBusinessEmployer,
+                rejectBusinessEmployer
             };

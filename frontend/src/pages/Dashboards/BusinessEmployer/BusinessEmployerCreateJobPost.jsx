@@ -1,5 +1,6 @@
 import { useState } from "react";
 import axios from "axios";
+import Sidebar from "./Sidebar";
 
 const CreateJobPost = () => {
   const [job_title, setJobTitle] = useState("");
@@ -56,7 +57,9 @@ const CreateJobPost = () => {
   }
 
   return (
-    <div className="pl-60 pr-60 pt-20">
+    <>
+    <Sidebar/>
+    <div className="relative min-h-[140vh]  bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 ">
       <h1 className="text-5xl font-bold text-blue-900">Create Job Post</h1>
       <p className="text-2xl mt-2">Fill out the form below to post a new job vacancy</p>
 
@@ -152,7 +155,7 @@ const CreateJobPost = () => {
           <button
             type="submit"
             className="bg-blue-900 text-white rounded-xl px-10 shadow-md py-2 text-2xl cursor-pointer"
-            disabled={isLoading} // Disable button while loading
+            disabled={isLoading}
           >
             {isLoading ? "Submitting..." : "Confirm"}
           </button>
@@ -160,6 +163,7 @@ const CreateJobPost = () => {
 
       </div>
     </div>
+    </>
   );
 };
 

@@ -58,14 +58,27 @@ const Profile = () => {
                     <p><strong>Birth Date:</strong> {profileData.date_of_birth}</p>
                     <p><strong>Cellphone No.:</strong> {profileData.phone}</p>
                     <p><strong>Gender:</strong> {profileData.gender}</p>
-                    <p><strong>Present Address:</strong> {profileData.present_address}</p> 
+                    <p><strong>Present Address:</strong> {profileData.present_address}</p>
                     <p><strong>Permanent Address:</strong> {profileData.permanent_address}</p>
                     <p><strong>Government ID:</strong> {profileData.government_id}</p>
                     <p><strong>Selfie with ID:</strong> {profileData.selfie_with_id}</p>
                     <p><strong>NBI or Barangay Clearance:</strong> {profileData.nbi_barangay_clearance}</p>
+
                     {/* ✅ Conditional rendering based on submission status */}
                     {profileData.is_verified ? (
                         <p className="text-green-600 font-semibold mt-4">Verified ✅</p>
+                    ) : profileData.is_rejected ? (
+                        <>
+                            <p className="text-red-600 font-semibold mt-4">
+                                Your submitted documents are invalid ❌
+                            </p>
+                            <button
+                                className="bg-blue-900 text-white px-5 py-1 rounded-xl mt-4 cursor-pointer"
+                                onClick={openFormm}
+                            >
+                                Submit your requirements
+                            </button>
+                        </>
                     ) : profileData.is_submitted ? (
                         <p className="text-yellow-600 font-semibold mt-4">Waiting for verification...</p>
                     ) : (

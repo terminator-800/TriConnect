@@ -88,16 +88,16 @@ const ManpowerProviderForm = ({ onClose, onSubmitSuccess }) => {
 
         <div>
           <label htmlFor="agencyName" className='sr-only'>Agency Name</label>
-          <input onChange={(e) => setAgencyName(e.target.value)} value={agencyName} type="text" name='agencyName' id='agencyName' placeholder='Agency Name' className='w-full border rounded p-2 mt-2 mb-2 outline-none' />
+          <input onChange={(e) => setAgencyName(e.target.value)} required value={agencyName} type="text" name='agencyName' id='agencyName' placeholder='Agency Name' className='w-full border rounded p-2 mt-2 mb-2 outline-none' />
         </div>
 
         <div>
           <label htmlFor="agencyAddress" className='sr-only'>Agency Address</label>
-          <input onChange={(e) => setAgencyAddress(e.target.value)} value={agencyAddress} type="text" id='agencyAddress' name='agencyAddress' placeholder='Agency Address' className='outline-none border rounded p-2 mt-2 mb-2 w-full' />
+          <input onChange={(e) => setAgencyAddress(e.target.value)} required value={agencyAddress} type="text" id='agencyAddress' name='agencyAddress' placeholder='Agency Address' className='outline-none border rounded p-2 mt-2 mb-2 w-full' />
         </div>
 
         <div>
-          <select onChange={(e) => setAgencyServicesOffered(e.target.value)} value={agencyServicesOffered} name="agencyServicesOffered" id="agencyServicesOffered" className='w-full p-2 mb-2 mt-2 outline-none border rounded'>
+          <select onChange={(e) => setAgencyServicesOffered(e.target.value)} required value={agencyServicesOffered} name="agencyServicesOffered" id="agencyServicesOffered" className='w-full p-2 mb-2 mt-2 outline-none border rounded'>
             <option value="">Type of Services Offered</option>
             <option value="Recruitment Hiring">Recruitment Hiring</option>
             <option value="Manpower Outsourcing">Manpower Outsourcing</option>
@@ -108,7 +108,7 @@ const ManpowerProviderForm = ({ onClose, onSubmitSuccess }) => {
 
         <div>
           <label htmlFor="agencyAuthorizedRepresentative" className='sr-only'>Authorized Personnel</label>
-          <input onChange={(e) => setAgencyAuthorizedRepresentative(e.target.value)} value={agencyAuthorizedRepresentative} type="text" placeholder='Authorized Personel' id='agencyAuthorizedRepresentative' name='agencyAuthorizedRepresentative' className='outline-none p-2 mb-2 mt-2 border rounded w-full' />
+          <input onChange={(e) => setAgencyAuthorizedRepresentative(e.target.value)} required value={agencyAuthorizedRepresentative} type="text" placeholder='Authorized Personel' id='agencyAuthorizedRepresentative' name='agencyAuthorizedRepresentative' className='outline-none p-2 mb-2 mt-2 border rounded w-full' />
         </div>
 
         {/* File Uploads */}

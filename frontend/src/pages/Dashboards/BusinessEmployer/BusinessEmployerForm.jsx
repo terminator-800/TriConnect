@@ -73,7 +73,7 @@ const BusinessEmployerForm = ({ onClose, onSubmitSuccess }) => {
     <div className='fixed flex items-center justify-center z-50 inset-0'>
       <form
         onSubmit={submitRequirements}
-        className='relative z-10 border-2 border-gray-300 bg-white rounded-xl p-6 h-[90vh] overflow-y-auto w-full max-w-2xl mt-20'
+        className='relative z-10 border-2 border-gray-300 bg-white rounded-xl p-6 h-[90vh] overflow-y-auto w-full max-w-2xl mt-20 hide-scrollbar'
       >
         {/* Close Button */}
         <button
@@ -97,6 +97,7 @@ const BusinessEmployerForm = ({ onClose, onSubmitSuccess }) => {
             id="employerBusinessName"
             placeholder="Business Name"
             className='border w-full mb-2 mt-2 p-2 rounded outline-none'
+            required
           />
         </div>
 
@@ -109,6 +110,7 @@ const BusinessEmployerForm = ({ onClose, onSubmitSuccess }) => {
             id="business_address"
             placeholder="Business Address"
             className='border w-full mb-2 mt-2 p-2 rounded outline-none'
+            required
           />
         </div>
 
@@ -118,12 +120,13 @@ const BusinessEmployerForm = ({ onClose, onSubmitSuccess }) => {
             onChange={(e) => setIndustry(e.target.value)}
             value={industry}
             className="w-full border p-2 rounded mb-2 outline-none"
+            required
           >
             <option value="">Industry</option>
-            <option value="corporations">Corporations</option>
-            <option value="smallBusinesses">Small Businesses</option>
-            <option value="government">Government</option>
-            <option value="freelanceAgencies">Freelance Agencies</option>
+            <option value="Corporations">Corporations</option>
+            <option value="Small Busines">Small Businesses</option>
+            <option value="Government">Government</option>
+            <option value="Freelance Agencies">Freelance Agencies</option>
           </select>
         </div>
 
@@ -133,12 +136,13 @@ const BusinessEmployerForm = ({ onClose, onSubmitSuccess }) => {
             onChange={(e) => setBusinessSize(e.target.value)}
             value={business_size}
             className="w-full border p-2 rounded mb-2 outline-none"
+            required
           >
             <option value="">Business Size</option>
-            <option value="corporations">Corporations</option>
-            <option value="smallBusinesses">Small Businesses</option>
-            <option value="government">Government</option>
-            <option value="freelanceAgencies">Freelance Agencies</option>
+            <option value="Corporations">Corporations</option>
+            <option value="Small Businesses">Small Businesses</option>
+            <option value="Government">Government</option>
+            <option value="Freelance Agencies">Freelance Agencies</option>
           </select>
         </div>
 
@@ -151,6 +155,7 @@ const BusinessEmployerForm = ({ onClose, onSubmitSuccess }) => {
             id="authorized_person"
             placeholder="Authorized Person (Full Name)"
             className='border w-full mb-2 mt-2 p-2 rounded outline-none'
+            required
           />
         </div>
 

@@ -16,7 +16,7 @@ const ManpowerProviderDashboard = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
   const navigate = useNavigate();
 
-   const handleSidebarOpen = () => {
+  const handleSidebarOpen = () => {
     setSidebarOpen(true);
     setSidebarFullyClosed(false);
   };
@@ -40,7 +40,7 @@ const ManpowerProviderDashboard = () => {
     }
   };
 
- const handleFeedbackOpen = () => {
+  const handleFeedbackOpen = () => {
     setFeedbackModalVisible(true); // Show the feedback modal
   };
 
@@ -49,14 +49,16 @@ const ManpowerProviderDashboard = () => {
   };
 
   return (
- <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400">
+    <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400">
 
       {/* Navbar */}
-      <Navbar userType={"manpower_provider"}/>
-  
+      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
+        <Navbar userType={"manpower_provider"} />
+      </div>
+
 
       {/* Sidebar */}
-      <div
+      {/* <div
         className={`
           fixed top-0 left-0 h-full bg-gray-400 text-white z-50 p-0
           transition-all duration-300
@@ -67,18 +69,18 @@ const ManpowerProviderDashboard = () => {
         onTransitionEnd={() => {
           if (!sidebarOpen) setSidebarFullyClosed(true);
         }}
-      >
+      > */}
 
-        {/* Close Icon */}
-        <button
+      {/* Close Icon */}
+      {/* <button
           onClick={handleSidebarClose}
           className="absolute top-5 right-5 text-3xl bg-transparent border-none cursor-pointer text-white"
           aria-label="Close sidebar"
         >
           &times;
-        </button>
-        
-         <div className='flex'>
+        </button> */}
+      <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
+        <div className='flex'>
           <img src={icons.dashboard} alt="" className='mb-6 mt-30 ml-5' />
           <h2 className="text-2xl font-bold mt-30 ml-5 text-black">Dashboard</h2>
         </div>
@@ -86,7 +88,7 @@ const ManpowerProviderDashboard = () => {
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
 
           <li className={`${activeComponent === 'ManpowerProviderFindJob' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.find_job} alt="" className='ml-5 w-[27px]'/>
+            <img src={icons.find_job} alt="" className='ml-5 w-[27px]' />
             <button
               onClick={() => setActiveComponent('ManpowerProviderFindJob')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
@@ -96,7 +98,7 @@ const ManpowerProviderDashboard = () => {
           </li>
 
           <li className={`${activeComponent === 'ManpowerProviderCreateJobPost' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.find_agency} alt="" className='ml-5 w-[27px]'/>
+            <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
             <button
               onClick={() => setActiveComponent('ManpowerProviderCreateJobPost')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
@@ -106,7 +108,7 @@ const ManpowerProviderDashboard = () => {
           </li>
 
           <li className={`${activeComponent === 'ManpowerProviderMessage' ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.message} alt="" className='ml-5 w-[27px]'/>
+            <img src={icons.message} alt="" className='ml-5 w-[27px]' />
             <button
               onClick={() => setActiveComponent('ManpowerProviderMessage')}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
@@ -137,7 +139,7 @@ const ManpowerProviderDashboard = () => {
       </div>
 
       {/* Hamburger Icon to open Sidebar */}
-      {!sidebarOpen && sidebarFullyClosed && (
+      {/* {!sidebarOpen && sidebarFullyClosed && (
         <button
           onClick={handleSidebarOpen}
           className="absolute top-5 left-10 text-3xl bg-transparent border-none cursor-pointer z-50"
@@ -145,11 +147,11 @@ const ManpowerProviderDashboard = () => {
         >
           &#9776;
         </button>
-      )}
+      )} */}
 
-    
+
       {/* Main Content */}
-      <div>
+      <div className="pt-[80px] pl-60">
         {activeComponent === 'ManpowerProviderFindJob' ? (
           <ManpowerProviderFindJob />
         ) : activeComponent === 'ManpowerProviderCreateJobPost' ? (
@@ -164,7 +166,7 @@ const ManpowerProviderDashboard = () => {
         )}
       </div>
 
-          {/* Feedback Modal */}
+      {/* Feedback Modal */}
       {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}
     </div>
   )

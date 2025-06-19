@@ -2,7 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const { createIndividualEmployer, uploadIndividualEmployerRequirement } = require("../service/IndividualEmployerQuery");
-const { findUsersEmail, createUsers, getIndividualEmployerInfo, uploadUserRequirement } = require("../service/UsersQuery");
+const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -52,7 +52,6 @@ const verifyEmail = async (req, res) => {
         const { email, password } = decoded;
         const role = "individual_employer";
 
-        // Step 1: Create user in the central users table
         const createdUser = await createUsers(email, password, role);
         if (!createdUser || !createdUser.user_id) {
             return res.status(500).send("Failed to create user account.");
@@ -60,7 +59,6 @@ const verifyEmail = async (req, res) => {
         
         const user_id = createdUser.user_id;
 
-        // Step 2: Create business_employer-specific row
         await createIndividualEmployer(user_id, role, email, password);
 
         console.log("Individual employer account created successfully!");
@@ -87,7 +85,7 @@ const getIndividualEmployerProfile = async (req, res) => {
             return res.status(403).json({ error: 'Forbidden: Not an individual employer' });
         }
 
-        const individualEmployerProfile = await getIndividualEmployerInfo(user_id);
+        const individualEmployerProfile = await getUserInfo(user_id);
         if (!individualEmployerProfile) {
             return res.status(404).json({ error: 'Profile not found' });
         }

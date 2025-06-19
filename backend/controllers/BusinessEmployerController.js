@@ -1,10 +1,9 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-const dbPromise = require("../config/DatabaseConnection");
 
 const { createJobPostQuery } = require("../service/JobPostQuery");
-const { findUsersEmail, createUsers, getBusinessEmployerInfo, uploadUserRequirement } = require("../service/UsersQuery");
+const { findUsersEmail, createUsers, uploadUserRequirement, getUserInfo } = require("../service/UsersQuery");
 const { createBusinessEmployer, uploadBusinessEmployerRequirement } = require("../service/BusinessEmployerQuery")
 
 const register = async (req, res) => {
@@ -50,7 +49,6 @@ const verifyEmail = async (req, res) => {
         const { email, password } = decoded;
         const role = "business_employer";
 
-        // Step 1: Create user in the central users table
         const createdUser = await createUsers(email, password, role);
         if (!createdUser || !createdUser.user_id) {
             return res.status(500).send("Failed to create user account.");
@@ -58,7 +56,6 @@ const verifyEmail = async (req, res) => {
 
         const user_id = createdUser.user_id;
 
-        // Step 2: Create business_employer-specific row
         await createBusinessEmployer(user_id, role, email, password);
 
         console.log("Business employer account created successfully!");
@@ -143,7 +140,7 @@ const getBusinessEmployerProfile = async (req, res) => {
             return res.status(403).json({ error: 'Forbidden: Not a business employer' });
         }
 
-        const businessEmployerProfile = await getBusinessEmployerInfo(user_id);
+        const businessEmployerProfile = await getUserInfo(user_id);
         if (!businessEmployerProfile) {
             return res.status(404).json({ error: 'Profile not found' });
         }
@@ -204,7 +201,5 @@ const uploadRequirements = async (req, res) => {
         });
     }
 };
-
-
 
 module.exports = { register, verifyEmail, createJobPost, getBusinessEmployerProfile, uploadRequirements };

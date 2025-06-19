@@ -11,6 +11,8 @@ const { createIndividualEmployerTable } = require("./Schema/IndividualEmployerSc
 const { createManpowerProviderTable } = require("./Schema/manpowerProviderSchema")
 const { createUsersTable } = require("./Schema/UsersSchema")
 const { createJobPostTable } = require("./Schema/JobPostSchema")
+
+// Routes
 const jobseekerRoute = require("./routes/jobseekerRoute")
 const businessEmployerRoute = require("./routes/businessEmployerRoute")
 const individualEmployerRoute = require("./routes/IndividualEmployerRoute")
@@ -19,6 +21,7 @@ const loginRoute = require("./routes/loginRoute")
 const forgotPasswordRoute = require("./routes/ForgotPasswordRoute")
 const authRoute = require("./routes/authRoute")
 const logoutRoute = require("./routes/logoutRoute")
+const adminRoute = require("./routes/adminRoute")
 
 
 app.use(cors({
@@ -51,7 +54,7 @@ app.use("/", loginRoute);
 app.use("/", forgotPasswordRoute)
 app.use("/", authRoute)
 app.use("/", logoutRoute)
-
+app.use("/", adminRoute) 
 
 async function startServer() {
     try {

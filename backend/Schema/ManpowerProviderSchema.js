@@ -6,6 +6,8 @@ async function createManpowerProviderTable(connection) {
             role ENUM('manpower_provider') NOT NULL DEFAULT 'manpower_provider',
             is_verified BOOLEAN DEFAULT FALSE,
             is_submitted BOOLEAN DEFAULT FALSE,
+            is_rejected BOOLEAN DEFAULT FALSE,
+            verified_at DATETIME NULL DEFAULT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             agency_name VARCHAR(100),

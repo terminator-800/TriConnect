@@ -90,19 +90,19 @@ const VerificationForm = ({ onClose, onSubmitSuccess }) => {
 
         {/* 🔤 Input Fields */}
         <div className='mb-3'>
-          <input type="text" placeholder="Full Name" value={full_name} onChange={(e) => setFullName(e.target.value)} className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
+          <input type="text" placeholder="Full Name" value={full_name} onChange={(e) => setFullName(e.target.value)} required className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
         </div>
 
         <div className='mb-3'>
-          <input type="date" placeholder="Date of Birth" value={date_of_birth} onChange={(e) => setDateOfBirth(e.target.value)} className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
+          <input type="date" placeholder="Date of Birth" value={date_of_birth} onChange={(e) => setDateOfBirth(e.target.value)} required className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
         </div>
 
         <div className='mb-3'>
-          <input type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
+          <input type="text" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
         </div>
 
         <div className='mb-3'>
-          <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full border p-2 rounded mb-2 outline-none">
+          <select value={gender} onChange={(e) => setGender(e.target.value)} required className="w-full border p-2 rounded mb-2 outline-none">
             <option value="">Gender</option>
             <option value="male">Male</option>
             <option value="female">Female</option>
@@ -110,11 +110,11 @@ const VerificationForm = ({ onClose, onSubmitSuccess }) => {
         </div>
 
         <div className='mb-3'>
-          <input type="text" placeholder="Present Address" value={present_address} onChange={(e) => setPresentAddress(e.target.value)} className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
+          <input type="text" placeholder="Present Address" value={present_address} onChange={(e) => setPresentAddress(e.target.value)} required className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
         </div>
 
         <div className='mb-3'>
-          <input type="text" placeholder="Permanent Address" value={permanent_address} onChange={(e) => setPermanentAddress(e.target.value)} className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
+          <input type="text" placeholder="Permanent Address" value={permanent_address} onChange={(e) => setPermanentAddress(e.target.value)} required className='border w-full mb-2 mt-2 p-2 rounded outline-none' />
         </div>
 
         {/* 📎 File Uploads */}

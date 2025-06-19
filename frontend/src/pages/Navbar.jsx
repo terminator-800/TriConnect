@@ -15,16 +15,20 @@ const Navbar = ({ userType }) => {
 
       {/* Guest */}
       {userType === "guest" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-b-2 border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
 
-          <Link className="text-2xl font-bold">Features</Link>
-          <a href="#how_it_works" className="text-2xl font-bold">How it Works</a>
-          <Link className="text-2xl font-bold">Why Us</Link>
-          <Link className="text-2xl font-bold">Feedbacks</Link>
+          <div className="flex gap-30">
+            <Link className="text-2xl font-bold" to="#">Features</Link>
+            <a href="#how_it_works" className="text-2xl font-bold">How it Works</a>
+            <Link className="text-2xl font-bold" to="#">Why Us</Link>
+            <Link className="text-2xl font-bold" to="#">Feedbacks</Link>
+          </div>
+
+
           <div className="flex">
             <Link to={"/login"} className="text-blue-600 pl-3 p-1 pr-3 font-bold rounded m-2">Login</Link>
             <Link to={"/register"} className="bg-blue-900 font-bold p-1 rounded-3xl pl-3 pr-3 text-white m-2">Sign Up</Link>
@@ -34,37 +38,50 @@ const Navbar = ({ userType }) => {
 
       {/* Guest */}
       {userType === "register" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-b-2 border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
-          <Link className="text-2xl font-bold">Features</Link>
+
+          <div className="flex gap-30">
+             <Link className="text-2xl font-bold">Features</Link>
           <Link className="text-2xl font-bold">How it Works</Link>
           <Link className="text-2xl font-bold">Why Us</Link>
           <Link className="text-2xl font-bold">Feedbacks</Link>
-
+          </div>
+         
+           <div className="flex">
+            <Link to={"/login"} className="text-blue-600 pl-3 p-1 pr-3 font-bold rounded m-2">Login</Link>
+            <Link to={"/register"} className="bg-blue-900 font-bold p-1 rounded-3xl pl-3 pr-3 text-white m-2">Sign Up</Link>
+          </div>
         </div>
       )}
 
       {/* Login */}
       {userType === "login" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-b-2 border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
-          <Link className="text-2xl font-bold">Features</Link>
+          <div className="flex gap-30">
+             <Link className="text-2xl font-bold">Features</Link>
           <Link className="text-2xl font-bold">How it Works</Link>
           <Link className="text-2xl font-bold">Why Us</Link>
           <Link className="text-2xl font-bold">Feedbacks</Link>
+          </div>
 
+            <div className="flex">
+            <Link to={"/login"} className="text-blue-600 pl-3 p-1 pr-3 font-bold rounded m-2">Login</Link>
+            <Link to={"/register"} className="bg-blue-900 font-bold p-1 rounded-3xl pl-3 pr-3 text-white m-2">Sign Up</Link>
+          </div>
         </div>
       )}
 
       {/* Jobseeker */}
       {userType === "jobseeker" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/jobseeker"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
@@ -109,7 +126,7 @@ const Navbar = ({ userType }) => {
 
       {/* Business Employer */}
       {userType === "business_employer" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
@@ -153,7 +170,7 @@ const Navbar = ({ userType }) => {
 
       {/* Individual Employer */}
       {userType === "individual_employer" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
@@ -197,7 +214,7 @@ const Navbar = ({ userType }) => {
 
       {/* Manpower Provider */}
       {userType === "manpower_provider" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
@@ -241,7 +258,7 @@ const Navbar = ({ userType }) => {
 
       {/* Admininistrator */}
       {userType === "admin" && (
-        <div className="flex justify-between items-center pt-5 pb-5 pl-60 pr-60 border-b-2 border-gray-300">
+        <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect

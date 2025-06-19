@@ -69,6 +69,18 @@ const JobseekerProfile = () => {
           {/* ✅ Conditional rendering based on submission status */}
           {profileData.is_verified ? (
             <p className="text-green-600 font-semibold mt-4">Verified ✅</p>
+          ) : profileData.is_rejected ? (
+            <>
+              <p className="text-red-600 font-semibold mt-4">
+                Your submitted documents are invalid ❌
+              </p>
+              <button
+                className="bg-blue-900 text-white px-5 py-1 rounded-xl mt-4 cursor-pointer"
+                onClick={openFormm}
+              >
+                Submit your requirements
+              </button>
+            </>
           ) : profileData.is_submitted ? (
             <p className="text-yellow-600 font-semibold mt-4">Waiting for verification...</p>
           ) : (

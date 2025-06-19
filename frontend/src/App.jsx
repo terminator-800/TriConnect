@@ -17,6 +17,13 @@ import BusinessProfile from './pages/Dashboards/BusinessEmployer/BusinessProfile
 import ManpowerProviderProfile from "./pages/Dashboards/ManpowerProvider/ManpowerProviderProfile";
 import Profile from './pages/Dashboards/IndividualEmployer/Profile'
 
+import BusinessEmployerFindAgency from './pages/Dashboards/BusinessEmployer/BusinessEmployerFindAgency';
+import ViewApplicant from './pages/Dashboards/BusinessEmployer/ViewApplicant';
+import BusinessEmployerCreateJobPost from './pages/Dashboards/BusinessEmployer/BusinessEmployerCreateJobPost';
+import BusinessEmployerManageJobPost from './pages/Dashboards/BusinessEmployer/BusinessEmployerManageJobPost';
+import JobPostDetails from './pages/Dashboards/BusinessEmployer/JobPostDetails';
+import BusinessEmployerMessage from './pages/Dashboards/BusinessEmployer/BusinessEmployerMessage';
+
 function App() {
   return (
     <Router>
@@ -70,9 +77,16 @@ function App() {
           <Route path="profile/*" element={<JobseekerProfile />} />
         </Route>
 
+          {/* Business Employer */}
         <Route path="/business-employer/*" element={<PrivateRoute />}>
           <Route index element={<BusinessEmployerDashboard />} />
           <Route path="profile/*" element={<BusinessProfile />} />
+          <Route path="post" element={<JobPostDetails />} />
+          <Route path="manage" element={<BusinessEmployerManageJobPost />} />
+          <Route path="create" element={<BusinessEmployerCreateJobPost />} />
+          <Route path="view" element={<ViewApplicant />} />
+          <Route path="find" element={<BusinessEmployerFindAgency />} />
+          <Route path="message" element={<BusinessEmployerMessage />} />
         </Route>
         <Route path="/individual-employer/*" element={<PrivateRoute />}>
           <Route index element={<IndividualEmployerDashboard />} />

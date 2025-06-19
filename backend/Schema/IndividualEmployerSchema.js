@@ -6,6 +6,8 @@ async function createIndividualEmployerTable(connection) {
             role ENUM('individual_employer') NOT NULL DEFAULT 'individual_employer',            
             is_verified BOOLEAN DEFAULT FALSE,
             is_submitted BOOLEAN DEFAULT FALSE,
+            is_rejected BOOLEAN DEFAULT FALSE,
+            verified_at DATETIME NULL DEFAULT NULL,
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
             full_name VARCHAR(100), 

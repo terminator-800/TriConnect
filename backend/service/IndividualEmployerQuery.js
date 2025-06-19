@@ -44,20 +44,18 @@ const uploadIndividualEmployerRequirement = async (data) => {
     try {
         const db = await dbPromise;
 
-        // Check if individual employer exists
         const [rows] = await db.execute(
             "SELECT individual_employer_id FROM individual_employer WHERE user_id = ?",
             [data.user_id]
         );
         if (!rows.length) return { success: false, message: "Individual employer not found." };
 
-        // Update the record with submitted information and mark as submitted
         const query = `
             UPDATE individual_employer SET
                 full_name = ?, date_of_birth = ?, phone = ?, gender = ?,
                 present_address = ?, permanent_address = ?,
                 government_id = ?, selfie_with_id = ?, nbi_barangay_clearance = ?,
-                is_submitted = TRUE
+                is_submitted = TRUE, is_rejected = FALSE
             WHERE user_id = ?`;
 
         const values = [
@@ -80,8 +78,76 @@ const uploadIndividualEmployerRequirement = async (data) => {
     }
 };
 
+const verifyIndividualEmployer = async (user_id) => {
+    const db = await dbPromise;
+
+    const [rows] = await db.execute(
+        `SELECT user_id FROM individual_employer WHERE user_id = ?`,
+        [user_id]
+    );
+
+    if (rows.length === 0) {
+        throw new Error('Individual employer not found.');
+    }
+
+    const [updateResult] = await db.execute(
+        `UPDATE individual_employer 
+        SET is_verified = TRUE, 
+            verified_at = NOW(), 
+            is_rejected = FALSE
+        WHERE user_id = ?`,
+        [user_id]
+    );
+
+    if (updateResult.affectedRows === 0) {
+        throw new Error('Update failed - no rows affected.');
+    }
+};
+
+const rejectIndividualEmployer = async (user_id) => {
+    const db = await dbPromise;
+
+    const resetFields = [
+        "full_name", "date_of_birth", "phone", "gender",
+        "present_address", "permanent_address",
+        "government_id", "selfie_with_id", "nbi_barangay_clearance"
+    ];
+
+    const [existingRows] = await db.execute(
+        `SELECT user_id FROM individual_employer WHERE user_id = ?`,
+        [user_id]
+    );
+
+    if (existingRows.length === 0) {
+        throw new Error('Individual employer not found.');
+    }
+
+    const nullifyFields = resetFields.map(f => `${f} = NULL`).join(", ");
+    const query = `
+        UPDATE individual_employer
+        SET ${nullifyFields},
+            is_verified = FALSE,
+            is_rejected = TRUE,
+            is_submitted = FALSE,
+            verified_at = NULL
+        WHERE user_id = ?
+    `;
+
+    const [updateResult] = await db.execute(query, [user_id]);
+
+    if (updateResult.affectedRows === 0) {
+        throw new Error('Reject failed - no rows affected.');
+    }
+
+    return { success: true, message: "Individual employer rejected and fields reset (files not deleted)." };
+};
+
+
+
 module.exports = { createIndividualEmployer, 
                     findIndividualEmployerEmail, 
                     updateIndividualEmployerPassword, 
-                    uploadIndividualEmployerRequirement 
+                    uploadIndividualEmployerRequirement,
+                    verifyIndividualEmployer,
+                    rejectIndividualEmployer
                 };

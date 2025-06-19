@@ -39,8 +39,6 @@ const JobseekerForm = ({ onClose, onSubmitSuccess }) => {
 
   const submitRequirements = async (e) => {
     e.preventDefault();
-
-    console.log("line 43 role: ", role);
     
     const formData = new FormData();
     formData.append("full_name", jsFullname);

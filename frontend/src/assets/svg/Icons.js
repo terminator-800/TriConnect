@@ -21,6 +21,7 @@ import landing_page from './landing_page.SVG'
 import login from './login.SVG'
 import attach_file from './attach_file.SVG'
 import logo_triconnect from './logo_triconnect.SVG'
+import not_verified from './not_verified.SVG'
 
 const icons = {
     find_agency,
@@ -45,7 +46,8 @@ const icons = {
     landing_page,
     login,
     attach_file,
-    logo_triconnect
+    logo_triconnect,
+    not_verified
 }
 
 export default icons;

@@ -55,10 +55,12 @@ const IndividualEmployerDashboard = () => {
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400">
       {/* Navbar */}
-      <Navbar userType={"individual_employer"}/>
+      <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
+          <Navbar userType={"individual_employer"}/>
+      </div>
 
        {/* Sidebar */}
-      <div
+      {/* <div
           className={`
             fixed top-0 left-0 h-full bg-gray-400 text-white z-50 p-0
             transition-all duration-300
@@ -69,18 +71,18 @@ const IndividualEmployerDashboard = () => {
           onTransitionEnd={() => {
             if (!sidebarOpen) setSidebarFullyClosed(true);
           }}
-        >
+        > */}
 
         {/* Close Icon */}
-        <button
+        {/* <button
           onClick={handleSidebarClose}
           className="absolute top-5 right-5 text-3xl bg-transparent border-none cursor-pointer text-white"
           aria-label="Close sidebar"
         >
           &times;
-        </button>
+        </button> */}
 
-        {/* svg here */}
+      <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
         <div className='flex'>
           <img src={icons.dashboard} alt="" className='mb-6 mt-30 ml-5' />
           <h2 className="text-2xl font-bold mb-6 mt-30 ml-5 text-black">Dashboard</h2>
@@ -171,7 +173,7 @@ const IndividualEmployerDashboard = () => {
       </div>
 
       {/* Hamburger Icon to open Sidebar */}
-      {!sidebarOpen && sidebarFullyClosed && (
+      {/* {!sidebarOpen && sidebarFullyClosed && (
         <button
           onClick={handleSidebarOpen}
           className="absolute top-5 left-10  text-3xl bg-transparent border-none cursor-pointer z-50"
@@ -179,10 +181,10 @@ const IndividualEmployerDashboard = () => {
         >
           &#9776;
         </button>
-      )}
+      )} */}
 
       {/* Main Content */}
-      <div>
+      <div className="pt-[80px] pl-60">
         {activeComponent === 'JobPostDetail' ? (
           <JobPostDetails />
         ) : activeComponent === 'ManageJobPost' ? (

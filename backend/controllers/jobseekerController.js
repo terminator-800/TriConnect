@@ -1,8 +1,10 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const dbPromise = require("../config/DatabaseConnection");
+
 const { createJobseeker, uploadJobseekerRequirement } = require("../service/JobseekerQuery");
-const { findUsersEmail, createUsers, getJobseekerInfo, uploadUserRequirement } = require("../service/UsersQuery");
+const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -49,7 +51,6 @@ const verifyEmail = async (req, res) => {
         const { email, password } = decoded;
         const role = "jobseeker"
 
-        // Create the user
         const createdUser = await createUsers(email, password, role);
         const user_id = createdUser.user_id;
         await createJobseeker(user_id, role, email, password);
@@ -61,7 +62,6 @@ const verifyEmail = async (req, res) => {
         res.status(400).send("Invalid or expired verification link.");
     }
 };
-
 
 const getJobseekerProfile = async (req, res) => {
     try {
@@ -79,7 +79,7 @@ const getJobseekerProfile = async (req, res) => {
             return res.status(403).json({ error: 'Forbidden: Not a jobseeker' });
         }
 
-        const jobseekerProfile = await getJobseekerInfo(user_id);
+        const jobseekerProfile = await getUserInfo(user_id);
         if (!jobseekerProfile) {
             return res.status(404).json({ error: 'Profile not found' });
         }
@@ -112,13 +112,10 @@ const uploadRequirements = async (req, res) => {
             skills
         } = req.body;
 
-        // ✅ Extract uploaded file paths from req.files
         const government_id = req.files?.government_id?.[0]?.filename || null;
         const selfie_with_id = req.files?.selfie_with_id?.[0]?.filename || null;
         const nbi_barangay_clearance = req.files?.nbi_barangay_clearance?.[0]?.filename || null;
 
-        
-        // ✅ Save data (call your DB function)
         await uploadJobseekerRequirement({
             user_id,
             full_name,
@@ -148,7 +145,13 @@ const uploadRequirements = async (req, res) => {
             selfie_with_id,
             nbi_barangay_clearance
         })
-        
+
+            const db = await dbPromise
+           await db.execute(
+            "UPDATE users SET is_submitted = ? WHERE user_id = ?",
+            [true, user_id]
+        );
+
         res.status(200).json({ message: "Requirements uploaded successfully" });
     } catch (error) {
         console.error("Upload error:", error);
