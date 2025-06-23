@@ -60,6 +60,7 @@ const fetchJobseekerProfile = async () => {
 
 const fetchManpowerProviderProfile = async () => {
   try {
+    
     const response = await axios.get('http://localhost:3001/manpower-provider/profile', {
       withCredentials: true,
     });
