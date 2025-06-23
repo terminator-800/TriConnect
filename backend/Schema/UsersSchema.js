@@ -7,6 +7,9 @@ async function createUsersTable(connection) {
             is_submitted BOOLEAN DEFAULT FALSE,
             is_rejected BOOLEAN DEFAULT FALSE,
             verified_at DATETIME NULL DEFAULT NULL,
+            is_subscribed BOOLEAN DEFAULT FALSE,
+            subscription_start DATE DEFAULT NULL, 
+            subscription_end DATE DEFAULT NULL,  
             email VARCHAR(100) NOT NULL UNIQUE,
             password VARCHAR(255) NOT NULL,
 

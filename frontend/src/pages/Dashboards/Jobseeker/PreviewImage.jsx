@@ -1,5 +1,14 @@
+import { useEffect } from "react";
+
 const PreviewImage = ({ show, src, alt, onClose }) => {
   if (!show) return null;
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, []);
 
   return (
     <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center">

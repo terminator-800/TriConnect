@@ -1,8 +1,14 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const dbPromise = require("../config/DatabaseConnection");
 const { createManpowerProvider, uploadManpowerProviderRequirement } = require("../service/ManpowerProviderQuery");
 const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
+const { getUserSubscription,
+    expireUserSubscription,
+    archiveOldJobPosts,
+    getJobPostCountThisMonth,
+    insertJobPost } = require("../service/JobPostQuery")
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -66,6 +72,89 @@ const verifyEmail = async (req, res) => {
     }
 }
 
+const createJobPost = async (req, res) => {
+    const {
+        job_title,
+        job_type,
+        salary_range,
+        location,
+        required_skill,
+        job_description,
+    } = req.body;
+
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: Token not provided." });
+        }
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid token." });
+        }
+
+        const { user_id, role } = decoded;
+        if (role !== "manpower_provider") {
+            return res.status(403).json({ error: "Forbidden: Only manpower providers can create job posts." });
+        }
+
+        if (!job_title || !job_type || !salary_range || !location || !job_description || !required_skill) {
+            return res.status(400).json({ error: "All required fields must be filled out." });
+        }
+
+        const validJobTypes = ["Full-time", "Part-time", "Contract"];
+        if (!validJobTypes.includes(job_type)) {
+            return res.status(400).json({ error: "Invalid job type." });
+        }
+
+        const subscription = await getUserSubscription(user_id);
+        if (!subscription) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        let { is_subscribed, subscription_end } = subscription;
+
+        if (is_subscribed && new Date(subscription_end) < new Date()) {
+            await expireUserSubscription(user_id);
+            is_subscribed = 0;
+        }
+
+        if (!is_subscribed) {
+            await archiveOldJobPosts(user_id);
+        }
+
+        const postCount = await getJobPostCountThisMonth(user_id);
+        const maxAllowedPosts = is_subscribed ? 10 : 3;
+
+        if (postCount >= maxAllowedPosts) {
+            return res.status(403).json({
+                error: `You have reached the maximum of ${maxAllowedPosts} job posts this month.` +
+                    (is_subscribed ? "" : " Please upgrade your subscription."),
+            });
+        }
+
+        const job_post_id = await insertJobPost({
+            user_id, role, job_title, job_type,
+            salary_range, location, required_skill, job_description
+        });
+
+        res.status(201).json({
+            message: "Job post created successfully!",
+            job_post_id,
+        });
+
+    } catch (error) {
+        console.error("Error creating job post:", error.stack);
+        if (error.name === "ValidationError") {
+            return res.status(400).json({ error: "Invalid input data." });
+        }
+        res.status(500).json({ error: "Failed to create job post." });
+    }
+};
+
+
 const getManpowerProviderProfile = async (req, res) => {
     try {
         const token = req.cookies.token;
@@ -112,9 +201,9 @@ const uploadRequirements = async (req, res) => {
         } = req.body;
 
         const dole_registration_number = req.files?.dole_registration_number?.[0]?.filename || null;
-        const mayors_permit            = req.files?.mayors_permit?.[0]?.filename || null;
-        const agency_certificate       = req.files?.agency_certificate?.[0]?.filename || null;
-        const authorized_person_id     = req.files?.authorized_person_id?.[0]?.filename || null;
+        const mayors_permit = req.files?.mayors_permit?.[0]?.filename || null;
+        const agency_certificate = req.files?.agency_certificate?.[0]?.filename || null;
+        const authorized_person_id = req.files?.authorized_person_id?.[0]?.filename || null;
 
         const payload = {
             user_id,
@@ -144,4 +233,4 @@ const uploadRequirements = async (req, res) => {
     }
 };
 
-module.exports = { register, verifyEmail, getManpowerProviderProfile, uploadRequirements };
+module.exports = { register, verifyEmail, getManpowerProviderProfile, uploadRequirements, createJobPost };

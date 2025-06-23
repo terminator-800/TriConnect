@@ -3,19 +3,25 @@ async function createJobPostTable(connection) {
     CREATE TABLE IF NOT EXISTS job_post (
       job_post_id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL, -- Foreign key to reference the user
-      role VARCHAR(50) DEFAULT NULL,
+      role ENUM('business_employer', 'individual_employer', 'manpower_provider') NOT NULL,
+      status ENUM('pending', 'approved', 'rejected', 'draft') DEFAULT NULL,
+      submitted_at DATETIME DEFAULT NULL,
+      approved_at DATETIME DEFAULT NULL,
+      expires_at DATETIME DEFAULT NULL,
+      rejection_reason TEXT DEFAULT NULL,
+      is_verified_jobpost BOOLEAN DEFAULT FALSE,
       job_title VARCHAR(255) NOT NULL,
-      job_type ENUM('full-time', 'part-time', 'contract') NOT NULL,
-      salary_range VARCHAR(50),
+      job_type ENUM('Full-time', 'Part-time', 'Contract') NOT NULL,
+      salary_range INT,
       location VARCHAR(255),
       required_skill TEXT,
       job_description TEXT,
-      is_verified_jobpost BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE -- Assuming a 'users' table exists
     );
   `;
   await connection.execute(query);
 }
+
 
 module.exports = { createJobPostTable };

@@ -22,7 +22,7 @@ const Reject = ({ onClose, user, onRejected  }) => {
 
   const handleReject = async () => {
     try {
-      const response = await axios.put(`http://localhost:3001/admin/reject/${user.user_id}`);
+      const response = await axios.put(`http://localhost:3001/admin/reject/user/${user.user_id}`);
       console.log('User rejected:', response.data);
       if (onRejected) onRejected();
       onClose();

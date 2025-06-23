@@ -1,8 +1,12 @@
 const express = require("express");
-const { fetchUser, verifyUser, rejectUser }  = require("../controllers/adminController")
+const { fetchUser, verifyUser, rejectUser, fetchJobPost, rejectJobpost, approveJobpost }  = require("../controllers/adminController")
 const router = express.Router();
 
-router.get("/admin/fetch", fetchUser)
-router.put("/admin/verify/:user_id", verifyUser);
-router.put("/admin/reject/:user_id", rejectUser)
+router.get("/fetch", fetchUser)
+router.get("/jobposts", fetchJobPost)
+router.put("/admin/verify/user/:user_id", verifyUser);
+router.put("/admin/reject/user/:user_id", rejectUser)
+router.put("/admin/reject/jobpost/:job_post_id", rejectJobpost)
+router.patch("/admin/approve/jobpost/:job_post_id", approveJobpost)
+
 module.exports = router;

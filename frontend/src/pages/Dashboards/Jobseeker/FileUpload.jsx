@@ -5,7 +5,6 @@ import icons from '../../../assets/svg/Icons';
 const FileUpload = forwardRef(({ label, description, setFile, preview, setPreview, id, allowPreview = false }, ref) => {
   const fileInputRef = useRef();
 
-  // Expose a reset method to parent via ref
   useImperativeHandle(ref, () => ({
     reset: () => {
       setFile(null);
@@ -59,6 +58,7 @@ const FileUpload = forwardRef(({ label, description, setFile, preview, setPrevie
               onClick={() => setPreview('modal')}
             />
           )}
+          
           <div className="flex gap-3">
             <button
               type="button"
@@ -77,6 +77,7 @@ const FileUpload = forwardRef(({ label, description, setFile, preview, setPrevie
           </div>
         </div>
       )}
+
       <input
         ref={fileInputRef}
         onChange={handleChange}

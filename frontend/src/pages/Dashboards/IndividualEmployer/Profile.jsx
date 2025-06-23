@@ -1,108 +1,151 @@
-import { useState, useRef, useEffect } from 'react'
-import VerificationForm from './VerificationForm';
-import Navbar from '../../Navbar';
-import axios from 'axios';
-import IndividualEmployerDashboard from './IndividualEmployerDashboard';
+import { useState, useEffect } from 'react';
+import Form from './Form';
+import Sidebar from './Sidebar';
+import icons from '../../../assets/svg/Icons';
+import PersonalInfo from './PersonalInfo';
+import Security from './Security';
+import VerificationStatus from './VerificationStatus';
+import userApi from '../../../../api/userApi';
 
-const Profile = () => {
-    const [profileData, setProfileData] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [showForm, setShowForm] = useState(false);
-    const hasFetched = useRef(false);
-    const [refreshTrigger, setRefreshTrigger] = useState(0);
+const IndividualEmployerProfile = () => {
+  const [activeTab, setActiveTab] = useState('personal');
+  const [profileData, setProfileData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    useEffect(() => {
-        // if (hasFetched.current) return;
-        // hasFetched.current = true;
+  useEffect(() => {
+    if (profileData) {
+      setFormData({
+        email: profileData.email || '',
+        full_name: profileData.full_name || '',
+        phone: profileData.phone || '',
+        gender: profileData.gender || '',
+        date_of_birth: profileData.date_of_birth || '',
+      });
+    }
+  }, [profileData]);
 
-        const fetchProfileData = async () => {
-            try {
-                const response = await axios.get('http://localhost:3001/individual-employer/profile', {
-                    withCredentials: true,
-                });
+  const [formData, setFormData] = useState({
+    email: '',
+    full_name: '',
+    phone: '',
+    gender: '',
+    date_of_birth: '',
+  });
 
-                if (response.status === 200) {
-                    setProfileData(response.data);
+  const [editMode, setEditMode] = useState(false);
 
-                } else if (response.status === 400) {
-                    setError('Bad request. Please try again.');
-                }
-            } catch (err) {
-                setError('Failed to fetch profile data');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchProfileData();
-    }, [refreshTrigger]);
-
-    const openFormm = () => {
-        setShowForm(true);
+  useEffect(() => {
+    const getProfile = async () => {
+      try {
+        const data = await userApi.fetchIndividualEmployereProfile();
+        if (data) {
+          setProfileData(data);
+        }
+      } catch (err) {
+        setError("Failed to fetch profile data.");
+      } finally {
+        setLoading(false);
+      }
     };
+    getProfile();
+  }, [refreshTrigger]);
 
-    if (loading) return <div>Loading...</div>;
-    if (error) return <div>{error}</div>;
+  const openForm = () => {
+    setShowForm(true);
+  };
 
-    return (
-        <>
-            <Navbar userType={"individual_employer"} />
-            <div className="min-h-screen bg-gradient-to-b from-white to-cyan-400 flex flex-col items-center">
-                <h1 className="text-3xl font-bold mb-4">Individual Employer Profile</h1>
-                <div className="bg-white shadow-md rounded p-6 w-96">
-                    <p><strong>Role:</strong> {profileData.role}</p>
-                    <p><strong>Email:</strong> {profileData.email}</p>
-                    <p><strong>Full Name:</strong> {profileData.full_name}</p>
-                    <p><strong>Verified:</strong> {profileData.is_verified ? 'Yes' : 'No'}</p>
-                    <p><strong>Birth Date:</strong> {profileData.date_of_birth}</p>
-                    <p><strong>Cellphone No.:</strong> {profileData.phone}</p>
-                    <p><strong>Gender:</strong> {profileData.gender}</p>
-                    <p><strong>Present Address:</strong> {profileData.present_address}</p>
-                    <p><strong>Permanent Address:</strong> {profileData.permanent_address}</p>
-                    <p><strong>Government ID:</strong> {profileData.government_id}</p>
-                    <p><strong>Selfie with ID:</strong> {profileData.selfie_with_id}</p>
-                    <p><strong>NBI or Barangay Clearance:</strong> {profileData.nbi_barangay_clearance}</p>
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>{error}</div>;
 
-                    {/* ✅ Conditional rendering based on submission status */}
-                    {profileData.is_verified ? (
-                        <p className="text-green-600 font-semibold mt-4">Verified ✅</p>
-                    ) : profileData.is_rejected ? (
-                        <>
-                            <p className="text-red-600 font-semibold mt-4">
-                                Your submitted documents are invalid ❌
-                            </p>
-                            <button
-                                className="bg-blue-900 text-white px-5 py-1 rounded-xl mt-4 cursor-pointer"
-                                onClick={openFormm}
-                            >
-                                Submit your requirements
-                            </button>
-                        </>
-                    ) : profileData.is_submitted ? (
-                        <p className="text-yellow-600 font-semibold mt-4">Waiting for verification...</p>
-                    ) : (
-                        <button
-                            className="bg-blue-900 text-white px-5 py-1 rounded-xl mt-4 cursor-pointer"
-                            onClick={openFormm}
-                        >
-                            Submit your requirements
-                        </button>
-                    )}
+  const handleInputChange = (field, value) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  return (
+    <>
+      <Sidebar />
+      <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-40">
+        <div className="bg-white shadow-md rounded-3xl p-6 w-full max-w-7xl border border-gray-300 px-20">
+          <div>
+
+            {profileData.is_verified ? (
+              <>
+                <div className="flex items-center pt-20 justify-between w-full">
+                  <div>
+                    <h1 className='font-bold text-4xl'>{profileData.full_name}</h1>
+                    <div className="bg-white p-3 rounded-md shadow-md flex justify-between items-center w-full border border-gray-300 mt-5">
+                      <div className="flex gap-4 items-center">
+                        <div>
+                          <div className='flex'>
+                            <h1 className="font-bold text-2xl text-yellow-900">Account Verified</h1>
+                            <img src={icons.verified} alt="" />
+                          </div>
+                          <p className="text-yellow-900 max-w-4xl">
+                            Your account has been successfully verified and all submitted requirements have been approved.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="ml-6">
+                    <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
+                      PHOTO
+                    </div>
+                  </div>
                 </div>
 
-                {showForm && (
-                    <VerificationForm
-                        onClose={() => setShowForm(false)}
-                        onSubmitSuccess={() => {
-                            setShowForm(false);
-                            setRefreshTrigger(prev => prev + 1);
-                        }}
-                    />
-                )}
-            </div>
-        </>
-    );
-}
+                <div className="bg-white w-full flex justify-between mt-20 gap-5">
+                  <button
+                    onClick={() => setActiveTab('personal')}
+                    className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200 ${activeTab === 'personal' ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
+                  >
+                    Personal Information
+                  </button>
+                  <button
+                    onClick={() => setActiveTab('security')}
+                    className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200 ${activeTab === 'security' ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
+                  >
+                    Security
+                  </button>
+                </div>
 
-export default Profile
+                {activeTab === 'personal' && (
+                  <PersonalInfo
+                    formData={formData}
+                    profileData={profileData}
+                    editMode={editMode}
+                    handleInputChange={handleInputChange}
+                    setEditMode={setEditMode}
+                    setFormData={setFormData}
+                  />
+                )}
+                {activeTab === 'security' && <Security />}
+              </>
+            ) : profileData.is_rejected ? (
+              <VerificationStatus profileData={profileData} openFormm={openForm} />
+            ) : profileData.is_submitted ? (
+              <VerificationStatus profileData={profileData} openFormm={openForm} />
+            ) : (
+              <VerificationStatus profileData={profileData} openFormm={openForm} />
+            )}
+          </div>
+        </div>
+
+        {showForm && (
+          <Form
+            onClose={() => setShowForm(false)}
+            onSubmitSuccess={() => {
+              setShowForm(false);
+              setRefreshTrigger(prev => prev + 1);
+            }}
+          />
+        )}
+      </div>
+    </>
+  );
+};
+
+export default IndividualEmployerProfile;

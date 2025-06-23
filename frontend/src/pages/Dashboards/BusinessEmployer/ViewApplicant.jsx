@@ -8,9 +8,6 @@ const ViewApplicant = () => {
   
       <h1 className="text-5xl font-bold text-blue-900">View Applicant</h1>
       <p className="text-2xl mt-2">Manage applicants for your job postings </p>
-
-      
-
       <div className="w-full bg-white p-15 rounded mt-15">
         
       </div>

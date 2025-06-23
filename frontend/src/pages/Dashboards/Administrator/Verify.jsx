@@ -23,7 +23,7 @@ const Verify = ({ onClose, user, onVerified }) => {
 
   const handleVerify = async () => {
     try {
-      const response = await axios.put(`http://localhost:3001/admin/verify/${user.user_id}`);
+      const response = await axios.put(`http://localhost:3001/admin/verify/user/${user.user_id}`);
       alert("User verified successfully!");
       onVerified();   
       onClose();           

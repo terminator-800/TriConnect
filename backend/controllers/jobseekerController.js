@@ -159,5 +159,12 @@ const uploadRequirements = async (req, res) => {
     }
 };
 
+const apply = async (req, res) => {
+      const { job_post_id, sender_id, receiver_id, message } = req.body;
+        console.log(job_post_id);
+        console.log(sender_id);
+        console.log(receiver_id);
+        console.log(message); 
+}
 
-module.exports = { register, verifyEmail, getJobseekerProfile, uploadRequirements };
+module.exports = { register, verifyEmail, getJobseekerProfile, uploadRequirements, apply };

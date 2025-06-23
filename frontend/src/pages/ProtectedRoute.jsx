@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import axios from 'axios';
 
-const ProtectedRoute = ({ children, redirectTo }) => {
+const ProtectedRoute = ({ children }) => {
   const [authStatus, setAuthStatus] = useState(null);
 
   useEffect(() => {
@@ -13,12 +13,12 @@ const ProtectedRoute = ({ children, redirectTo }) => {
         });
         
         if (res.data.authenticated) {
-          setAuthStatus(res.data.role); // Store the user's role
+          setAuthStatus(res.data.role); 
         } else {
-          setAuthStatus(false); // Not authenticated
+          setAuthStatus(false);
         }
       } catch (error) {
-        setAuthStatus(false); // Error or not authenticated
+        setAuthStatus(false); 
       }
     };
 
@@ -26,11 +26,10 @@ const ProtectedRoute = ({ children, redirectTo }) => {
   }, []);
 
   if (authStatus === null) {
-    return <div>Loading...</div>; // Show a loading state while checking authentication
+    return <div>Loading...</div>;
   }
 
   if (authStatus) {
-    // Redirect authenticated users to their respective dashboards
     switch (authStatus) {
       case "jobseeker":
         return <Navigate to="/jobseeker" />;
@@ -47,7 +46,7 @@ const ProtectedRoute = ({ children, redirectTo }) => {
     }
   }
 
-  return children; // Render the protected component for unauthenticated users
+  return children;
 };
 
 export default ProtectedRoute;

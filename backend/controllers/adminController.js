@@ -3,6 +3,7 @@ const { verifyJobseeker, rejectJobseeker } = require("../service/JobseekerQuery"
 const { verifyBusinessEmployer, rejectBusinessEmployer } = require("../service/BusinessEmployerQuery")
 const { verifyIndividualEmployer, rejectIndividualEmployer } = require("../service/IndividualEmployerQuery")
 const { verifyManpowerProvider, rejectManpowerProvider } = require("../service/ManpowerProviderQuery")
+const { getAllJobPosts } = require("../service/JobPostQuery")
 const dbPromise = require("../config/DatabaseConnection");
 
 const fetchUser = async (req, res) => {
@@ -12,6 +13,17 @@ const fetchUser = async (req, res) => {
     } catch (error) {
         console.error("Failed to fetch users:", error);
         res.status(500).json({ message: "Failed to fetch users" });
+    }
+};
+
+
+const fetchJobPost = async (req, res) => {
+    try {
+        const jobposts = await getAllJobPosts();
+        res.status(200).json(jobposts);
+    } catch (error) {
+        console.error("Failed to fetch job posts:", error);
+        res.status(500).json({ message: "Failed to fetch job posts" });
     }
 };
 
@@ -44,7 +56,7 @@ const verifyUser = async (req, res) => {
                 return res.status(400).json({ message: 'Invalid user role.' });
         }
 
-        await verifyUsers(user_id); 
+        await verifyUsers(user_id);
 
         res.json({ success: true, message: `User verified successfully (${userRole}).` });
 
@@ -84,7 +96,7 @@ const rejectUser = async (req, res) => {
                 return res.status(400).json({ message: 'Invalid user role.' });
         }
 
-        await rejectUsers(user_id); 
+        await rejectUsers(user_id);
 
         res.json({ success: true, message: `User rejected successfully (${user_id}).` });
 
@@ -94,5 +106,61 @@ const rejectUser = async (req, res) => {
     }
 };
 
+const rejectJobpost = async (req, res) => {
+    const db = await dbPromise;
+    const jobPostId = req.params.job_post_id;
+    console.log("this is line 112: ", jobPostId);
+    
+    try{
+        const [jobPostRows] = await db.query('SELECT * FROM job_post WHERE job_post_id = ?', [jobPostId])
 
-module.exports = { fetchUser, verifyUser, verifyManpowerProvider, rejectUser }
+        if(jobPostRows.length === 0){
+            return res.status(404).json({error: 'Jobpost not found.'})
+        }
+
+        await db.query(`
+            UPDATE job_post 
+            SET 
+                status = 'rejected', 
+                is_verified_jobpost = FALSE
+            WHERE job_post_id = ?
+            `, [jobPostId]);
+
+        return res.status(200).json({ message: 'Jobpost rejected successfully.'})
+    }catch (error){
+        console.error('Error rejecting jobpost:', error);
+        return res.status(500).json({ error: 'Internal server error.'})
+    }
+}
+
+const approveJobpost = async (req, res) => {
+    const db = await dbPromise;
+    const jobPostId = req.params.job_post_id;
+
+     try{
+    const [jobPostRows] = await db.query('SELECT * FROM job_post WHERE job_post_id = ?', [jobPostId])
+
+    if(jobPostRows.length === 0){
+        return res.status(404).json({ message: 'Jobpost not found'})
+    }
+
+    await db.query(`
+        UPDATE job_post
+        SET
+        status = 'approved',
+        rejection_reason = NULL,
+        approved_at = NOW(),
+        is_verified_jobpost = TRUE
+        WHERE job_post_id = ?`, [jobPostId])
+
+        return res.status(200).json({ message: 'Jobpost approved successfully.'})
+      
+     } catch (error){
+        console.error("Error approving jobpost", error)
+        return res.status(500).json({ error: 'Internal server error'})
+     }
+    
+}
+
+
+module.exports = { fetchUser, verifyUser, verifyManpowerProvider, rejectUser, fetchJobPost, rejectJobpost, approveJobpost }
