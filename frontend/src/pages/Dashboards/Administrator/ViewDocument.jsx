@@ -5,18 +5,34 @@ const ViewDocument = ({ user, onClose }) => {
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflow;
         document.body.style.overflow = 'hidden';
-    
+
         return () => {
-          document.body.style.overflow = originalStyle;
+            document.body.style.overflow = originalStyle;
         };
-      }, []);
-    
-    const getImagePath = (role, filename) => {
-        if (!filename) return null;
-        return `http://localhost:3001/uploads/${role}/${filename}`;
+    }, []);
+
+    const getImagePath = (user, filename) => {
+        if (!filename || !user) return null;
+
+        const role = user.role;
+        const user_id = user.user_id;
+
+        const name =
+            role === "jobseeker"
+                ? user.full_name
+                : role === "individual_employer"
+                    ? user.full_name
+                    : role === "business_employer"
+                        ? user.business_name
+                        : role === "manpower_provider"
+                            ? user.agency_name
+                            : "unknown";
+
+        if (!name) return null;
+
+        return `http://localhost:3001/uploads/${role}/${user_id}/${encodeURIComponent(name)}/${filename}`;
     };
 
-    // Role-based document configuration
     const documentMap = {
         jobseeker: [
             { key: 'government_id', label: 'Government ID' },
@@ -76,10 +92,8 @@ const ViewDocument = ({ user, onClose }) => {
             { key: 'agency_authorize_person', label: 'Authorized Person' },
         ],
     };
-
     const documentsToShow = documentMap[user?.role] || [];
     const infoToShow = infoMap[user?.role] || [];
-
     return (
         <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center ">
             <div className="bg-white p-8 rounded-2xl shadow-lg max-w-3xl w-full h-[85vh] overflow-y-auto relative border border-gray-300 hide-scrollbar">
@@ -89,9 +103,7 @@ const ViewDocument = ({ user, onClose }) => {
                 >
                     &times;
                 </button>
-
                 <h2 className="text-2xl font-bold mb-4 text-center">User Information</h2>
-
                 <div className="grid grid-cols-2 gap-4 text-sm mb-6">
                     {infoToShow.map(({ key, label }) => (
                         <div key={key}>
@@ -99,17 +111,14 @@ const ViewDocument = ({ user, onClose }) => {
                         </div>
                     ))}
                 </div>
-
                 <hr className="my-4" />
-
                 <h2 className="text-2xl font-bold mb-4 text-center">Submitted Documents</h2>
-
                 {documentsToShow.length === 0 ? (
                     <p className="text-center text-gray-500">No documents available for this user.</p>
                 ) : (
                     <div className="grid grid-cols-2 gap-4">
                         {documentsToShow.map(({ key, label }) => {
-                            const fileUrl = getImagePath(user.role, user[key]);
+                            const fileUrl = getImagePath(user, user[key]);
                             return fileUrl ? (
                                 <div key={key} className="flex flex-col items-center">
                                     <p className="text-sm font-semibold mb-1">{label}</p>

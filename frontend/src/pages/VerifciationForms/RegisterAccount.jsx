@@ -54,8 +54,6 @@ const RegisterAccount = () => {
               alert("Business employer registration failed");
             }
           }
-
-          // For individual-type employer
         } else if (type === individual) {
           try {
             const individualRes = await axios.post(
@@ -115,7 +113,7 @@ const RegisterAccount = () => {
 
   return (
     <>
-      <Navbar userType={"register"}/>
+      <Navbar userType={"register"} />
       <div className='flex justify-center items-center h-screen bg-gradient-to-b from-white to-cyan-400 flex-col'>
         {type === business || type === individual ? (
           <h1 className="font-bold text-3xl text-left mb-5">
@@ -145,10 +143,7 @@ const RegisterAccount = () => {
             <div className="flex justify-center mt-5 gap-10">
               <button type='submit' className='bg-blue-900 text-white pt-1 pb-1 pl-10 pr-10 rounded-3xl w-50 text-2xl cursor-pointer'>Proceed</button>
             </div>
-
           </form>
-
-
           <div className="flex justify-center mt-5 gap-10">
             <BackButton to='/register' className='bg-white text-blue-900 pt-1 pb-1 pl-10 pr-10 rounded-3xl w-50 text-2xl cursor-pointer border border-blue-900' />
           </div>

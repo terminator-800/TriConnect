@@ -1,4 +1,3 @@
-// IndividualFileUpload.jsx
 import { useRef, forwardRef, useImperativeHandle } from 'react';
 import icons from '../../../assets/svg/Icons';
 
@@ -58,6 +57,7 @@ const FileUpload = forwardRef(({ label, description, setFile, preview, setPrevie
               onClick={() => setPreview('modal')}
             />
           )}
+          
           <div className="flex gap-3">
             <button
               type="button"
@@ -76,6 +76,7 @@ const FileUpload = forwardRef(({ label, description, setFile, preview, setPrevie
           </div>
         </div>
       )}
+
       <input
         ref={fileInputRef}
         onChange={handleChange}

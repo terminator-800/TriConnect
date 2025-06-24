@@ -1,35 +1,15 @@
 import { useState } from 'react'
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
-
-import BusinessEmployerFindAgency from './BusinessEmployerFindAgency';
-import ViewApplicant from './ViewApplicant';
-import BusinessEmployerCreateJobPost from './BusinessEmployerCreateJobPost';
-import BusinessEmployerManageJobPost from './BusinessEmployerManageJobPost';
-import JobPostDetails from './JobPostDetails';
-import BusinessEmployerMessage from './BusinessEmployerMessage';
 import icons from '../../../assets/svg/Icons'
 import Navbar from '../../Navbar';
 import Feedback from '../Feedback';
 
-const SIDEBAR_WIDTH = 15;
 
 const Sidebar = () => {
     const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
-    const [sidebarOpen, setSidebarOpen] = useState(false);
-    const [sidebarFullyClosed, setSidebarFullyClosed] = useState(true);
     const navigate = useNavigate();
     const location = useLocation();
-
-    const handleSidebarOpen = () => {
-        setSidebarOpen(true);
-        setSidebarFullyClosed(false);
-    };
-
-    const handleSidebarClose = () => {
-        setSidebarOpen(false);
-
-    };
 
     const handleLogout = async () => {
         try {
@@ -151,10 +131,8 @@ const Sidebar = () => {
                 </ul>
             </div>
 
-            {/* Main Content */}
-        
-                {/* Feedback Modal */}
-                {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}
+            {/* Feedback Modal */}
+            {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}
         </>
     );
 

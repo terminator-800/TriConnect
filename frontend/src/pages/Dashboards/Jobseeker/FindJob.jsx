@@ -1,44 +1,28 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import { useJobseekerProfile } from "../../../../hooks/useUserProfiles";
 import Sidebar from "./Sidebar"
 import BrowseJob from "./BrowseJob"
-import userApi from '../../../../api/userApi';
 import VerificationStatus from './VerificationStatus'
 import Form from "./Form";
 
 const FindJob = () => {
-  const [profileData, setProfileData] = useState(null);
-  const [loadingProfile, setLoadingProfile] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-  useEffect(() => {
-    const getProfile = async () => {
-      try {
-        setLoadingProfile(true);
-        const data = await userApi.fetchJobseekerProfile();
-        console.log(data);
-        
-        if (data) {
-          setProfileData(data);
-        }
-        
-      } catch (err) {
-        console.log("Failed to fetch profile data.", err);
-      } finally {
-        setLoadingProfile(false);
-      }
-    };
-    getProfile();
-  }, [refreshTrigger]);
+  const {
+    data: profileData,
+    isLoading: loadingProfile,
+    isError,
+    refetch,
+  } = useJobseekerProfile();
 
   if (loadingProfile) return <div>Loading profile...</div>;
+  if (isError) return <div>Failed to load profile.</div>;
 
   const openForm = () => {
-    document.body.style.overflow = 'hidden';
+    document.body.style.overflow = "hidden";
     setShowForm(true);
   };
 
-  
   return (
     <>
       {/*  */}
@@ -72,6 +56,7 @@ const FindJob = () => {
             }}
             onSubmitSuccess={() => {
               setShowForm(false);
+              refetch();
               setRefreshTrigger(prev => prev + 1);
             }}
           />

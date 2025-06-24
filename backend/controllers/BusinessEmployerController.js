@@ -1,10 +1,14 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
-
-const { createJobPostQuery } = require("../service/JobPostQuery");
+const dbPromise = require("../config/DatabaseConnection");
 const { findUsersEmail, createUsers, uploadUserRequirement, getUserInfo } = require("../service/UsersQuery");
 const { createBusinessEmployer, uploadBusinessEmployerRequirement } = require("../service/BusinessEmployerQuery")
+const { getUserSubscription,
+    expireUserSubscription,
+    archiveOldJobPosts,
+    getJobPostCountThisMonth,
+    insertJobPost } = require("../service/JobPostQuery");
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -78,48 +82,74 @@ const createJobPost = async (req, res) => {
     } = req.body;
 
     try {
-        if (!req.session.user) {
-            return res.status(401).json({ error: "Unauthorized: User not logged in." });
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: Token not provided." });
         }
-        const { id: user_id, role } = req.session.user;
+
+        let decoded;
+        try {
+            decoded = jwt.verify(token, process.env.JWT_SECRET);
+        } catch (err) {
+            return res.status(401).json({ error: "Unauthorized: Invalid token." });
+        }
+
+        const { user_id, role } = decoded;
+        
         if (role !== "business_employer") {
             return res.status(403).json({ error: "Forbidden: Only business employers can create job posts." });
         }
-        if (!job_title ||
-            !job_type ||
-            !salary_range ||
-            !location ||
-            !job_description ||
-            !required_skill) {
+
+        if (!job_title || !job_type || !salary_range || !location || !job_description || !required_skill) {
             return res.status(400).json({ error: "All required fields must be filled out." });
         }
 
-        const validJobTypes = ["full-time", "part-time", "contract"];
+        const validJobTypes = ["Full-time", "Part-time", "Contract"];
         if (!validJobTypes.includes(job_type)) {
             return res.status(400).json({ error: "Invalid job type." });
         }
 
-        const result = await createJobPostQuery(
-            user_id,
-            role,
-            job_title,
-            job_type,
-            salary_range,
-            location,
-            required_skill,
-            job_description
-        );
+        const subscription = await getUserSubscription(user_id);
+        if (!subscription) {
+            return res.status(404).json({ error: "User not found." });
+        }
+
+        let { is_subscribed, subscription_end } = subscription;
+
+        if (is_subscribed && new Date(subscription_end) < new Date()) {
+            await expireUserSubscription(user_id);
+            is_subscribed = 0;
+        }
+
+        if (!is_subscribed) {
+            await archiveOldJobPosts(user_id);
+        }
+
+        const postCount = await getJobPostCountThisMonth(user_id);
+        const maxAllowedPosts = is_subscribed ? 10 : 3;
+
+        if (postCount >= maxAllowedPosts) {
+            return res.status(403).json({
+                error: `You have reached the maximum of ${maxAllowedPosts} job posts this month.` +
+                    (is_subscribed ? "" : " Please upgrade your subscription."),
+            });
+        }
+
+        const job_post_id = await insertJobPost({
+            user_id, role, job_title, job_type,
+            salary_range, location, required_skill, job_description
+        });
 
         res.status(201).json({
             message: "Job post created successfully!",
-            job_post_id: result.jobId,
+            job_post_id,
         });
+
     } catch (error) {
         console.error("Error creating job post:", error.stack);
         if (error.name === "ValidationError") {
             return res.status(400).json({ error: "Invalid input data." });
         }
-
         res.status(500).json({ error: "Failed to create job post." });
     }
 };
@@ -170,9 +200,9 @@ const uploadRequirements = async (req, res) => {
             authorized_person
         } = req.body;
 
-        const authorized_person_id    = req.files?.authorized_person_id?.[0]?.filename || null;
-        const business_permit_BIR     = req.files?.business_permit_BIR?.[0]?.filename || null;
-        const DTI                     = req.files?.DTI?.[0]?.filename || null;
+        const authorized_person_id = req.files?.authorized_person_id?.[0]?.filename || null;
+        const business_permit_BIR = req.files?.business_permit_BIR?.[0]?.filename || null;
+        const DTI = req.files?.DTI?.[0]?.filename || null;
         const business_establishment = req.files?.business_establishment?.[0]?.filename || null;
 
         const payload = {
@@ -201,5 +231,8 @@ const uploadRequirements = async (req, res) => {
         });
     }
 };
+
+
+
 
 module.exports = { register, verifyEmail, createJobPost, getBusinessEmployerProfile, uploadRequirements };

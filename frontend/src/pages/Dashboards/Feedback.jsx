@@ -1,15 +1,22 @@
-import React from 'react';
+import { useEffect } from "react";
 
 const Feedback = ({ onClose }) => {
+
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        return () => {
+            document.body.style.overflow = 'auto';
+        };
+    }, []);
+
     return (
-        <div className="fixed inset-0 flex items-center justify-center z-50 ">
-            {/* Semi-transparent background overlay */}
+        <div className="fixed inset-0 flex items-center justify-center z-50">
 
             {/* Feedback modal */}
-            <div className="relative bg-white pl-7 pr-7 pt-5 pb-5 rounded-xl shadow-lg w-[550px] z-10">
+            <div className="relative bg-white pl-7 pr-7 pt-5 pb-5 rounded-xl shadow-lg w-[550px] z-10 border border-gray-300">
 
 
-                <div className='border-b-4 border-gray-300 flex justify-between mb-3'>
+                <div className='border-b-4 border-gray-300 flex justify-between mb-3 '>
                     <h2 className="text-2xl font-bold">Feedback Details</h2>
                     <button
                         onClick={onClose}
@@ -18,7 +25,7 @@ const Feedback = ({ onClose }) => {
                         X
                     </button>
                 </div>
-                
+
                 <p className='text-gray-500'>Your Feedback Message:</p>
                 <textarea
                     rows="4"

@@ -45,13 +45,13 @@ const Navbar = ({ userType }) => {
           </Link>
 
           <div className="flex gap-30">
-             <Link className="text-2xl font-bold">Features</Link>
-          <Link className="text-2xl font-bold">How it Works</Link>
-          <Link className="text-2xl font-bold">Why Us</Link>
-          <Link className="text-2xl font-bold">Feedbacks</Link>
+            <Link className="text-2xl font-bold">Features</Link>
+            <Link className="text-2xl font-bold">How it Works</Link>
+            <Link className="text-2xl font-bold">Why Us</Link>
+            <Link className="text-2xl font-bold">Feedbacks</Link>
           </div>
-         
-           <div className="flex">
+
+          <div className="flex">
             <Link to={"/login"} className="text-blue-600 pl-3 p-1 pr-3 font-bold rounded m-2">Login</Link>
             <Link to={"/register"} className="bg-blue-900 font-bold p-1 rounded-3xl pl-3 pr-3 text-white m-2">Sign Up</Link>
           </div>
@@ -66,13 +66,13 @@ const Navbar = ({ userType }) => {
             TriConnect
           </Link>
           <div className="flex gap-30">
-             <Link className="text-2xl font-bold">Features</Link>
-          <Link className="text-2xl font-bold">How it Works</Link>
-          <Link className="text-2xl font-bold">Why Us</Link>
-          <Link className="text-2xl font-bold">Feedbacks</Link>
+            <Link className="text-2xl font-bold">Features</Link>
+            <Link className="text-2xl font-bold">How it Works</Link>
+            <Link className="text-2xl font-bold">Why Us</Link>
+            <Link className="text-2xl font-bold">Feedbacks</Link>
           </div>
 
-            <div className="flex">
+          <div className="flex">
             <Link to={"/login"} className="text-blue-600 pl-3 p-1 pr-3 font-bold rounded m-2">Login</Link>
             <Link to={"/register"} className="bg-blue-900 font-bold p-1 rounded-3xl pl-3 pr-3 text-white m-2">Sign Up</Link>
           </div>
@@ -94,7 +94,6 @@ const Navbar = ({ userType }) => {
                 Notifications
               </button>
             </div>
-
 
             <div className="relative flex">
               <img src={icons.profile} alt="" className="mr-3" />

@@ -11,6 +11,6 @@ router.post("/register/employer/business/account/", validateRegisterInput, regis
 router.get("/register/employer/business/verify", verifyEmail);
 router.get("/business-employer/profile", getBusinessEmployerProfile)
 router.post("/business-employer/upload-requirements", uploadBusinessEmployerFiles, uploadRequirements)
-router.post("/job-post", createJobPost)
+router.post("/business-employer/job-post", createJobPost)
 
 module.exports = router;

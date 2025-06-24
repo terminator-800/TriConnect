@@ -2,7 +2,7 @@ const PreviewImage = ({ show, src, alt, onClose }) => {
   if (!show) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black bg-opacity-75 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-opacity-75 flex items-center justify-center">
       <div className="relative">
         <img
           src={src}

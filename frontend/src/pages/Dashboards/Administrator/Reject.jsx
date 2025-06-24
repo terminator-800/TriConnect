@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
+import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 
-const Reject = ({ onClose, user, onRejected  }) => {
+const Reject = ({ onClose, user, onRejected }) => {
   if (!user) return null;
 
   // Stop scroll
@@ -20,16 +21,26 @@ const Reject = ({ onClose, user, onRejected  }) => {
     manpower_provider: 'Agency',
   };
 
-  const handleReject = async () => {
-    try {
-      const response = await axios.put(`http://localhost:3001/admin/reject/${user.user_id}`);
-      console.log('User rejected:', response.data);
+  // ✅ useMutation with React Query
+  const rejectMutation = useMutation({
+    mutationFn: async () => {
+      const response = await axios.put(
+        `http://localhost:3001/admin/reject/user/${user.user_id}`
+      );
+      return response.data;
+    },
+    onSuccess: () => {
       if (onRejected) onRejected();
       onClose();
-    } catch (error) {
+    },
+    onError: (error) => {
       console.error('Rejection failed:', error);
       alert('Something went wrong while rejecting the user.');
-    }
+    },
+  });
+
+  const handleReject = () => {
+    rejectMutation.mutate();
   };
 
   return (
@@ -60,13 +71,15 @@ const Reject = ({ onClose, user, onRejected  }) => {
         <div className="flex justify-center gap-4">
           <button
             onClick={handleReject}
+            disabled={rejectMutation.isLoading}
             className="bg-red-900 hover:bg-red-700 text-white px-6 py-2 rounded-lg cursor-pointer"
           >
-            Yes, Reject
+            {rejectMutation.isLoading ? 'Rejecting...' : 'Yes, Reject'}
           </button>
           <button
             onClick={onClose}
             className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg cursor-pointer"
+            disabled={rejectMutation.isLoading}
           >
             Cancel
           </button>

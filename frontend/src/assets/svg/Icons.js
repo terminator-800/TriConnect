@@ -22,7 +22,8 @@ import login from './login.SVG'
 import attach_file from './attach_file.SVG'
 import logo_triconnect from './logo_triconnect.SVG'
 import not_verified from './not_verified.SVG'
-
+import verified from './verified.SVG'
+import location from './location.SVG'
 const icons = {
     find_agency,
     dashboard,
@@ -47,7 +48,9 @@ const icons = {
     login,
     attach_file,
     logo_triconnect,
-    not_verified
+    not_verified,
+    verified,
+    location
 }
 
 export default icons;

@@ -1,4 +1,3 @@
-// FileUpload.jsx
 import { useRef, forwardRef, useImperativeHandle } from 'react';
 import icons from '../../../assets/svg/Icons';
 
