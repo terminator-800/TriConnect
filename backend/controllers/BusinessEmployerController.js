@@ -1,4 +1,5 @@
 require('dotenv').config();
+const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dbPromise = require("../config/DatabaseConnection");
@@ -53,14 +54,16 @@ const verifyEmail = async (req, res) => {
         const { email, password } = decoded;
         const role = "business_employer";
 
-        const createdUser = await createUsers(email, password, role);
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const createdUser = await createUsers(email, hashedPassword, role);
         if (!createdUser || !createdUser.user_id) {
             return res.status(500).send("Failed to create user account.");
         }
 
         const user_id = createdUser.user_id;
 
-        await createBusinessEmployer(user_id, role, email, password);
+        await createBusinessEmployer(user_id, role, email, hashedPassword);
 
         console.log("Business employer account created successfully!");
         res.send("Email verified and account created successfully!");

@@ -2,6 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dbPromise = require("../config/DatabaseConnection");
+const bcrypt = require('bcrypt'); 
 
 const { createJobseeker, uploadJobseekerRequirement } = require("../service/JobseekerQuery");
 const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
@@ -44,21 +45,28 @@ const register = async (req, res) => {
     }
 };
 
+
 const verifyEmail = async (req, res) => {
     const { token } = req.query;
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
-        const role = "jobseeker"
+        const role = "jobseeker";
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const createdUser = await createUsers(email, hashedPassword, role);
+        if (!createdUser || !createdUser.user_id) {
+            return res.status(500).send("Failed to create user account.");
+        }
 
-        const createdUser = await createUsers(email, password, role);
         const user_id = createdUser.user_id;
-        await createJobseeker(user_id, role, email, password);
+
+        await createJobseeker(user_id, role, email, hashedPassword);
 
         console.log("Jobseeker account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {
-        console.error(err); // Log the error for debugging
+        console.error(err); 
         res.status(400).send("Invalid or expired verification link.");
     }
 };

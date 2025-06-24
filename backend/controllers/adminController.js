@@ -5,6 +5,33 @@ const { verifyIndividualEmployer, rejectIndividualEmployer } = require("../servi
 const { verifyManpowerProvider, rejectManpowerProvider } = require("../service/ManpowerProviderQuery")
 const { getAllJobPosts } = require("../service/JobPostQuery")
 const dbPromise = require("../config/DatabaseConnection");
+const bcrypt = require('bcrypt');
+
+async function createAdminIfNotExists() {
+    const db = await dbPromise;
+
+    const adminEmail = process.env.ADMIN_EMAIL;
+    const adminPassword = process.env.ADMIN_PASSWORD;
+    const hashedPassword = await bcrypt.hash(adminPassword, 10);
+
+    try {
+        const [rows] = await db.execute(
+            "SELECT * FROM users WHERE email = ? AND role = 'admin'",
+            [adminEmail]
+        );
+
+        if (rows.length === 0) {
+            await db.execute(
+                "INSERT INTO users (role, email, password, is_verified) VALUES (?, ?, ?, ?)",
+                ['admin', adminEmail, hashedPassword, 1]
+            );
+        } else {
+            console.log("✅ Admin account already exists.");
+        }
+    } catch (error) {
+        console.error("❌ Error creating admin:", error);
+    }
+}
 
 const fetchUser = async (req, res) => {
     try {
@@ -163,4 +190,4 @@ const approveJobpost = async (req, res) => {
 }
 
 
-module.exports = { fetchUser, verifyUser, verifyManpowerProvider, rejectUser, fetchJobPost, rejectJobpost, approveJobpost }
+module.exports = { createAdminIfNotExists, fetchUser, verifyUser, verifyManpowerProvider, rejectUser, fetchJobPost, rejectJobpost, approveJobpost }

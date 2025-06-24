@@ -22,7 +22,7 @@ async function createJobseekerTable(connection) {
             selfie_with_id VARCHAR(255),
             nbi_barangay_clearance VARCHAR(255),
             created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE -- Assuming a 'users' table exists
+            FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE 
         );
     `;
     await connection.execute(query);

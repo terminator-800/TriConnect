@@ -1,6 +1,7 @@
 require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const bcrypt = require('bcrypt');
 const dbPromise = require("../config/DatabaseConnection");
 const { createIndividualEmployer, uploadIndividualEmployerRequirement } = require("../service/IndividualEmployerQuery");
 const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
@@ -52,20 +53,23 @@ const register = async (req, res) => {
 };
 
 const verifyEmail = async (req, res) => {
-   const { token } = req.query;
+    const { token } = req.query;
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
         const role = "individual_employer";
 
-        const createdUser = await createUsers(email, password, role);
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const createdUser = await createUsers(email, hashedPassword, role);
         if (!createdUser || !createdUser.user_id) {
             return res.status(500).send("Failed to create user account.");
         }
-        
+
         const user_id = createdUser.user_id;
 
-        await createIndividualEmployer(user_id, role, email, password);
+        await createIndividualEmployer(user_id, role, email, hashedPassword);
 
         console.log("Individual employer account created successfully!");
         res.send("Email verified and account created successfully!");
@@ -73,7 +77,7 @@ const verifyEmail = async (req, res) => {
         console.error("Verification error:", err);
         res.status(400).send("Invalid or expired verification link.");
     }
-}
+};
 
 const createJobPost = async (req, res) => {
     const {
@@ -99,7 +103,7 @@ const createJobPost = async (req, res) => {
         }
 
         const { user_id, role } = decoded;
-        
+
         // ✅ Updated: Only allow individual_employer
         if (role !== "individual_employer") {
             return res.status(403).json({ error: "Forbidden: Only individual employers can create job posts." });
@@ -159,10 +163,10 @@ const createJobPost = async (req, res) => {
     }
 };
 
-const getIndividualEmployerProfile = async (req, res) => { 
+const getIndividualEmployerProfile = async (req, res) => {
     try {
         const token = req.cookies.token;
-        
+
         if (!token) {
             return res.status(401).json({ error: 'Unauthorized: No token provided' });
         }
@@ -170,7 +174,7 @@ const getIndividualEmployerProfile = async (req, res) => {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const user_id = decoded.user_id;
         const role = decoded.role;
-        
+
         if (role !== 'individual_employer') {
             return res.status(403).json({ error: 'Forbidden: Not an individual employer' });
         }
@@ -179,7 +183,7 @@ const getIndividualEmployerProfile = async (req, res) => {
         if (!individualEmployerProfile) {
             return res.status(404).json({ error: 'Profile not found' });
         }
-        
+
         return res.status(200).json(individualEmployerProfile);
     } catch (err) {
         console.error('Error fetching profile:', err.message);
@@ -206,9 +210,9 @@ const uploadRequirements = async (req, res) => {
             permanent_address
         } = req.body;
 
-        const government_id           = req.files?.government_id?.[0]?.filename || null;
-        const selfie_with_id          = req.files?.selfie_with_id?.[0]?.filename || null;
-        const nbi_barangay_clearance  = req.files?.nbi_barangay_clearance?.[0]?.filename || null;
+        const government_id = req.files?.government_id?.[0]?.filename || null;
+        const selfie_with_id = req.files?.selfie_with_id?.[0]?.filename || null;
+        const nbi_barangay_clearance = req.files?.nbi_barangay_clearance?.[0]?.filename || null;
 
         const payload = {
             user_id,

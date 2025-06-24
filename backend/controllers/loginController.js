@@ -1,26 +1,27 @@
 const jwt = require("jsonwebtoken");
 const dbPromise = require("../config/DatabaseConnection");
+const bcrypt = require('bcrypt');
 const { findUsersEmail } = require("../service/UsersQuery");
 
 const login = async (req, res) => {
     const { email, password } = req.body;
 
     try {
-        const db = await dbPromise;
         const user = await findUsersEmail(email);
-
         if (!user) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
-        if (password !== user.password) {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
             return res.status(401).json({ message: "Invalid email or password" });
         }
 
+        // Password matched
         req.session.user = {
-            id: user.user_id, 
-            role: user.role, 
-            email: user.email, 
+            id: user.user_id,
+            role: user.role,
+            email: user.email,
         };
 
         const token = jwt.sign(
@@ -40,6 +41,7 @@ const login = async (req, res) => {
             role: user.role,
             userId: user.user_id,
         });
+
     } catch (error) {
         console.error("Error during login:", error);
         res.status(500).json({ message: "Server error" });

@@ -2,6 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const dbPromise = require("../config/DatabaseConnection");
+const bcrypt = require('bcrypt');
 const { createManpowerProvider, uploadManpowerProviderRequirement } = require("../service/ManpowerProviderQuery");
 const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
 const { getUserSubscription,
@@ -50,27 +51,35 @@ const register = async (req, res) => {
     }
 };
 
+
 const verifyEmail = async (req, res) => {
     const { token } = req.query;
+
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         const { email, password } = decoded;
         const role = "manpower_provider";
-        const createdUser = await createUsers(email, password, role);
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const createdUser = await createUsers(email, hashedPassword, role);
 
         if (!createdUser || !createdUser.user_id) {
             return res.status(500).send("Failed to create user account.");
         }
 
         const user_id = createdUser.user_id;
-        await createManpowerProvider(user_id, email, password, role);
-        console.log("Business employer account created successfully!");
+
+        await createManpowerProvider(user_id, email, hashedPassword, role);
+
+        console.log("Manpower provider account created successfully!");
         res.send("Email verified and account created successfully!");
     } catch (err) {
         console.error("Verification error:", err);
         res.status(400).send("Invalid or expired verification link.");
     }
-}
+};
+
 
 const createJobPost = async (req, res) => {
     const {

@@ -17,7 +17,7 @@ async function createJobPostTable(connection) {
       required_skill TEXT,
       job_description TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE -- Assuming a 'users' table exists
+      FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE 
     );
   `;
   await connection.execute(query);

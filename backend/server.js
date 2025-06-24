@@ -11,7 +11,7 @@ const { createIndividualEmployerTable } = require("./Schema/IndividualEmployerSc
 const { createManpowerProviderTable } = require("./Schema/manpowerProviderSchema")
 const { createUsersTable } = require("./Schema/UsersSchema")
 const { createJobPostTable } = require("./Schema/JobPostSchema")
-
+const { createAdminIfNotExists } = require("./controllers/adminController")
 // Routes
 const jobseekerRoute = require("./routes/jobseekerRoute")
 const businessEmployerRoute = require("./routes/businessEmployerRoute")
@@ -45,6 +45,8 @@ app.use(session({
         maxAge: 1000 * 60 * 60 // 1 hour
     }
 }));
+
+createAdminIfNotExists();
 
 app.use("/", jobseekerRoute)
 app.use("/", businessEmployerRoute)
