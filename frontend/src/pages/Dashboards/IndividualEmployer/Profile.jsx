@@ -110,7 +110,7 @@ const IndividualEmployerProfile = () => {
                 {activeTab === 'security' && <Security />}
               </>
             ) : (
-              <VerificationStatus profileData={profileData} openFormm={openForm} />
+              <VerificationStatus profileData={profileData} openForm={openForm} />
             )}
           </div>
         </div>
