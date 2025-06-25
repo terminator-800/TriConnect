@@ -8,9 +8,9 @@ const Home = () => {
   return (
     <div className='items-center'>
       <Navbar userType={'guest'} />
-      <div className='flex pl-50 pr-0 mt-50 items-center'>
+      <div className='flex pl-50 lg:pl-25 pr-0 mt-50 items-center'>
         <div>
-          <h1 className='text-7xl font-bold'>Connecting Jobs, People, <br />And Oppurtunities</h1>
+          <h1 className='text-7xl lg:text-5xl font-bold'>Connecting Jobs, People, <br />And Oppurtunities</h1>
           <p className='mt-5 text-2xl text-gray-600 mb-15'>TriConnect is your all-in-one solution that seamlessly <br />
             connects job seekers, employers, and manpower <br />
             providers on a single, smart, and secure platform.</p>
