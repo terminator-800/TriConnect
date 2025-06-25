@@ -21,11 +21,10 @@ const Reject = ({ onClose, user, onRejected }) => {
     manpower_provider: 'Agency',
   };
 
-  // ✅ useMutation with React Query
   const rejectMutation = useMutation({
     mutationFn: async () => {
       const response = await axios.put(
-        `http://localhost:3001/admin/reject/user/${user.user_id}`
+        `${import.meta.env.VITE_API_URL}/admin/reject/user/${user.user_id}`
       );
       return response.data;
     },

@@ -18,14 +18,11 @@ const JobPostVerification = () => {
 
   const postsPerPage = 3;
 
-  // ✅ React Query hooks
   const { data: jobPosts = [], refetch: refetchJobPosts } = useJobPosts();
   const { data: users = [] } = useAllUsers();
 
-  // ✅ Filter pending only
   const pendingJobPosts = jobPosts.filter((post) => post.status === 'pending');
 
-  // ✅ Pagination
   const indexOfLastPost = currentPage * postsPerPage;
   const indexOfFirstPost = indexOfLastPost - postsPerPage;
   const currentPosts = pendingJobPosts.slice(indexOfFirstPost, indexOfLastPost);
@@ -165,7 +162,7 @@ const JobPostVerification = () => {
               jobPost={selectedJobPost}
               users={users}
               onApproved={() => {
-                refetchJobPosts(); // ✅ React Query refetch
+                refetchJobPosts(); 
                 setShowModal(false);
               }}
               onClose={() => setShowModal(false)}
@@ -178,7 +175,7 @@ const JobPostVerification = () => {
               jobPost={jobPostToReject}
               users={users}
               onRejected={() => {
-                refetchJobPosts(); // ✅ React Query refetch
+                refetchJobPosts();
                 setShowRejectModal(false);
               }}
               onClose={() => setShowRejectModal(false)}

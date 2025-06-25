@@ -9,7 +9,7 @@ const ForgotPassword = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.post('http://localhost:3001/forgot-password', { email });
+            await axios.post(`${import.meta.env.VITE_API_URL}/forgot-password`, { email });
             setMessage('If this email exists, a reset link has been sent.');
             setEmail('');
         } catch (error) {

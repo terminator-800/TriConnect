@@ -13,16 +13,16 @@ const PrivateRoute = () => {
             hasFetched.current = true;
 
             try {
-                const { data } = await axios.get("http://localhost:3001/auth/verify-session", {
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-session`, {
                     withCredentials: true,
                 });
-                
-                setAuthData({ authenticated: data.authenticated, role: data.role }); 
+
+                setAuthData({ authenticated: data.authenticated, role: data.role });
             } catch {
                 setAuthData({ authenticated: false, role: null });
             }
         };
-        
+
         checkAuth();
     }, []);
 

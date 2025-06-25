@@ -10,7 +10,6 @@ const bcrypt = require('bcrypt');
 
 async function createAdminIfNotExists() {
     const db = await dbPromise;
-
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
     const hashedPassword = await bcrypt.hash(adminPassword, 10);

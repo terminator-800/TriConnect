@@ -37,7 +37,7 @@ const ManpowerProviderForm = ({ onClose, onSubmitSuccess }) => {
   const mutation = useMutation({
     mutationFn: async (formData) => {
       return await axios.post(
-        'http://localhost:3001/manpower-provider/upload-requirements',
+        `${import.meta.env.VITE_API_URL}/manpower-provider/upload-requirements`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

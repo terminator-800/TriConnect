@@ -53,7 +53,7 @@ const Form = ({ onClose, onSubmitSuccess }) => {
       formData.append('business_establishment', business_establishment);
 
       const response = await axios.post(
-        'http://localhost:3001/business-employer/upload-requirements',
+        `${import.meta.env.VITE_API_URL}/business-employer/upload-requirements`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

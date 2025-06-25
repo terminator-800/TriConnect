@@ -3,7 +3,7 @@ import axios from "axios";
 const fetchAllJobPost = async () => {
     try {
         // Naa ni sa admin na fetched
-        const response = await axios.get('http://localhost:3001/jobposts');
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/jobposts`);
         return response.data;
         
     } catch (err) {

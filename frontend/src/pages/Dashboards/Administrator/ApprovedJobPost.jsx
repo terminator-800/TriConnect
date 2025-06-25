@@ -17,7 +17,7 @@ const ApprovedJobPost = ({ jobPost, users, onApproved, onClose }) => {
     const approveMutation = useMutation({
         mutationFn: async () => {
             const response = await axios.patch(
-                `http://localhost:3001/admin/approve/jobpost/${jobPost.job_post_id}`,
+                `${import.meta.env.VITE_API_URL}/admin/approve/jobpost/${jobPost.job_post_id}`,
                 {},
                 { withCredentials: true }
             );

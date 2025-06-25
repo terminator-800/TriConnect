@@ -2,7 +2,7 @@ import axios from "axios";
 
 const fetchUsers = async () => {
   try {
-    const response = await axios.get('http://localhost:3001/fetch');
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/fetch`);
     return response.data;
   } catch (err) {
     console.error("Failed to fetch users:", err.message);
@@ -12,7 +12,7 @@ const fetchUsers = async () => {
 
 const fetchBusinessEmployereProfile = async () => {
   try {
-    const response = await axios.get('http://localhost:3001/business-employer/profile', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/business-employer/profile`, {
       withCredentials: true,
     });
 
@@ -28,7 +28,7 @@ const fetchBusinessEmployereProfile = async () => {
 
 const fetchIndividualEmployerProfile = async () => {
   try {
-    const response = await axios.get('http://localhost:3001/individual-employer/profile', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/individual-employer/profile`, {
       withCredentials: true,
     });
 
@@ -44,7 +44,7 @@ const fetchIndividualEmployerProfile = async () => {
 
 const fetchJobseekerProfile = async () => {
   try {
-    const response = await axios.get('http://localhost:3001/jobseeker/profile', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/jobseeker/profile`, {
       withCredentials: true,
     });
 
@@ -61,7 +61,7 @@ const fetchJobseekerProfile = async () => {
 const fetchManpowerProviderProfile = async () => {
   try {
     
-    const response = await axios.get('http://localhost:3001/manpower-provider/profile', {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/manpower-provider/profile`, {
       withCredentials: true,
     });
 

@@ -1,11 +1,10 @@
 import { useEffect } from 'react';
-import axios from 'axios';
 import { useMutation } from '@tanstack/react-query';
+import axios from 'axios';
 
 const Verify = ({ onClose, user, onVerified }) => {
   if (!user) return null;
 
-  // Prevent background scroll when modal is open
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
@@ -22,16 +21,15 @@ const Verify = ({ onClose, user, onVerified }) => {
     manpower_provider: 'Agency',
   };
 
-  // React Query mutation to verify user
   const verifyMutation = useMutation({
     mutationFn: async () => {
       return await axios.put(
-        `http://localhost:3001/admin/verify/user/${user.user_id}`
+        `${import.meta.env.VITE_API_URL}/admin/verify/user/${user.user_id}`
       );
     },
     onSuccess: () => {
       alert('User verified successfully!');
-      if (onVerified) onVerified(); // Refresh user list
+      if (onVerified) onVerified(); 
       onClose();
     },
     onError: (error) => {

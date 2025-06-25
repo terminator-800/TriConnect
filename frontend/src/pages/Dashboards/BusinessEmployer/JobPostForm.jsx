@@ -23,7 +23,7 @@ const JobPostForm = () => {
             };
 
             const response = await axios.post(
-                "http://localhost:3001/business-employer/job-post",
+                `${import.meta.env.VITE_API_URL}/business-employer/job-post`,
                 data,
                 {
                     withCredentials: true,

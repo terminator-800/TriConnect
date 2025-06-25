@@ -30,7 +30,7 @@ const ViewDocument = ({ user, onClose }) => {
 
         if (!name) return null;
 
-        return `http://localhost:3001/uploads/${role}/${user_id}/${encodeURIComponent(name)}/${filename}`;
+        return `${import.meta.env.VITE_API_URL}/uploads/${role}/${user_id}/${encodeURIComponent(name)}/${filename}`;
     };
 
     const documentMap = {
@@ -58,7 +58,6 @@ const ViewDocument = ({ user, onClose }) => {
         ],
     };
 
-    // Role-based user detail configuration
     const infoMap = {
         jobseeker: [
             { key: 'full_name', label: 'Full Name' },

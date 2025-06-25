@@ -18,7 +18,7 @@
                             
         if (!name) return null;
 
-        return `http://localhost:3001/uploads/${role}/${user_id}/${encodeURIComponent(name)}/${filename}`;
+        return `${import.meta.env.VITE_API_URL}/uploads/${role}/${user_id}/${encodeURIComponent(name)}/${filename}`;
     };
 
     

@@ -34,7 +34,7 @@ const RegisterAccount = () => {
         if (type === business) {
           try {
             const businessRes = await axios.post(
-              `http://localhost:3001/register/${accountType}/${type}/account`,
+              `${import.meta.env.VITE_API_URL}/register/${accountType}/${type}/account`,
               data
             );
             console.log(data);
@@ -57,7 +57,7 @@ const RegisterAccount = () => {
         } else if (type === individual) {
           try {
             const individualRes = await axios.post(
-              `http://localhost:3001/register/${accountType}/${type}/account`,
+              `${import.meta.env.VITE_API_URL}/register/${accountType}/${type}/account`,
               data
             );
             console.log(data);
@@ -80,7 +80,7 @@ const RegisterAccount = () => {
         }
       } else {
         try {
-          const res = await axios.post(`http://localhost:3001/register/${accountType}`, data);
+          const res = await axios.post(`${import.meta.env.VITE_API_URL}/register/${accountType}`, data);
           console.log(data);
           if (res.status === 201) {
             alert(

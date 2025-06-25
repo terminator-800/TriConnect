@@ -14,7 +14,7 @@ const JobPostForm = () => {
   const mutation = useMutation({
     mutationFn: async (data) => {
       const response = await axios.post(
-        "http://localhost:3001/individual-employer/job-post",
+        `${import.meta.env.VITE_API_URL}/individual-employer/job-post`,
         data,
         {
           withCredentials: true,

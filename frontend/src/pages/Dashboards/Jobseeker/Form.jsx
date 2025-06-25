@@ -60,7 +60,7 @@ const Form = ({ onClose, onSubmitSuccess }) => {
       if (jsSelfieID) formData.append("selfie_with_id", jsSelfieID);
       if (jsNBIBarangayClearance) formData.append("nbi_barangay_clearance", jsNBIBarangayClearance);
 
-      return axios.post('http://localhost:3001/jobseeker/upload-requirements', formData, {
+      return axios.post(`${import.meta.env.VITE_API_URL}/jobseeker/upload-requirements`, formData, {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });

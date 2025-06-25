@@ -5,7 +5,6 @@ import axios from 'axios';
 const RejectJobPost = ({ jobPost, users, onClose, onRejected }) => {
   const user = users.find((u) => u.user_id === jobPost.user_id);
 
-  // Prevent background scroll
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
@@ -14,11 +13,10 @@ const RejectJobPost = ({ jobPost, users, onClose, onRejected }) => {
     };
   }, []);
 
-  // ✅ useMutation for rejecting job post
   const rejectJobPostMutation = useMutation({
     mutationFn: async () => {
       return await axios.put(
-        `http://localhost:3001/admin/reject/jobpost/${jobPost.job_post_id}`,
+        `${import.meta.env.VITE_API_URL}/admin/reject/jobpost/${jobPost.job_post_id}`,
         {},
         { withCredentials: true }
       );

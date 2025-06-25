@@ -47,7 +47,7 @@ const VerificationForm = ({ onClose, onSubmitSuccess }) => {
       formData.append('nbi_barangay_clearance', nbi_barangay_clearance);
 
       const response = await axios.post(
-        'http://localhost:3001/individual-employer/upload-requirements',
+        `${import.meta.env.VITE_API_URL}/individual-employer/upload-requirements`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

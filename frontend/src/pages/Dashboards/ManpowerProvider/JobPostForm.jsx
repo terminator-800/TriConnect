@@ -13,7 +13,7 @@ const JobPostForm = () => {
 
     const createJobPost = async (data) => {
         const response = await axios.post(
-            "http://localhost:3001/manpower-provider/job-post",
+            `${import.meta.env.VITE_API_URL}/manpower-provider/job-post`,
             data,
             {
                 withCredentials: true,

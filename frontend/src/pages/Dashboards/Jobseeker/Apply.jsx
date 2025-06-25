@@ -18,7 +18,7 @@ const Apply = ({ jobPost, employer, onClose }) => {
 
         setIsSubmitting(true);
         try {
-            await axios.post('http://localhost:3001/jobseeker/applications', {
+            await axios.post(`${import.meta.env.VITE_API_URL}/jobseeker/applications`, {
                 job_post_id: jobPost.job_post_id,
                 sender_id: profileData.user_id,
                 receiver_id: employer.user_id,
