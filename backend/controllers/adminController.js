@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { fetchAllUser, verifyUsers, getUserInfo, rejectUsers } = require("../service/UsersQuery");
 const { verifyJobseeker, rejectJobseeker } = require("../service/JobseekerQuery")
 const { verifyBusinessEmployer, rejectBusinessEmployer } = require("../service/BusinessEmployerQuery")
