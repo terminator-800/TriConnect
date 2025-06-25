@@ -7,5 +7,5 @@ export default defineConfig({
   plugins: [react(),
     tailwindcss(),
   ],
-  base: process.env.VITE_BASE_PATH || "/Job-Portalism",
+  // base: process.env.VITE_BASE_PATH || "/TriConnect",
 })

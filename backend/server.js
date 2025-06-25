@@ -24,8 +24,8 @@ const logoutRoute = require("./routes/logoutRoute")
 const adminRoute = require("./routes/adminRoute")
 
 
-app.use(cors({
-    origin: process.env.CLIENT_ORIGIN,
+app.use(cors({ 
+    origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
     credentials: true
 }));
 
