@@ -1,6 +1,5 @@
-// 📁 hooks/useJobPosts.js
 import { useQuery } from '@tanstack/react-query';
-import jobPostApi from '../api/jobpostApi';
+import jobPostApi from '../api/jobPostApi';
 
 export const useJobPosts = () =>
   useQuery({
