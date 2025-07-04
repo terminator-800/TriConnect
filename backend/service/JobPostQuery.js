@@ -26,80 +26,105 @@ const getAllJobPosts = async () => {
     return rows;
 };
 
-// jobPostQueries.js
-async function getUserSubscription(user_id) {
+const createJobPostWithSubscriptionLogic = async ({
+    user_id,
+    role,
+    job_title,
+    job_type,
+    salary_range,
+    location,
+    required_skill,
+    job_description
+}) => {
     const db = await dbPromise;
-    const [rows] = await db.execute(
-        `SELECT is_subscribed, subscription_start, subscription_end FROM users WHERE user_id = ?`,
+
+    // Step 1: Validate required fields
+    const requiredFields = [job_title, job_type, salary_range, location, required_skill, job_description];
+    if (requiredFields.some(field => !field)) {
+        return { error: "All required fields must be filled out." };
+    }
+
+    const validJobTypes = ["Full-time", "Part-time", "Contract"];
+    if (!validJobTypes.includes(job_type)) {
+        return { error: "Invalid job type." };
+    }
+
+    // Step 2: Get subscription info
+    const [userRows] = await db.execute(
+        `SELECT is_subscribed, subscription_end FROM users WHERE user_id = ?`,
         [user_id]
     );
-    return rows[0];
-}
 
-const expireUserSubscription = async (user_id) => {
-    const db = await dbPromise;
-    await db.execute(
-        `UPDATE users SET is_subscribed = 0, subscription_start = NULL, subscription_end = NULL WHERE user_id = ?`,
+    if (userRows.length === 0) {
+        return { error: "User not found." };
+    }
+
+    let { is_subscribed, subscription_end } = userRows[0];
+
+    // Step 3: Expire subscription if past end date
+    if (is_subscribed && new Date(subscription_end) < new Date()) {
+        await db.execute(
+            `UPDATE users SET is_subscribed = 0, subscription_start = NULL, subscription_end = NULL WHERE user_id = ?`,
+            [user_id]
+        );
+
+        await db.execute(
+            `UPDATE job_post SET status = 'draft' WHERE user_id = ?`,
+            [user_id]
+        );
+
+        is_subscribed = 0;
+    }
+
+    // Step 4: Archive old posts if user is not subscribed
+    if (!is_subscribed) {
+        await db.execute(
+            `UPDATE job_post
+       SET status = 'draft'
+       WHERE user_id = ?
+       AND status != 'draft'
+       AND (MONTH(submitted_at) < MONTH(CURRENT_DATE()) OR YEAR(submitted_at) < YEAR(CURRENT_DATE()))`,
+            [user_id]
+        );
+    }
+
+    // Step 5: Count current month's posts
+    const [countRows] = await db.execute(
+        `SELECT COUNT(*) AS postCount
+     FROM job_post
+     WHERE user_id = ?
+     AND status != 'draft'
+     AND MONTH(submitted_at) = MONTH(CURRENT_DATE())
+     AND YEAR(submitted_at) = YEAR(CURRENT_DATE())`,
         [user_id]
     );
-    await db.execute(
-        `UPDATE job_post SET status = 'draft' WHERE user_id = ?`,
-        [user_id]
-    );
-}
 
-const archiveOldJobPosts = async(user_id) => {
-    const db = await dbPromise;
-    await db.execute(
-        `UPDATE job_post 
-         SET status = 'draft' 
-         WHERE user_id = ? 
-         AND status != 'draft'
-         AND (MONTH(submitted_at) < MONTH(CURRENT_DATE()) OR YEAR(submitted_at) < YEAR(CURRENT_DATE()))`,
-        [user_id]
-    );
-}
+    const postCount = countRows[0].postCount;
+    const postLimit = is_subscribed ? 10 : 3;
 
-const getJobPostCountThisMonth = async (user_id) => {
-    const db = await dbPromise;
-    const [rows] = await db.execute(
-        `SELECT COUNT(*) AS postCount 
-         FROM job_post 
-         WHERE user_id = ? 
-         AND status != 'draft'
-         AND MONTH(submitted_at) = MONTH(CURRENT_DATE()) 
-         AND YEAR(submitted_at) = YEAR(CURRENT_DATE())`,
-        [user_id]
-    );
-    return rows[0].postCount;
-}
+    if (postCount >= postLimit) {
+        return {
+            error: `You have reached the maximum of ${postLimit} job posts this month.` +
+                (is_subscribed ? '' : ' Please upgrade your subscription.')
+        };
+    }
 
-const insertJobPost = async (data) => {
-    const db = await dbPromise;
-    const {
-        user_id, role, job_title, job_type,
-        salary_range, location, required_skill, job_description
-    } = data;
-
-    const [result] = await db.execute(
-        `INSERT INTO job_post 
-         (user_id, role, job_title, job_type, salary_range, location, required_skill, job_description, status, submitted_at, rejection_reason, is_verified_jobpost)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), NULL, false)`,
+    // Step 6: Insert the job post
+    const [insertResult] = await db.execute(
+        `INSERT INTO job_post
+     (user_id, role, job_title, job_type, salary_range, location, required_skill, job_description, status, submitted_at, rejection_reason, is_verified_jobpost)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'pending', NOW(), NULL, false)`,
         [user_id, role, job_title, job_type, salary_range, location, required_skill, job_description]
     );
 
-    return result.insertId;
-}
+    return { success: true, job_post_id: insertResult.insertId };
+};
 
 module.exports = {
     createJobPostQuery,
     getAllJobPosts,
-    getUserSubscription,
-    expireUserSubscription,
-    archiveOldJobPosts,
-    getJobPostCountThisMonth,
-    insertJobPost,
-};
+    createJobPostWithSubscriptionLogic
+}
 
 
 

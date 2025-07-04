@@ -24,7 +24,7 @@ import IndividualEmployerProfile from './pages/Dashboards/IndividualEmployer/Pro
 import IndividualEmployerManageJobPost from "./pages/Dashboards/IndividualEmployer/ManageJobPost";
 import IndividualEmployerCreateJobPost from "./pages/Dashboards/IndividualEmployer/CreateJobPost";
 import IndividualEmployerFindAgency from './pages/Dashboards/IndividualEmployer/FindAgency'
-import IndividualEmployerMessage from './pages/Dashboards/IndividualEmployer/Message'
+import IndividualEmployerMessage from './pages/Dashboards/IndividualEmployer/Message/Message'
 import IndividualEmployerViewApplicant from './pages/Dashboards/IndividualEmployer/ViewApplicant'
 import IndividualEmployerJobPostDetails from './pages/Dashboards/IndividualEmployer/JobPostDetails'
 
@@ -34,17 +34,17 @@ import ViewApplicant from './pages/Dashboards/BusinessEmployer/ViewApplicant';
 import BusinessEmployerCreateJobPost from './pages/Dashboards/BusinessEmployer/CreateJobPost';
 import BusinessEmployerManageJobPost from './pages/Dashboards/BusinessEmployer/ManageJobPost';
 import JobPostDetails from './pages/Dashboards/BusinessEmployer/JobPostDetails';
-import BusinessEmployerMessage from './pages/Dashboards/BusinessEmployer/Message';
+import BusinessEmployerMessage from './pages/Dashboards/BusinessEmployer/Message/Message';
 
 // Jobseeker
 import JobseekerFindJob from "./pages/Dashboards/Jobseeker/FindJob";
 import JobseekerFindAgency from "./pages/Dashboards/Jobseeker/FindAgency";
-import JobseekerMessage from "./pages/Dashboards/Jobseeker/Message";
+import JobseekerMessage from "./pages/Dashboards/Jobseeker/Message/Message";
 
 // Manpower Provider
 import ManpowerProviderFindJob from './pages/Dashboards/ManpowerProvider/FindJob'
 import ManpowerProviderCreateJobPost from './pages/Dashboards/ManpowerProvider/CreateJobPost'
-import ManpowerProviderMessage from './pages/Dashboards/ManpowerProvider/Message'
+import ManpowerProviderMessage from './pages/Dashboards/ManpowerProvider/Message/Message'
 
 // Administrator
 import UserVerification from './pages/Dashboards/Administrator/UserVerification'

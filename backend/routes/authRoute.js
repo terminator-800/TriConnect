@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { verifySession } = require("../controllers/authController");
+const { verifyToken } = require("../controllers/authController");
 
-router.get("/auth/verify-session", verifySession);
+router.get("/auth/verify-token", verifyToken);
 
 module.exports = router;

@@ -24,7 +24,7 @@ import logo_triconnect from './logo_triconnect.svg';
 import not_verified from './not_verified.svg';
 import verified from './verified.svg';
 import location from './location.svg';
-
+import pin from './pin.svg'
 
 const icons = {
     find_agency,
@@ -52,7 +52,8 @@ const icons = {
     logo_triconnect,
     not_verified,
     verified,
-    location
+    location,
+    pin
 }
 
 export default icons;

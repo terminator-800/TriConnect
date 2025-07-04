@@ -33,7 +33,6 @@ const CreateJobPost = () => {
         ) : profileData.is_rejected ? (
           <div className="bg-white shadow-md rounded-3xl p-6 w-full max-w-7xl border border-gray-300 px-20">
             <VerificationStatus profileData={profileData} openForm={openForm} />
-
           </div>
 
         ) : profileData.is_submitted ? (

@@ -4,8 +4,7 @@ import ViewDocument from './ViewDocument';
 import Verify from './Verify';
 import Reject from './Reject';
 import Sidebar from './Sidebar';
-import userApi from '../../../../api/userApi';
-import getImagePath from '../../../../api/getImagePath';
+import getImagePath from '../../../../utils/getImagePath';
 
 const UserVerification = () => {
     const [previewImage, setPreviewImage] = useState(null);

@@ -60,7 +60,7 @@ const BrowseJob = () => {
           ) : errorJobPosts ? (
             <p className="text-red-500">Failed to fetch job posts.</p>
           ) : approvedJobPosts.length === 0 ? (
-            <p className="text-gray-500">No approved job posts available.</p>
+            <p className="text-gray-500 italic">No approved job posts available.</p>
           ) : (
             paginatedPosts.map((post) => {
               const user = users.find((u) => u.user_id === post.user_id);

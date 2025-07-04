@@ -6,7 +6,7 @@ const fetchUsers = async () => {
     return response.data;
   } catch (err) {
     console.error("Failed to fetch users:", err.message);
-    throw err; // allow react-query to handle error
+    throw err; 
   }
 };
 

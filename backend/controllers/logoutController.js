@@ -1,18 +1,15 @@
 const logout = async (req, res) => {
+  try {
+    res.clearCookie('token', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: 'Lax'
+    });
 
-  if (!req.session) {
-    return res.status(404).send('Session not found');
+    return res.status(200).send('Logged out successfully');
+  } catch (error) {
+    return res.status(500).send('Logout failed');
   }
-
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send('Logout failed');
-    }
-
-    res.clearCookie('connect.sid'); 
-    res.clearCookie('token');
-    res.status(200).send('Logged out successfully');
-  });
 };
 
 module.exports = { logout };

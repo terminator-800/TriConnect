@@ -5,11 +5,8 @@ const bcrypt = require('bcrypt');
 const dbPromise = require("../config/DatabaseConnection");
 const { createIndividualEmployer, uploadIndividualEmployerRequirement } = require("../service/IndividualEmployerQuery");
 const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
-const { getUserSubscription,
-    expireUserSubscription,
-    archiveOldJobPosts,
-    getJobPostCountThisMonth,
-    insertJobPost } = require("../service/JobPostQuery")
+const { createJobPostWithSubscriptionLogic} = require("../service/JobPostQuery")
+const { handleMessageUpload } = require('../service/chat');
 
 const register = async (req, res) => {
     const { email, password } = req.body;
@@ -80,87 +77,42 @@ const verifyEmail = async (req, res) => {
 };
 
 const createJobPost = async (req, res) => {
-    const {
-        job_title,
-        job_type,
-        salary_range,
-        location,
-        required_skill,
-        job_description,
-    } = req.body;
-
-    try {
-        const token = req.cookies.token;
-        if (!token) {
-            return res.status(401).json({ error: "Unauthorized: Token not provided." });
-        }
-
-        let decoded;
-        try {
-            decoded = jwt.verify(token, process.env.JWT_SECRET);
-        } catch (err) {
-            return res.status(401).json({ error: "Unauthorized: Invalid token." });
-        }
-
-        const { user_id, role } = decoded;
-
-        // ✅ Updated: Only allow individual_employer
-        if (role !== "individual_employer") {
-            return res.status(403).json({ error: "Forbidden: Only individual employers can create job posts." });
-        }
-
-        if (!job_title || !job_type || !salary_range || !location || !job_description || !required_skill) {
-            return res.status(400).json({ error: "All required fields must be filled out." });
-        }
-
-        const validJobTypes = ["Full-time", "Part-time", "Contract"];
-        if (!validJobTypes.includes(job_type)) {
-            return res.status(400).json({ error: "Invalid job type." });
-        }
-
-        const subscription = await getUserSubscription(user_id);
-        if (!subscription) {
-            return res.status(404).json({ error: "User not found." });
-        }
-
-        let { is_subscribed, subscription_end } = subscription;
-
-        if (is_subscribed && new Date(subscription_end) < new Date()) {
-            await expireUserSubscription(user_id);
-            is_subscribed = 0;
-        }
-
-        if (!is_subscribed) {
-            await archiveOldJobPosts(user_id);
-        }
-
-        const postCount = await getJobPostCountThisMonth(user_id);
-        const maxAllowedPosts = is_subscribed ? 10 : 3;
-
-        if (postCount >= maxAllowedPosts) {
-            return res.status(403).json({
-                error: `You have reached the maximum of ${maxAllowedPosts} job posts this month.` +
-                    (is_subscribed ? "" : " Please upgrade your subscription."),
-            });
-        }
-
-        const job_post_id = await insertJobPost({
-            user_id, role, job_title, job_type,
-            salary_range, location, required_skill, job_description
-        });
-
-        res.status(201).json({
-            message: "Job post created successfully!",
-            job_post_id,
-        });
-
-    } catch (error) {
-        console.error("Error creating job post:", error.stack);
-        if (error.name === "ValidationError") {
-            return res.status(400).json({ error: "Invalid input data." });
-        }
-        res.status(500).json({ error: "Failed to create job post." });
+  try {
+    const token = req.cookies.token;
+    if (!token) {
+      return res.status(401).json({ error: "Unauthorized: Token not provided." });
     }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { user_id, role } = decoded;
+
+    if (role !== "individual_employer") {
+      return res.status(403).json({ error: "Only business employers can create job posts." });
+    }
+
+    const result = await createJobPostWithSubscriptionLogic({
+      user_id,
+      role,
+      job_title: req.body.job_title,
+      job_type: req.body.job_type,
+      salary_range: req.body.salary_range,
+      location: req.body.location,
+      required_skill: req.body.required_skill,
+      job_description: req.body.job_description
+    });
+
+    if (result.error) {
+      return res.status(403).json({ error: result.error });
+    }
+
+    res.status(201).json({
+      message: "Job post created successfully!",
+      job_post_id: result.job_post_id
+    });
+  } catch (error) {
+    console.error("Error creating job post:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
 };
 
 const getIndividualEmployerProfile = async (req, res) => {
@@ -241,4 +193,125 @@ const uploadRequirements = async (req, res) => {
     }
 };
 
-module.exports = { register, verifyEmail, getIndividualEmployerProfile, uploadRequirements, createJobPost };
+const conversations = async (req, res) => {
+    db = await dbPromise;
+  try {
+    const token = req.cookies.token; 
+
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET); 
+    const user_id = decoded.user_id; 
+
+    const [rows] = await db.query(
+      `SELECT conversation_id FROM conversations WHERE user1_id = ? OR user2_id = ?`,
+      [user_id, user_id]
+    );
+    // console.log("rows: ", rows);
+    
+    res.json(rows);
+  } catch (err) {
+    console.error("Error fetching conversations:", err);
+    res.status(500).json({ error: "Server error or invalid token" });
+  }
+};
+
+const messageHistory = async (req, res) => {
+  const { conversation_id } = req.params;
+    // console.log(conversation_id);
+    
+  try { 
+    const [messages] = await db.query(
+      `SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at ASC`,
+      [conversation_id]
+    );
+
+    res.json(messages);
+  } catch (err) {
+    console.error('Error fetching messages:', err);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+}
+
+const replyMessage = async (req, res) => {
+  const { sender_id, receiver_id, message_text } = req.body;
+
+  try {
+    const newMessage = await handleMessageUpload({
+      sender_id,
+      receiver_id,
+      message: message_text,
+      file: req.file,
+    });
+
+    newMessage.created_at = new Date().toISOString();
+    newMessage.is_read = false;
+
+    const roomId = newMessage.conversation_id;
+    if (!roomId) {
+      return res.status(400).json({ error: "Missing conversation_id" });
+    }
+
+    const io = req.app.get('io');
+    const userSocketMap = req.app.get('userSocketMap');
+
+    const receiverSocketId = userSocketMap[receiver_id];
+    const senderSocketId = userSocketMap[sender_id];
+
+    const room = io.sockets.adapter.rooms.get(roomId.toString());
+    const isReceiverInRoom = room?.has(receiverSocketId);
+    const isSenderInRoom = room?.has(senderSocketId);
+
+    // 🟡 1. Always emit to room (whoever is inside will get it)
+    io.to(roomId.toString()).emit('receiveMessage', newMessage);
+
+    // 🟡 2. If receiver is NOT in room, emit directly to them
+    if (receiverSocketId && !isReceiverInRoom) {
+      io.to(receiverSocketId).emit('receiveMessage', newMessage);
+    }
+
+    // 🟡 3. If sender is NOT in room, emit directly so they see it too
+    if (senderSocketId && !isSenderInRoom) {
+      io.to(senderSocketId).emit('receiveMessage', newMessage);
+    }
+
+    res.status(201).json({
+      message: 'Message sent and stored successfully',
+      conversation_id: newMessage.conversation_id,
+      file_url: newMessage.file_url,
+    });
+
+  } catch (error) {
+    console.error('❌ Error sending message:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+};
+
+const markAsSeen = async (req, res) => {
+    const db = await dbPromise;
+
+    const { messageIds, viewerId } = req.body;
+
+    if (!Array.isArray(messageIds) || messageIds.length === 0 || !viewerId) {
+        return res.status(400).json({ error: 'Missing messageIds or viewerId' });
+    }
+
+    try {
+        const [result] = await db.query(
+            `UPDATE messages
+       SET is_read = TRUE, read_at = NOW()
+       WHERE message_id IN (${messageIds.map(() => '?').join(',')})
+         AND receiver_id = ?`,
+            [...messageIds, viewerId]
+        );
+
+        return res.json({ success: true, updated: result.affectedRows });
+    } catch (error) {
+        console.error('Error marking messages as seen:', error);
+        return res.status(500).json({ error: 'Database error' });
+    }
+};
+
+module.exports = { register, verifyEmail, getIndividualEmployerProfile, uploadRequirements, createJobPost, replyMessage, markAsSeen, conversations, messageHistory };

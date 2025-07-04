@@ -7,18 +7,27 @@ const ProtectedRoute = ({ children }) => {
 
   useEffect(() => {
     const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        setAuthStatus(false);
+        return;
+      }
+
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-session`, {
-          withCredentials: true,
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         });
-        
+
         if (res.data.authenticated) {
-          setAuthStatus(res.data.role); 
+          setAuthStatus(res.data.role);
         } else {
           setAuthStatus(false);
         }
       } catch (error) {
-        setAuthStatus(false); 
+        setAuthStatus(false);
       }
     };
 

@@ -5,28 +5,20 @@ const { verifyBusinessEmployer, rejectBusinessEmployer } = require("../service/B
 const { verifyIndividualEmployer, rejectIndividualEmployer } = require("../service/IndividualEmployerQuery")
 const { verifyManpowerProvider, rejectManpowerProvider } = require("../service/ManpowerProviderQuery")
 const { getAllJobPosts } = require("../service/JobPostQuery")
-const dbPromise = require("../config/DatabaseConnection");
+const { findOrCreateAdmin, rejectJobPostIfExists, approveJobPostIfExists } = require("../service/administratorQuery");
 const bcrypt = require('bcrypt');
 
 async function createAdminIfNotExists() {
-    const db = await dbPromise;
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
     const hashedPassword = await bcrypt.hash(adminPassword, 10);
-
     try {
-        const [rows] = await db.execute(
-            "SELECT * FROM users WHERE email = ? AND role = 'admin'",
-            [adminEmail]
-        );
+        const result = await findOrCreateAdmin({ email: adminEmail, hashedPassword });
 
-        if (rows.length === 0) {
-            await db.execute(
-                "INSERT INTO users (role, email, password, is_verified) VALUES (?, ?, ?, ?)",
-                ['admin', adminEmail, hashedPassword, 1]
-            );
-        } else {
+        if (result.alreadyExists) {
             console.log("✅ Admin account already exists.");
+        } else {
+            console.log("✅ Admin account created.");
         }
     } catch (error) {
         console.error("❌ Error creating admin:", error);
@@ -134,60 +126,38 @@ const rejectUser = async (req, res) => {
 };
 
 const rejectJobpost = async (req, res) => {
-    const db = await dbPromise;
     const jobPostId = req.params.job_post_id;
-    console.log("this is line 112: ", jobPostId);
-    
-    try{
-        const [jobPostRows] = await db.query('SELECT * FROM job_post WHERE job_post_id = ?', [jobPostId])
 
-        if(jobPostRows.length === 0){
-            return res.status(404).json({error: 'Jobpost not found.'})
+    try {
+        const result = await rejectJobPostIfExists(jobPostId);
+
+        if (!result.success) {
+            return res.status(404).json({ error: result.message });
         }
 
-        await db.query(`
-            UPDATE job_post 
-            SET 
-                status = 'rejected', 
-                is_verified_jobpost = FALSE
-            WHERE job_post_id = ?
-            `, [jobPostId]);
-
-        return res.status(200).json({ message: 'Jobpost rejected successfully.'})
-    }catch (error){
+        return res.status(200).json({ message: result.message });
+    } catch (error) {
         console.error('Error rejecting jobpost:', error);
-        return res.status(500).json({ error: 'Internal server error.'})
+        return res.status(500).json({ error: 'Internal server error.' });
     }
-}
+};
 
 const approveJobpost = async (req, res) => {
-    const db = await dbPromise;
     const jobPostId = req.params.job_post_id;
 
-     try{
-    const [jobPostRows] = await db.query('SELECT * FROM job_post WHERE job_post_id = ?', [jobPostId])
+    try {
+        const result = await approveJobPostIfExists(jobPostId);
 
-    if(jobPostRows.length === 0){
-        return res.status(404).json({ message: 'Jobpost not found'})
+        if (!result.success) {
+            return res.status(404).json({ message: result.message });
+        }
+
+        return res.status(200).json({ message: result.message });
+    } catch (error) {
+        console.error("Error approving jobpost:", error);
+        return res.status(500).json({ error: "Internal server error" });
     }
-
-    await db.query(`
-        UPDATE job_post
-        SET
-        status = 'approved',
-        rejection_reason = NULL,
-        approved_at = NOW(),
-        is_verified_jobpost = TRUE
-        WHERE job_post_id = ?`, [jobPostId])
-
-        return res.status(200).json({ message: 'Jobpost approved successfully.'})
-      
-     } catch (error){
-        console.error("Error approving jobpost", error)
-        return res.status(500).json({ error: 'Internal server error'})
-     }
-    
-}
+};
 
 
 module.exports = { createAdminIfNotExists, fetchUser, verifyUser, verifyManpowerProvider, rejectUser, fetchJobPost, rejectJobpost, approveJobpost }

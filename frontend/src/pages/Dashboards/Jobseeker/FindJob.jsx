@@ -57,7 +57,6 @@ const FindJob = () => {
             onSubmitSuccess={() => {
               setShowForm(false);
               refetch();
-              setRefreshTrigger(prev => prev + 1);
             }}
           />
         )}
