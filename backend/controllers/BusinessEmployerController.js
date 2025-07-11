@@ -5,9 +5,14 @@ const nodemailer = require("nodemailer");
 const dbPromise = require("../config/DatabaseConnection");
 const { findUsersEmail, createUsers, uploadUserRequirement, getUserInfo } = require("../service/usersQuery");
 const { createBusinessEmployer, uploadBusinessEmployerRequirement } = require("../service/BusinessEmployerQuery")
+<<<<<<< HEAD
 const { createJobPostWithSubscriptionLogic, getJobPostById, softDeleteJobPostById } = require("../service/jobPostQuery");
 const { handleMessageUpload } = require('../service/conversationsQuery');
 const { getUserConversations, getMessageHistoryByConversationId, processSeenMessages } = require("../service/messageService");
+=======
+const { createJobPostWithSubscriptionLogic } = require("../service/JobPostQuery");
+const { handleMessageUpload } = require('../service/chat');
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 
 const register = async (req, res) => {
     const { email, password } = req.body;

@@ -1,10 +1,18 @@
 require('dotenv').config();
+<<<<<<< HEAD
 const { createManpowerProvider, uploadManpowerProviderRequirement } = require("../service/manpowerProviderQuery");
 const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/usersQuery");
 const { createJobPostWithSubscriptionLogic, getJobPostById, softDeleteJobPostById } = require("../service/jobPostQuery")
 const { handleMessageUpload } = require('../service/conversationsQuery');
 const { getUserConversations, getMessageHistoryByConversationId, processSeenMessages } = require("../service/messageService");
 const { addMonths } = require('date-fns');
+=======
+const { createManpowerProvider, uploadManpowerProviderRequirement } = require("../service/ManpowerProviderQuery");
+const { findUsersEmail, createUsers, getUserInfo, uploadUserRequirement } = require("../service/UsersQuery");
+const { createJobPostWithSubscriptionLogic } = require("../service/JobPostQuery")
+const { handleMessageUpload } = require('../service/chat');
+
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
 const bcrypt = require('bcrypt');
@@ -53,6 +61,7 @@ const register = async (req, res) => {
 const verifyEmail = async (req, res) => {
   const { token } = req.query;
 
+<<<<<<< HEAD
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { email, password } = decoded;
@@ -62,8 +71,31 @@ const verifyEmail = async (req, res) => {
 
     if (!createdUser || !createdUser.user_id) {
       return res.status(500).send("Failed to create user account.");
+=======
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { email, password } = decoded;
+        const role = "manpower_provider";
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const createdUser = await createUsers(email, hashedPassword, role);
+
+        if (!createdUser || !createdUser.user_id) {
+            return res.status(500).send("Failed to create user account.");
+        }
+
+        const user_id = createdUser.user_id;
+
+        await createManpowerProvider(user_id, email, hashedPassword, role);
+
+        console.log("Manpower provider account created successfully!");
+        res.send("Email verified and account created successfully!");
+    } catch (err) {
+        console.error("Verification error:", err);
+        res.status(400).send("Invalid or expired verification link.");
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     }
 
+<<<<<<< HEAD
     const user_id = createdUser.user_id;
 
     await createManpowerProvider(user_id, email, hashedPassword, role);
@@ -81,6 +113,44 @@ const createJobPost = async (req, res) => {
     const token = req.cookies.token;
     if (!token) {
       return res.status(401).json({ error: "Unauthorized: Token not provided." });
+=======
+const createJobPost = async (req, res) => {
+    try {
+        const token = req.cookies.token;
+        if (!token) {
+            return res.status(401).json({ error: "Unauthorized: Token not provided." });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const { user_id, role } = decoded;
+
+        if (role !== "manpower_provider") {
+            return res.status(403).json({ error: "Only business employers can create job posts." });
+        }
+
+        const result = await createJobPostWithSubscriptionLogic({
+            user_id,
+            role,
+            job_title: req.body.job_title,
+            job_type: req.body.job_type,
+            salary_range: req.body.salary_range,
+            location: req.body.location,
+            required_skill: req.body.required_skill,
+            job_description: req.body.job_description
+        });
+
+        if (result.error) {
+            return res.status(403).json({ error: result.error });
+        }
+
+        res.status(201).json({
+            message: "Job post created successfully!",
+            job_post_id: result.job_post_id
+        });
+    } catch (error) {
+        console.error("Error creating job post:", error);
+        res.status(500).json({ error: "Internal server error" });
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -195,6 +265,7 @@ const uploadRequirements = async (req, res) => {
 };
 
 const apply = async (req, res) => {
+<<<<<<< HEAD
   const { sender_id, receiver_id, message, job_post_id } = req.body;
 
   try {
@@ -210,6 +281,12 @@ const apply = async (req, res) => {
       [job_post_id, sender_id, sender.role]
     );
 
+=======
+  const { sender_id, receiver_id, message } = req.body;
+
+  try {
+    // Save message (with optional file)
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     const newMessage = await handleMessageUpload({
       sender_id,
       receiver_id,
@@ -217,6 +294,10 @@ const apply = async (req, res) => {
       file: req.file,
     });
 
+<<<<<<< HEAD
+=======
+    // Add metadata
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     newMessage.created_at = new Date().toISOString();
     newMessage.is_read = false;
 
@@ -227,12 +308,24 @@ const apply = async (req, res) => {
       return res.status(400).json({ error: "Missing conversation_id" });
     }
 
+<<<<<<< HEAD
     const io = req.app.get('io');
     const userSocketMap = req.app.get('userSocketMap');
 
     io.to(roomId.toString()).emit('receiveMessage', newMessage);
     console.log(`📨 Sent application to room ${roomId}`, newMessage);
 
+=======
+    // Access socket instance & user map
+    const io = req.app.get('io');
+    const userSocketMap = req.app.get('userSocketMap');
+
+    // ✅ Emit to conversation room
+    io.to(roomId.toString()).emit('receiveMessage', newMessage);
+    console.log(`📨 Sent application to room ${roomId}`, newMessage);
+
+    // ✅ Notify receiver directly if connected
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     const receiverSocketId = userSocketMap?.[receiver_id];
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('receiveMessage', newMessage);
@@ -241,6 +334,10 @@ const apply = async (req, res) => {
       console.log(`⚠️ Receiver ${receiver_id} not currently connected`);
     }
 
+<<<<<<< HEAD
+=======
+    // ✅ Final response
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     res.status(201).json({
       message: 'Application sent and message stored',
       conversation_id: newMessage.conversation_id,
@@ -282,12 +379,23 @@ const replyMessage = async (req, res) => {
     const isReceiverInRoom = room?.has(receiverSocketId);
     const isSenderInRoom = room?.has(senderSocketId);
 
+<<<<<<< HEAD
     io.to(roomId.toString()).emit('receiveMessage', newMessage);
 
+=======
+    // 🟡 1. Always emit to room (whoever is inside will get it)
+    io.to(roomId.toString()).emit('receiveMessage', newMessage);
+
+    // 🟡 2. If receiver is NOT in room, emit directly to them
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     if (receiverSocketId && !isReceiverInRoom) {
       io.to(receiverSocketId).emit('receiveMessage', newMessage);
     }
 
+<<<<<<< HEAD
+=======
+    // 🟡 3. If sender is NOT in room, emit directly so they see it too
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     if (senderSocketId && !isSenderInRoom) {
       io.to(senderSocketId).emit('receiveMessage', newMessage);
     }
@@ -305,6 +413,7 @@ const replyMessage = async (req, res) => {
 };
 
 const conversations = async (req, res) => {
+<<<<<<< HEAD
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -356,10 +465,79 @@ const markAsSeen = async (req, res) => {
       }
       senderToMessages[msg.sender_id].message_ids.push(msg.message_id);
     }
+=======
+    db = await dbPromise;
+    try {
+        const token = req.cookies.token;
+
+        if (!token) {
+            return res.status(401).json({ error: "No token provided" });
+        }
+
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user_id = decoded.user_id;
+
+        // console.log("User ID from token:", user_id);
+
+        const [rows] = await db.query(
+            `SELECT conversation_id FROM conversations WHERE user1_id = ? OR user2_id = ?`,
+            [user_id, user_id]
+        );
+        // console.log("rows: ", rows);
+
+        res.json(rows);
+    } catch (err) {
+        console.error("Error fetching conversations:", err);
+        res.status(500).json({ error: "Server error or invalid token" });
+    }
+};
+
+const messageHistory = async (req, res) => {
+    const { conversation_id } = req.params;
+    const db = await dbPromise;
+    try {
+        const [messages] = await db.query(
+            `SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at ASC`,
+            [conversation_id]
+        );
+
+        res.json(messages);
+    } catch (err) {
+        console.error('Error fetching messages:', err);
+        res.status(500).json({ error: 'Internal Server Error' });
+    }
+}
+
+const markAsSeen = async (req, res) => {
+  const db = await dbPromise;
+  const { messageIds, viewerId } = req.body;
+
+  if (!Array.isArray(messageIds) || messageIds.length === 0 || !viewerId) {
+    return res.status(400).json({ error: 'Missing messageIds or viewerId' });
+  }
+
+  try {
+    // ✅ Update read status
+    const [result] = await db.query(
+      `UPDATE messages
+       SET is_read = TRUE, read_at = NOW()
+       WHERE message_id IN (${messageIds.map(() => '?').join(',')})
+         AND receiver_id = ?`,
+      [...messageIds, viewerId]
+    );
+
+    // ✅ Fetch messages to get sender_id and conversation_id
+    const [messages] = await db.query(
+      `SELECT message_id, sender_id, conversation_id FROM messages
+       WHERE message_id IN (${messageIds.map(() => '?').join(',')})`,
+      messageIds
+    );
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 
     const io = req.app.get('io');
     const userSocketMap = req.app.get('userSocketMap');
 
+<<<<<<< HEAD
     for (const [senderId, data] of Object.entries(senderToMessages)) {
       const senderSocketId = userSocketMap[senderId];
       if (senderSocketId) {
@@ -463,3 +641,27 @@ module.exports = {
   updateJobPostStatus,
   softDeleteJobPost
 };
+=======
+    // ✅ Emit to each unique sender
+    const notified = new Set();
+    for (const msg of messages) {
+      const senderSocketId = userSocketMap[msg.sender_id];
+      if (senderSocketId && !notified.has(msg.sender_id)) {
+        io.to(senderSocketId).emit('messagesSeen', {
+          conversation_id: msg.conversation_id,
+          message_ids: messageIds,
+        });
+        notified.add(msg.sender_id);
+      }
+    }
+
+    return res.json({ success: true, updated: result.affectedRows });
+  } catch (error) {
+    console.error('Error marking messages as seen:', error);
+    return res.status(500).json({ error: 'Database error' });
+  }
+};
+
+
+module.exports = { register, verifyEmail, getManpowerProviderProfile, uploadRequirements, createJobPost, apply, replyMessage, markAsSeen, messageHistory, conversations };
+>>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
