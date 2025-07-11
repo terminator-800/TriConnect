@@ -33,7 +33,7 @@ async function updateIndividualEmployerPassword(email, password) {
             "UPDATE individual_employer SET password = ? WHERE email = ?",
             [password, email]
         );
-        return result; 
+        return result;
     } catch (error) {
         console.error("Error updating password:", error);
         throw error;
@@ -142,12 +142,11 @@ const rejectIndividualEmployer = async (user_id) => {
     return { success: true, message: "Individual employer rejected and fields reset (files not deleted)." };
 };
 
-
-
-module.exports = { createIndividualEmployer, 
-                    findIndividualEmployerEmail, 
-                    updateIndividualEmployerPassword, 
-                    uploadIndividualEmployerRequirement,
-                    verifyIndividualEmployer,
-                    rejectIndividualEmployer
-                };
+module.exports = {
+    createIndividualEmployer,
+    findIndividualEmployerEmail,
+    updateIndividualEmployerPassword,
+    uploadIndividualEmployerRequirement,
+    verifyIndividualEmployer,
+    rejectIndividualEmployer
+};

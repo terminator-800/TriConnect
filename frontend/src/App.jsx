@@ -5,7 +5,7 @@ import RegisterRoutes from "./pages/Register/RegisterRoutes";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import ResetPassword from "./pages/ForgotPassword/ResetPassword";
 import PrivateRoute from "./pages/Dashboards/PrivateRoute";
-import ProtectedRoute from "./pages/ProtectedRoute";
+import PublicRoute from "./pages/PublicRoute";
 
 // Dashboards
 import JobseekerDashboard from "./pages/Dashboards/Jobseeker/JobseekerDashboard";
@@ -15,41 +15,42 @@ import ManpowerProviderDashboard from "./pages/Dashboards/ManpowerProvider/Manpo
 import AdministratorDashboard from "./pages/Dashboards/Administrator/AdministratorDashboard";
 
 // Profiles
-import JobseekerProfile from "./pages/Dashboards/Jobseeker/Profile";
-import BusinessProfile from './pages/Dashboards/BusinessEmployer/Profile'
-import ManpowerProviderProfile from "./pages/Dashboards/ManpowerProvider/Profile";
-import IndividualEmployerProfile from './pages/Dashboards/IndividualEmployer/Profile'
+import JobseekerProfile from "./pages/Dashboards/Jobseeker/Profile/Profile";
+import BusinessProfile from './pages/Dashboards/BusinessEmployer/Profile/Profile'
+import ManpowerProviderProfile from "./pages/Dashboards/ManpowerProvider/Profile/Profile";
+import IndividualEmployerProfile from './pages/Dashboards/IndividualEmployer/Profile/Profile'
 
 // Individual Employer
-import IndividualEmployerManageJobPost from "./pages/Dashboards/IndividualEmployer/ManageJobPost";
-import IndividualEmployerCreateJobPost from "./pages/Dashboards/IndividualEmployer/CreateJobPost";
-import IndividualEmployerFindAgency from './pages/Dashboards/IndividualEmployer/FindAgency'
-import IndividualEmployerMessage from './pages/Dashboards/IndividualEmployer/Message'
+import IndividualEmployerManageJobPost from "./pages/Dashboards/IndividualEmployer/ManageJobPost/ManageJobPost";
+import IndividualEmployerCreateJobPost from "./pages/Dashboards/IndividualEmployer/Job Post/CreateJobPost";
+import IndividualEmployerFindAgency from './pages/Dashboards/IndividualEmployer/FindAgency/FindAgency'
+import IndividualEmployerMessage from './pages/Dashboards/IndividualEmployer/Message/Message'
 import IndividualEmployerViewApplicant from './pages/Dashboards/IndividualEmployer/ViewApplicant'
 import IndividualEmployerJobPostDetails from './pages/Dashboards/IndividualEmployer/JobPostDetails'
 
 // Business Employer
-import BusinessEmployerFindAgency from './pages/Dashboards/BusinessEmployer/FindAgency';
+import BusinessEmployerFindAgency from './pages/Dashboards/BusinessEmployer/FindAgency/FindAgency';
 import ViewApplicant from './pages/Dashboards/BusinessEmployer/ViewApplicant';
-import BusinessEmployerCreateJobPost from './pages/Dashboards/BusinessEmployer/CreateJobPost';
-import BusinessEmployerManageJobPost from './pages/Dashboards/BusinessEmployer/ManageJobPost';
+import BusinessEmployerCreateJobPost from './pages/Dashboards/BusinessEmployer/Job Post/CreateJobPost';
+import BusinessEmployerManageJobPost from './pages/Dashboards/BusinessEmployer/Manage Job Post/ManageJobPost';
 import JobPostDetails from './pages/Dashboards/BusinessEmployer/JobPostDetails';
-import BusinessEmployerMessage from './pages/Dashboards/BusinessEmployer/Message';
+import BusinessEmployerMessage from './pages/Dashboards/BusinessEmployer/Message/Message';
 
 // Jobseeker
-import JobseekerFindJob from "./pages/Dashboards/Jobseeker/FindJob";
+import JobseekerFindJob from "./pages/Dashboards/Jobseeker/Find Job/FindJob";
 import JobseekerFindAgency from "./pages/Dashboards/Jobseeker/FindAgency";
-import JobseekerMessage from "./pages/Dashboards/Jobseeker/Message";
+import JobseekerMessage from "./pages/Dashboards/Jobseeker/Message/Message";
 
 // Manpower Provider
-import ManpowerProviderFindJob from './pages/Dashboards/ManpowerProvider/FindJob'
-import ManpowerProviderCreateJobPost from './pages/Dashboards/ManpowerProvider/CreateJobPost'
-import ManpowerProviderMessage from './pages/Dashboards/ManpowerProvider/Message'
+import ManpowerProviderFindJob from './pages/Dashboards/ManpowerProvider/FindJob/FindJob'
+import ManpowerProviderCreateJobPost from './pages/Dashboards/ManpowerProvider/JobPost/CreateJobPost'
+import ManpowerProviderMessage from './pages/Dashboards/ManpowerProvider/Message/Message'
+import ManpowerProviderManageJobPost from './pages/Dashboards/ManpowerProvider/Manage Job Post/ManageJobPost'
 
 // Administrator
-import UserVerification from './pages/Dashboards/Administrator/UserVerification'
+import UserVerification from './pages/Dashboards/Administrator/User Verification/UserVerification'
 import VerifiedUser from './pages/Dashboards/Administrator/VerifiedUser'
-import JobPostVerification from './pages/Dashboards/Administrator/JobPostVerification'
+import JobPostVerification from './pages/Dashboards/Administrator/Jobpost Verification/JobPostVerification'
 import VerifiedJobPost from './pages/Dashboards/Administrator/VerifiedJobPost'
 import ReportedUser from './pages/Dashboards/Administrator/ReportedUser'
 import UserFeedback from './pages/Dashboards/Administrator/UserFeedback'
@@ -63,41 +64,41 @@ function App() {
         <Route
           path="/"
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <Home />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path="/login"
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <Login />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path="/forgot-password"
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <ForgotPassword />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path="/forgot-password/reset-password"
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <ResetPassword />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
         <Route
           path="/register/*"
           element={
-            <ProtectedRoute>
+            <PublicRoute>
               <RegisterRoutes />
-            </ProtectedRoute>
+            </PublicRoute>
           }
         />
 
@@ -143,6 +144,7 @@ function App() {
           <Route path="profile/*" element={<ManpowerProviderProfile />} />
           <Route path="jobs" element={<ManpowerProviderFindJob />} />
           <Route path="create" element={<ManpowerProviderCreateJobPost />} />
+          <Route path="manage" element={<ManpowerProviderManageJobPost />} />
           <Route path="messages" element={<ManpowerProviderMessage />} />
         </Route>
 

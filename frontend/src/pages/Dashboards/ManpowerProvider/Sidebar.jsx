@@ -58,6 +58,16 @@ const Sidebar = () => {
             </button>
           </li>
 
+          <li className={`${location.pathname.includes('/manpower-provider/manage') ? 'bg-gray-500' : ''} flex`}>
+            <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
+            <button
+              onClick={() => navigate('/manpower-provider/manage')}
+              className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+            >
+              Manage Job Post
+            </button>
+          </li>
+
           <li className={`${location.pathname.includes('/manpower-provider/create') ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
             <button

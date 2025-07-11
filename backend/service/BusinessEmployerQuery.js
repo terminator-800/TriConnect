@@ -13,7 +13,6 @@ async function createBusinessEmployer(user_id, role, email, password) {
     }
 }
 
-
 async function findBusinessEmployerEmail(email) {
     try {
         const db = await dbPromise;
@@ -143,10 +142,11 @@ const rejectBusinessEmployer = async (user_id) => {
     return { success: true, message: "Business employer rejected and fields reset (files not deleted)." };
 };
 
-module.exports = { createBusinessEmployer, 
-                findBusinessEmployerEmail, 
-                updateBusinessEmployerPassword,
-                uploadBusinessEmployerRequirement,
-                verifyBusinessEmployer,
-                rejectBusinessEmployer
-            };
+module.exports = { 
+    createBusinessEmployer, 
+    findBusinessEmployerEmail, 
+    updateBusinessEmployerPassword,
+    uploadBusinessEmployerRequirement,
+    verifyBusinessEmployer,
+    rejectBusinessEmployer
+};

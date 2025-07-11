@@ -5,7 +5,72 @@ const jwt = require('jsonwebtoken');
 
 // === Directory Setup ===
 const baseUploadDir = './uploads';
+const chatUploadDir = './uploads/chat';
 const roles = ['jobseeker', 'business_employer', 'individual_employer', 'manpower_provider'];
+
+if (!fs.existsSync(chatUploadDir)) {
+    fs.mkdirSync(chatUploadDir, { recursive: true });
+}
+
+// === Multer Storage Config / FILE UPLOAD FOR CHAT MESSAGES ===
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        try {
+            const tempDir = path.join(chatUploadDir, 'temp');
+            fs.mkdirSync(tempDir, { recursive: true });
+            cb(null, tempDir);
+        } catch (error) {
+            cb(new Error('Failed to create temp upload directory'), false);
+        }
+    },
+    filename: (_req, file, cb) => {
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
+});
+
+
+// ✅ Restrict to only images and single file upload
+const imageOnlyFilter = (req, file, cb) => {
+    const allowedMimeTypes = [
+        'image/png', 'image/jpeg', 'image/jpg',
+        'application/pdf', 'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+    if (!allowedMimeTypes.includes(file.mimetype)) {
+        return cb(new Error(`Only image or document files (PDF, DOC, DOCX) are allowed.`), false);
+    }
+    cb(null, true);
+};
+
+const chatImageUpload = multer({ storage, fileFilter: imageOnlyFilter }).single('file');
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // === Ensure Base Role Directories Exist ===
 roles.forEach(role => {
@@ -114,5 +179,6 @@ module.exports = {
     uploadJobseekerFiles,
     uploadBusinessEmployerFiles,
     uploadIndividualEmployerFiles,
-    uploadManpowerProviderFiles
+    uploadManpowerProviderFiles,
+    chatImageUpload,
 };

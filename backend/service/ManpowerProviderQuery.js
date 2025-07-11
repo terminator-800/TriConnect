@@ -144,10 +144,11 @@ const rejectManpowerProvider = async (user_id) => {
     return { success: true, message: "Manpower provider rejected and fields reset (files not deleted)." };
 };
 
-module.exports = { createManpowerProvider, 
-                    findManpowerProviderEmail, 
-                    updateManpowerProviderPassword, 
-                    uploadManpowerProviderRequirement, 
-                    verifyManpowerProvider, 
-                    rejectManpowerProvider 
-                };
+module.exports = { 
+    createManpowerProvider, 
+    findManpowerProviderEmail, 
+    updateManpowerProviderPassword, 
+    uploadManpowerProviderRequirement, 
+    verifyManpowerProvider, 
+    rejectManpowerProvider 
+};

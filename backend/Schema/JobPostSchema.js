@@ -5,6 +5,7 @@ async function createJobPostTable(connection) {
       user_id INT NOT NULL, -- Foreign key to reference the user
       role ENUM('business_employer', 'individual_employer', 'manpower_provider') NOT NULL,
       status ENUM('pending', 'approved', 'rejected', 'draft') DEFAULT NULL,
+      jobpost_status ENUM('active', 'paused', 'completed', 'archive', 'deleted') DEFAULT NULL,
       submitted_at DATETIME DEFAULT NULL,
       approved_at DATETIME DEFAULT NULL,
       expires_at DATETIME DEFAULT NULL,
@@ -16,6 +17,7 @@ async function createJobPostTable(connection) {
       location VARCHAR(255),
       required_skill TEXT,
       job_description TEXT,
+      applicant_count INT DEFAULT 0,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE 
     );

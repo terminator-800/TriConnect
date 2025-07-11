@@ -1,8 +1,8 @@
 import { Routes, Route } from "react-router-dom";
-import RegisterType from "../UserType";
+import RegisterType from "./UserType";
 import ConditionalRouting from "./ConditionalRouting";
-import EmployerType from "../EmployerType";
-import RegisterAccount from "../VerifciationForms/RegisterAccount";
+import EmployerType from "./EmployerType";
+import RegisterAccount from "./RegisterAccount";
 import VerifyAccount from "../../components/VerifyAccount";
 
 const RegisterRoutes = () => (

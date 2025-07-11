@@ -6,7 +6,7 @@ const fetchUsers = async () => {
     return response.data;
   } catch (err) {
     console.error("Failed to fetch users:", err.message);
-    throw err; // allow react-query to handle error
+    throw err; 
   }
 };
 
@@ -67,7 +67,7 @@ const fetchManpowerProviderProfile = async () => {
 
     if (response.status === 200) {
       return response.data; 
-    } else if (response.status === 400) {
+    } else if (response.status === 403) {
       console.log('Bad request. Please try again.');
     }
   } catch (err) {

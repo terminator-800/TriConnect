@@ -1,12 +1,11 @@
 const jwt = require("jsonwebtoken");
 const dbPromise = require("../config/DatabaseConnection");
 const nodemailer = require("nodemailer");
-
-const { updateUserPassword, findUsersEmail } = require("../service/UsersQuery");
-const { updateJobseekerPassword } = require("../service/JobseekerQuery");
+const { updateUserPassword, findUsersEmail } = require("../service/usersQuery");
+const { updateJobseekerPassword } = require("../service/jobseekerQuery");
 const { updateBusinessEmployerPassword } = require("../service/BusinessEmployerQuery");
-const { updateIndividualEmployerPassword } = require("../service/IndividualEmployerQuery");
-const { updateManpowerProviderPassword } = require("../service/ManpowerProviderQuery");
+const { updateIndividualEmployerPassword } = require("../service/individualEmployerQuery");
+const { updateManpowerProviderPassword } = require("../service/manpowerProviderQuery");
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;

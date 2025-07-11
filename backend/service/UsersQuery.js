@@ -17,6 +17,7 @@ async function createUsers(email, password, role) {
 
 async function findUsersEmail(email) {
     try {
+        
         const db = await dbPromise;
         const [rows] = await db.execute(
             "SELECT * FROM users WHERE email = ?",
@@ -344,7 +345,6 @@ async function rejectUsers(user_id) {
         message: `${role} requirements rejected, files and folders removed, and rejection recorded.`
     };
 }
-
 
 module.exports = {
     findUsersEmail,

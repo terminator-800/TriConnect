@@ -13,8 +13,8 @@ const PrivateRoute = () => {
             hasFetched.current = true;
 
             try {
-                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-session`, {
-                    withCredentials: true,
+                const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
+                    withCredentials: true, // ✅ this sends the cookie automatically
                 });
 
                 setAuthData({ authenticated: data.authenticated, role: data.role });
@@ -44,7 +44,6 @@ const PrivateRoute = () => {
         return <Navigate to={expectedBasePath} replace />;
     }
 
-    // Render nested routes using Outlet
     return <Outlet />;
 };
 

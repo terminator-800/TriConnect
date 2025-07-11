@@ -153,5 +153,5 @@ module.exports = {
     updateJobseekerPassword,
     uploadJobseekerRequirement,
     verifyJobseeker,
-    rejectJobseeker
+    rejectJobseeker,
 };
