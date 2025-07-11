@@ -38,7 +38,6 @@ const getAllJobPosts = async () => {
     return rows;
 };
 
-<<<<<<< HEAD
 const getJobPostById = async (jobPostId) => {
     const db = await dbPromise;
     const [rows] = await db.query(`SELECT * FROM job_post WHERE job_post_id = ?`, [jobPostId]);
@@ -56,19 +55,6 @@ const createJobPostWithSubscriptionLogic = async ({
     job_description
 }) => {
     const db = await dbPromise;
-=======
-const createJobPostWithSubscriptionLogic = async ({
-    user_id,
-    role,
-    job_title,
-    job_type,
-    salary_range,
-    location,
-    required_skill,
-    job_description
-}) => {
-    const db = await dbPromise;
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 
     // Step 1: Validate required fields
     const requiredFields = [job_title, job_type, salary_range, location, required_skill, job_description];
@@ -151,7 +137,6 @@ const createJobPostWithSubscriptionLogic = async ({
 
     return { success: true, job_post_id: insertResult.insertId };
 };
-<<<<<<< HEAD
 
 const softDeleteJobPostById = async (jobPostId) => {
     const expiresAt = addMonths(new Date(), 1);
@@ -168,19 +153,13 @@ const softDeleteJobPostById = async (jobPostId) => {
     const [result] = await db.query(softDeleteQuery, ['deleted', expiresAt, jobPostId]);
     return result;
 };
-=======
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 
 module.exports = {
     createJobPostQuery,
     getAllJobPosts,
-<<<<<<< HEAD
     createJobPostWithSubscriptionLogic,
     getJobPostById,
     softDeleteJobPostById
-=======
-    createJobPostWithSubscriptionLogic
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 }
 
 

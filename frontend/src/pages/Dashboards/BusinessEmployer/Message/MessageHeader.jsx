@@ -1,38 +1,19 @@
 const MessageHeader = ({ selectedConversationId, messages, user_id, allUsers }) => {
-<<<<<<< HEAD
-=======
-  // Get any message from the selected conversation
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
   const selectedMsg = messages.find(
     (msg) => msg.conversation_id === selectedConversationId
   );
 
-<<<<<<< HEAD
-=======
-  // Determine the other participant's user_id
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
   const otherUserId =
     selectedMsg?.sender_id === user_id
       ? selectedMsg?.receiver_id
       : selectedMsg?.sender_id;
 
-<<<<<<< HEAD
   const user = allUsers.find((u) => u.user_id === otherUserId);
 
   const name =
     user?.full_name || 
     user?.agency_name || 
     user?.business_name || 
-=======
-  // Find the user from allUsers
-  const user = allUsers.find((u) => u.user_id === otherUserId);
-
-  // For Business Employer, prioritize names of other roles
-  const name =
-    user?.full_name || // jobseeker or individual employer
-    user?.agency_name || // manpower provider
-    user?.business_name || // fallback
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
     'Unknown';
 
   const initials =

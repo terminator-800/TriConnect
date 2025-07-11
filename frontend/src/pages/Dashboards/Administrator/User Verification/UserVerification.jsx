@@ -1,17 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useSubmittedUsers } from '../../../../../hooks/useUserProfiles';
 import ViewDocument from './ViewDocument';
-<<<<<<< HEAD:frontend/src/pages/Dashboards/Administrator/User Verification/UserVerification.jsx
 import Verify from '../User Verification/Verify';
 import Reject from '../User Verification/Reject';
 import Sidebar from '../Sidebar';
 import getImagePath from '../../../../../utils/getImagePath';
-=======
-import Verify from './Verify';
-import Reject from './Reject';
-import Sidebar from './Sidebar';
-import getImagePath from '../../../../utils/getImagePath';
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2:frontend/src/pages/Dashboards/Administrator/UserVerification.jsx
 
 const UserVerification = () => {
     const [previewImage, setPreviewImage] = useState(null);

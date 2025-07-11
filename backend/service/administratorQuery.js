@@ -60,7 +60,6 @@ const approveJobPostIfExists = async (jobPostId) => {
 
   await db.query(
     `UPDATE job_post
-<<<<<<< HEAD
    SET 
      status = 'approved',
      jobpost_status = 'active',
@@ -72,16 +71,6 @@ const approveJobPostIfExists = async (jobPostId) => {
   );
 
 
-=======
-     SET status = 'approved',
-         rejection_reason = NULL,
-         approved_at = NOW(),
-         is_verified_jobpost = TRUE
-     WHERE job_post_id = ?`,
-    [jobPostId]
-  );
-
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
   return { success: true, message: 'Jobpost approved successfully.' };
 };
 

@@ -1,5 +1,4 @@
 const express = require("express");
-<<<<<<< HEAD
 const { 
     register, 
     verifyEmail, 
@@ -17,11 +16,6 @@ const {
 } = require("../controllers/ManpowerProviderController");
 const validateRegisterInput = require("../middleware/validateRegisterInput");
 const { uploadManpowerProviderFiles, chatImageUpload } = require("../middleware/uploadFiles")
-=======
-const { register, verifyEmail, getManpowerProviderProfile, uploadRequirements, createJobPost, apply, replyMessage, conversations, messageHistory, markAsSeen } = require("../controllers/ManpowerProviderController");
-const validateRegisterInput = require("../middleware/ValidateRegisterInput");
-const { uploadManpowerProviderFiles, chatImageUpload } = require("../middleware/UploadFiles")
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 const router = express.Router();
 
 router.post("/register/manpower-provider", validateRegisterInput, register);
@@ -34,11 +28,8 @@ router.post("/manpower-provider/messages/send", chatImageUpload, replyMessage);
 router.get("/manpower-provider/conversations", conversations)
 router.get("/manpower-provider/messages/:conversation_id", messageHistory)
 router.post("/manpower-provider/messages/mark-as-seen", markAsSeen);
-<<<<<<< HEAD
 router.get("/manpower-provider/job-applications/:user_id", appliedJobPost)
 router.patch("/manpower-provider/:jobPostId/:status", updateJobPostStatus)
 router.delete("/manpower-provider/delete/jobpost/:jobPostId", softDeleteJobPost)
-=======
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 
 module.exports = router;

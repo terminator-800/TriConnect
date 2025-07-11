@@ -25,11 +25,8 @@ import not_verified from './not_verified.svg';
 import verified from './verified.svg';
 import location from './location.svg';
 import pin from './pin.svg'
-<<<<<<< HEAD
 import three_dots from './three_dots.svg';
 import close from './close.svg'
-=======
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 
 const icons = {
     find_agency,
@@ -58,13 +55,9 @@ const icons = {
     not_verified,
     verified,
     location,
-<<<<<<< HEAD
     pin,
     three_dots,
     close
-=======
-    pin
->>>>>>> 5c24e1cab43e9ce3fdca97914d13bcb6c735a7c2
 }
 
 export default icons;
