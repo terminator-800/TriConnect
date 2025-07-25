@@ -1,26 +1,34 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { findUsersEmail } = require("../service/usersQuery");
+const { findUsersEmail, getUserInfo } = require("../service/usersQuery");
 
 const login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
     const user = await findUsersEmail(email);
+
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
+    if (!user.is_registered) {
+      return res.status(403).json({ message: "Please verify your email first." });
+    }
+
     const isMatch = await bcrypt.compare(password, user.password);
+
     if (!isMatch) {
+      console.error("❌ Password does NOT match");
       return res.status(401).json({ message: "Invalid email or password" });
     }
 
     const token = jwt.sign(
       {
-        user_id: user.user_id,     
+        user_id: user.user_id,
         email: user.email,
         role: user.role,
+        is_registered: user.is_registered,
       },
       process.env.JWT_SECRET,
       { expiresIn: "1d" }
@@ -36,7 +44,7 @@ const login = async (req, res) => {
     return res.status(200).json({
       message: "Login successful",
       role: user.role,
-      userId: user.user_id,
+      user_id: user.user_id,
     });
   } catch (error) {
     console.error("Error during login:", error);
@@ -57,5 +65,6 @@ const logout = async (req, res) => {
     return res.status(500).send('Logout failed');
   }
 };
+
 
 module.exports = { login, logout };

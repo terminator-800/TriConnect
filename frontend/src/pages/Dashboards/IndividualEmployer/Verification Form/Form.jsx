@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { ROLE } from '../../../../../utils/role';
 import Agreement from '../../Agreement';
 import FileUpload from '../Verification Form/FileUpload';
 import PreviewImage from '../Verification Form/PreviewImage';
@@ -47,7 +48,7 @@ const VerificationForm = ({ onClose, onSubmitSuccess }) => {
       formData.append('nbi_barangay_clearance', nbi_barangay_clearance);
 
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/individual-employer/upload-requirements`,
+        `${import.meta.env.VITE_API_URL}/${ROLE.INDIVIDUAL_EMPLOYER}/upload-requirements`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

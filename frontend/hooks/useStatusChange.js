@@ -7,12 +7,16 @@ export const useStatusChange = (role) => {
   const mutation = useMutation({
     mutationFn: async ({ jobPostId, status }) => {
       const response = await axios.patch(
-        `${import.meta.env.VITE_API_URL}/${role}/${jobPostId}/${status}`
+        `${import.meta.env.VITE_API_URL}/${role}/${jobPostId}/${status}`,
+        {}, 
+        {
+          withCredentials: true, 
+        }
       );
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobpost'] });
+      queryClient.invalidateQueries({ queryKey: ['jobPostsByUser'] });
     },
   });
 

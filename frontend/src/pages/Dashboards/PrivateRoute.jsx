@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Navigate, useLocation, Outlet } from "react-router-dom";
 import axios from "axios";
+import { ROLE } from "../../../utils/role";
 
 const PrivateRoute = () => {
     const [authData, setAuthData] = useState({ authenticated: null, role: null });
@@ -14,7 +15,7 @@ const PrivateRoute = () => {
 
             try {
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
-                    withCredentials: true, // ✅ this sends the cookie automatically
+                    withCredentials: true,
                 });
 
                 setAuthData({ authenticated: data.authenticated, role: data.role });
@@ -27,11 +28,11 @@ const PrivateRoute = () => {
     }, []);
 
     const roleToPath = {
-        jobseeker: "/jobseeker",
-        business_employer: "/business-employer",
-        individual_employer: "/individual-employer",
-        manpower_provider: "/manpower-provider",
-        admin: "/admin",
+        [ROLE.JOBSEEKER]: `/${ROLE.JOBSEEKER}`,
+        [ROLE.BUSINESS_EMPLOYER]: `/${ROLE.BUSINESS_EMPLOYER}`,
+        [ROLE.INDIVIDUAL_EMPLOYER]: `/${ROLE.INDIVIDUAL_EMPLOYER}`,
+        [ROLE.MANPOWER_PROVIDER]: `/${ROLE.MANPOWER_PROVIDER}`,
+        [ROLE.ADMINISTRATOR]: `/${ROLE.ADMINISTRATOR}`,
     };
 
     if (authData.authenticated === null) return <div>Loading...</div>;

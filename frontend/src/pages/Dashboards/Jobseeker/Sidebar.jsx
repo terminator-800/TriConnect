@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ROLE } from '../../../../utils/role';
 import axios from 'axios';
 import icons from '../../../assets/svg/Icons';
 import Navbar from '../../Navbar';
-import Feedback from '../Feedback';
+import Feedback from '../../../components/Feedback';
 
 const Sidebar = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
@@ -36,7 +37,7 @@ const Sidebar = () => {
     <>
       {/* Navbar */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
-        <Navbar userType={"jobseeker"} />
+        <Navbar userType={ROLE.JOBSEEKER} />
       </div>
 
       {/* Sidebar */}
@@ -48,30 +49,30 @@ const Sidebar = () => {
         </div>
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
-          <li className={`${location.pathname.includes('/jobseeker/jobs') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.JOBSEEKER}/jobs`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_job} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/jobseeker/jobs')}
+              onClick={() => navigate(`/${ROLE.JOBSEEKER}/jobs`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Find Jobs
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/jobseeker/agencies') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.JOBSEEKER}/agencies`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/jobseeker/agencies')}
+              onClick={() => navigate(`/${ROLE.JOBSEEKER}/agencies`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Find Agencies
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/jobseeker/message') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.JOBSEEKER}/message`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.message} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/jobseeker/message')}
+              onClick={() => navigate(`/${ROLE.JOBSEEKER}/message`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Messages
@@ -99,7 +100,12 @@ const Sidebar = () => {
       </div>
 
       {/* Feedback Modal */}
-      {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}
+      {feedbackModalVisible && (
+        <Feedback
+          onClose={handleFeedbackClose}
+          role={ROLE.JOBSEEKER}
+        />
+      )}
     </>
   );
 };

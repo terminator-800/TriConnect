@@ -19,7 +19,7 @@ router.get("/auth/verify-token", async (req, res) => {
     return res.status(200).json({
       authenticated: true,
       role: decoded.role,
-      user: decoded.user_id, // ✅ use correct field
+      user: decoded.user_id,
       message: `Authenticated as ${decoded.role}`,
     });
   } catch (error) {

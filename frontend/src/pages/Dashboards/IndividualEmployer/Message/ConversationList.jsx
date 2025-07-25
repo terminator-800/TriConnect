@@ -12,32 +12,33 @@ const ConversationList = ({
   user_id,
 }) => {
   const renderConversationItem = (msg) => {
+    const unkown = 'Unkown'
+
     const otherUserId = msg.sender_id === user_id ? msg.receiver_id : msg.sender_id;
     const user = allUsers.find((u) => u.user_id === otherUserId);
 
-    const name = user?.full_name || user?.agency_name || 'Unknown';
+    const name = user?.full_name || user?.agency_name || unkown;
     const initials =
-      name !== 'Unknown'
+      name !== unkown
         ? name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase()
-            .slice(0, 2)
+          .split(' ')
+          .map((n) => n[0])
+          .join('')
+          .toUpperCase()
+          .slice(0, 2)
         : '??';
 
     return (
       <div
         key={msg.conversation_id}
-        className={`p-4 cursor-pointer transition-colors duration-200 ${
-          selectedConversationId === msg.conversation_id
+        className={`p-4 cursor-pointer transition-colors duration-200 ${selectedConversationId === msg.conversation_id
             ? 'bg-blue-100'
             : !msg.is_read && msg.sender_id !== user_id
-            ? 'bg-cyan-100 animate-pulse'
-            : highlightedConversationId === msg.conversation_id
-            ? 'bg-blue-300'
-            : ''
-        }`}
+              ? 'bg-cyan-100 animate-pulse'
+              : highlightedConversationId === msg.conversation_id
+                ? 'bg-blue-300'
+                : ''
+          }`}
         onClick={() => setSelectedConversationId(msg.conversation_id)}
       >
         <div className="flex items-center gap-3">
@@ -63,11 +64,14 @@ const ConversationList = ({
     );
   };
 
+  const jobseeker = 'jobseeker'
+  const manpower = 'manpower'
+
   const dataToRender =
-    selectedTab === 'jobseekers' ? jobseekerConversations : agencyConversations;
+    selectedTab === jobseeker ? jobseekerConversations : agencyConversations;
 
   const emptyMessage =
-    selectedTab === 'jobseekers'
+    selectedTab === jobseeker
       ? 'No messages from jobseekers'
       : 'No messages from agencies';
 
@@ -75,22 +79,20 @@ const ConversationList = ({
     <div className="w-1/3 border-r border-gray-200">
       <div className="flex">
         <button
-          onClick={() => setSelectedTab('jobseekers')}
-          className={`w-1/2 py-3 text-center font-semibold ${
-            selectedTab === 'jobseekers'
+          onClick={() => setSelectedTab(jobseeker)}
+          className={`w-1/2 py-3 text-center font-semibold ${selectedTab === jobseeker
               ? 'border-b-4 border-blue-600 text-blue-600'
               : 'text-gray-500'
-          }`}
+            }`}
         >
           Job Seekers
         </button>
         <button
-          onClick={() => setSelectedTab('agencies')}
-          className={`w-1/2 py-3 text-center font-semibold ${
-            selectedTab === 'agencies'
+          onClick={() => setSelectedTab(manpower)}
+          className={`w-1/2 py-3 text-center font-semibold ${selectedTab === manpower
               ? 'border-b-4 border-blue-600 text-blue-600'
               : 'text-gray-500'
-          }`}
+            }`}
         >
           Agencies
         </button>

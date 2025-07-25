@@ -1,4 +1,4 @@
-import { ROLES } from '../../../../../utils/role';
+import { ROLE, ROLE_CATEGORY } from '../../../../../utils/role';
 import { useEffect, useRef, useReducer, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useChat } from '../../../../../hooks/useChats';
@@ -26,7 +26,7 @@ const ACTIONS = {
 const initialState = {
   text: '',
   file: null,
-  selectedTab: 'employers',
+  selectedTab: ROLE_CATEGORY.EMPLOYER,
   selectedConversationId: null,
   conversationSummaries: [],
   highlightedConversationId: null,
@@ -75,15 +75,14 @@ const Message = () => {
 
   const { data: allUsers = [] } = useAllUsers();
 
-  const mutation = useSendMessage(ROLES.JOBSEEKER, user_id);
-  const { messages } = useChat(state.selectedConversationId, user_id, ROLES.JOBSEEKER);
+  const mutation = useSendMessage(ROLE.JOBSEEKER, user_id);
+  const { messages } = useChat(state.selectedConversationId, user_id, ROLE.JOBSEEKER);
 
-  // 🧠 Fetch conversation summaries using React Query
   const { data: conversationSummaries = [] } = useQuery({
-    queryKey: ['conversationSummaries', ROLES.JOBSEEKER],
+    queryKey: ['conversationSummaries', ROLE.JOBSEEKER],
     queryFn: async () => {
-      const conversations = await messageApi.fetchConversations(ROLES.JOBSEEKER);
-      const messages = await messageApi.fetchMessagesForConversations(ROLES.JOBSEEKER, conversations);
+      const conversations = await messageApi.fetchConversations(ROLE.JOBSEEKER);
+      const messages = await messageApi.fetchMessagesForConversations(ROLE.JOBSEEKER, conversations);
       const grouped = {};
       messages.forEach((msg) => {
         const id = msg.conversation_id;
@@ -95,7 +94,6 @@ const Message = () => {
     },
   });
 
-  // 🧠 Mutation for marking messages as seen
   const markSeenMutation = useMutation({
     mutationFn: ({ ids, role, userId }) => messageApi.markAsSeen(ids, role, userId),
   });
@@ -204,7 +202,7 @@ const Message = () => {
 
     markSeenMutation.mutate({
       ids: unseen,
-      role: ROLES.JOBSEEKER,
+      role: ROLE.JOBSEEKER,
       userId: user_id,
     });
 

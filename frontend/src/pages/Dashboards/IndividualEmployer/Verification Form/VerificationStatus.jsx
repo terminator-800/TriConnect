@@ -1,4 +1,3 @@
-// src/components/VerificationStatus.jsx
 import icons from '../../../../assets/svg/Icons';
 
 const VerificationStatus = ({ profileData, openForm }) => {

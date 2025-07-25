@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import icons from "../assets/svg/Icons";
+import { ROLE } from "../../utils/role";
 
 const Navbar = ({ userType }) => {
 
@@ -80,9 +81,9 @@ const Navbar = ({ userType }) => {
       )}
 
       {/* Jobseeker */}
-      {userType === "jobseeker" && (
+      {userType === ROLE.JOBSEEKER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
-          <Link to={"/jobseeker"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+          <Link to={`/${ROLE.JOBSEEKER}`} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
@@ -106,7 +107,7 @@ const Navbar = ({ userType }) => {
 
               {dropdownVisible && (
                 <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <Link to="/jobseeker/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                  <Link to={`/${ROLE.JOBSEEKER}/profile`} className="block px-4 py-2 text-black hover:bg-gray-100">
                     View Profile
                   </Link>
                   <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
@@ -124,7 +125,7 @@ const Navbar = ({ userType }) => {
       )}
 
       {/* Business Employer */}
-      {userType === "business_employer" && (
+      {userType === ROLE.BUSINESS_EMPLOYER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
@@ -150,7 +151,7 @@ const Navbar = ({ userType }) => {
 
               {dropdownVisible && (
                 <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <Link to="/business-employer/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                  <Link to={`/${ROLE.BUSINESS_EMPLOYER}/profile`} className="block px-4 py-2 text-black hover:bg-gray-100">
                     View Profile
                   </Link>
                   <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
@@ -168,7 +169,7 @@ const Navbar = ({ userType }) => {
       )}
 
       {/* Individual Employer */}
-      {userType === "individual_employer" && (
+      {userType === ROLE.INDIVIDUAL_EMPLOYER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
@@ -194,7 +195,7 @@ const Navbar = ({ userType }) => {
 
               {dropdownVisible && (
                 <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <Link to="/individual-employer/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                  <Link to={`/${ROLE.INDIVIDUAL_EMPLOYER}/profile`} className="block px-4 py-2 text-black hover:bg-gray-100">
                     View Profile
                   </Link>
                   <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
@@ -212,7 +213,7 @@ const Navbar = ({ userType }) => {
       )}
 
       {/* Manpower Provider */}
-      {userType === "manpower_provider" && (
+      {userType === ROLE.MANPOWER_PROVIDER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
@@ -238,7 +239,7 @@ const Navbar = ({ userType }) => {
 
               {dropdownVisible && (
                 <div className="absolute right-0 mt-10 w-48 bg-white border border-gray-300 rounded shadow-lg">
-                  <Link to="/manpower-provider/profile" className="block px-4 py-2 text-black hover:bg-gray-100">
+                  <Link to={`/${ROLE.MANPOWER_PROVIDER}/profile`} className="block px-4 py-2 text-black hover:bg-gray-100">
                     View Profile
                   </Link>
                   <Link to="/messages" className="block px-4 py-2 text-black hover:bg-gray-100">
@@ -256,7 +257,7 @@ const Navbar = ({ userType }) => {
       )}
 
       {/* Admininistrator */}
-      {userType === "admin" && (
+      {userType === ROLE.ADMINISTRATOR && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
           <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />

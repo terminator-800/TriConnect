@@ -12,11 +12,12 @@ const ConversationList = ({
   user_id
 }) => {
   const renderConversationItem = (msg) => {
+    const unknown = 'Unknown'
     const otherUserId = msg.sender_id === user_id ? msg.receiver_id : msg.sender_id;
     const user = allUsers.find((u) => u.user_id === otherUserId);
-    const name = user?.business_name || user?.agency_name || user?.full_name || 'Unknown';
+    const name = user?.business_name || user?.agency_name || user?.full_name || unknown;
     const initials =
-      name !== 'Unknown'
+      name !== unknown
         ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
         : '??';
 
@@ -57,22 +58,24 @@ const ConversationList = ({
       </div>
     );
   };
-
-  const dataToRender = selectedTab === 'employers' ? employerConversations : agencyConversations;
-  const emptyMessage = selectedTab === 'employers' ? 'No messages from employers' : 'No messages from agencies';
+  
+  const employer = 'employer'
+  const manpower = 'manpower' 
+  const dataToRender = selectedTab === employer ? employerConversations : agencyConversations;
+  const emptyMessage = selectedTab === employer ? 'No messages from employers' : 'No messages from agencies';
 
   return (
     <div className="w-1/3 border-r border-gray-200">
       <div className="flex">
         <button
-          onClick={() => setSelectedTab('employers')}
-          className={`w-1/2 py-3 text-center font-semibold ${selectedTab === 'employers' ? 'border-b-4 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setSelectedTab(employer)}
+          className={`w-1/2 py-3 text-center font-semibold ${selectedTab === employer ? 'border-b-4 border-blue-600 text-blue-600' : 'text-gray-500'}`}
         >
           Employers
         </button>
         <button
-          onClick={() => setSelectedTab('agencies')}
-          className={`w-1/2 py-3 text-center font-semibold ${selectedTab === 'agencies' ? 'border-b-4 border-blue-600 text-blue-600' : 'text-gray-500'}`}
+          onClick={() => setSelectedTab(manpower)}
+          className={`w-1/2 py-3 text-center font-semibold ${selectedTab === manpower ? 'border-b-4 border-blue-600 text-blue-600' : 'text-gray-500'}`}
         >
           Agencies
         </button>

@@ -1,24 +1,16 @@
 import { useEffect, useState } from 'react';
 import { Navigate } from 'react-router-dom';
 import axios from 'axios';
+import { ROLE } from '../../utils/role';
 
 const ProtectedRoute = ({ children }) => {
   const [authStatus, setAuthStatus] = useState(null);
 
   useEffect(() => {
     const checkAuth = async () => {
-      const token = localStorage.getItem('token');
-
-      if (!token) {
-        setAuthStatus(false);
-        return;
-      }
-
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          withCredentials: true,
         });
 
         if (res.data.authenticated) {
@@ -40,16 +32,16 @@ const ProtectedRoute = ({ children }) => {
 
   if (authStatus) {
     switch (authStatus) {
-      case "jobseeker":
-        return <Navigate to="/jobseeker" />;
-      case "business_employer":
-        return <Navigate to="/business-employer" />;
-      case "individual_employer":
-        return <Navigate to="/individual-employer" />;
-      case "manpower_provider":
-        return <Navigate to="/manpower-provider" />;
-      case "admin":
-        return <Navigate to="/admin" />;
+      case ROLE.JOBSEEKER:
+        return <Navigate to={`/${ROLE.JOBSEEKER}`} />;
+      case ROLE.BUSINESS_EMPLOYER:
+        return <Navigate to={`/${ROLE.BUSINESS_EMPLOYER}`} />;
+      case ROLE.INDIVIDUAL_EMPLOYER:
+        return <Navigate to={`${ROLE.INDIVIDUAL_EMPLOYER}`} />;
+      case ROLE.MANPOWER_PROVIDER:
+        return <Navigate to={`${ROLE.MANPOWER_PROVIDER}`} />;
+      case ROLE.ADMININISTRATOR:
+        return <Navigate to={`${ROLE.ADMININISTRATOR}`} />;
       default:
         return <Navigate to="/" />;
     }

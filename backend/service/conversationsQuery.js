@@ -8,7 +8,9 @@ const handleMessageUpload = async ({ sender_id, receiver_id, message, file }) =>
   const user_large_id = Math.max(sender_id, receiver_id);
 
   const [existing] = await db.query(
-    `SELECT * FROM conversations WHERE user_small_id = ? AND user_large_id = ?`,
+    `SELECT * FROM conversations 
+     WHERE user_small_id = ? 
+     AND user_large_id = ?`,
     [user_small_id, user_large_id]
   );
 
@@ -17,7 +19,11 @@ const handleMessageUpload = async ({ sender_id, receiver_id, message, file }) =>
     conversation_id = existing[0].conversation_id;
   } else {
     const [result] = await db.query(
-      `INSERT INTO conversations (user1_id, user2_id, user_small_id, user_large_id)
+      `INSERT INTO conversations (
+        user1_id, 
+        user2_id, 
+        user_small_id, 
+        user_large_id)
        VALUES (?, ?, ?, ?)`,
       [sender_id, receiver_id, user_small_id, user_large_id]
     );
@@ -26,28 +32,38 @@ const handleMessageUpload = async ({ sender_id, receiver_id, message, file }) =>
 
   let file_url = null;
   if (file) {
-  const tempPath = path.join(__dirname, '..', 'uploads', 'chat', 'temp', file.filename);
-  const destDir = path.join(__dirname, '..', 'uploads', 'chat', conversation_id.toString());
-  const destPath = path.join(destDir, file.filename);
+    const tempPath = path.join(__dirname, '..', 'uploads', 'chat', 'temp', file.filename);
+    const destDir = path.join(__dirname, '..', 'uploads', 'chat', conversation_id.toString());
+    const destPath = path.join(destDir, file.filename);
 
-  fs.mkdirSync(destDir, { recursive: true });
-  fs.renameSync(tempPath, destPath);
-
-  file_url = `/uploads/chat/${conversation_id}/${file.filename}`;
-}
+    try {
+      await fs.promises.mkdir(destDir, { recursive: true });
+      await fs.promises.rename(tempPath, destPath);
+      file_url = `/uploads/chat/${conversation_id}/${file.filename}`;
+    } catch (err) {
+      console.error("❌ File operation failed:", err);
+      throw new Error("Failed to process uploaded file");
+    }
+  }
 
   const messageType = file_url ? 'file' : 'text';
 
-  // Insert the new message
   await db.query(
-    `INSERT INTO messages (conversation_id, sender_id, receiver_id, message_text, message_type, file_url)
+    `INSERT INTO messages (
+      conversation_id, 
+      sender_id, 
+      receiver_id, 
+      message_text, 
+      message_type, 
+      file_url)
      VALUES (?, ?, ?, ?, ?, ?)`,
     [conversation_id, sender_id, receiver_id, message || null, messageType, file_url]
   );
 
-  // ✅ Fetch and return the newly inserted message
   const [newMessageRows] = await db.query(
-    `SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at DESC LIMIT 1`,
+    `SELECT * FROM messages 
+     WHERE conversation_id = ? 
+     ORDER BY created_at DESC LIMIT 1`,
     [conversation_id]
   );
 

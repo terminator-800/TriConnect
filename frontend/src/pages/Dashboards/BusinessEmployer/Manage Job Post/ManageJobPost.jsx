@@ -1,23 +1,26 @@
-import { ROLES } from '../../../../../utils/role';
-import { format } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
-import Sidebar from '../Sidebar';
-import { useBusinessEmployerProfile } from '../../../../../hooks/useUserProfiles';
-import { useJobPosts } from '../../../../../hooks/useJobposts';
-import icons from '../../../../assets/svg/Icons';
-import { useStatusChange } from '../../../../../hooks/useStatusChange';
 import { useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { ROLE } from '../../../../../utils/role';
+import { JOBPOST_STATUS } from '../../../../../utils/JobPostStatus';
+import icons from '../../../../assets/svg/Icons';
+import Sidebar from '../Sidebar';
 import VerificationStatus from '../../../Dashboards/BusinessEmployer/Verification Form/VerificationStatus';
 import Form from '../../BusinessEmployer/Verification Form/Form';
-import ConfirmStatusChange from '../../../../../utils/ConfirmStatusChange';
-import ConfirmDeleteJobPost from '../../../../../utils/ConfirmDeleteJobPost';
+import { useBusinessEmployerProfile } from '../../../../../hooks/useUserProfiles';
+import { useJobPostsByUser } from '../../../../../hooks/useJobposts';
+import { useStatusChange } from '../../../../../hooks/useStatusChange';
 import { useDeleteJobPost } from '../../../../../hooks/useDeleteJobPost';
+import ConfirmStatusChange from '../../../../components/ConfirmStatusChange';
+import ConfirmDeleteJobPost from '../../../../components/ConfirmDeleteJobPost';
 
 const ManageJobPost = () => {
+    const [selectedJobPost, setSelectedJobPost] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [updatingId, setUpdatingId] = useState(null);
     const queryClient = useQueryClient();
 
+    // Business Profile
     const {
         data: employer,
         isLoading: isEmployerLoading,
@@ -26,44 +29,34 @@ const ManageJobPost = () => {
         refetch,
     } = useBusinessEmployerProfile();
 
+    // Get Job Posts
     const {
-        data: jobPosts = [],
+        data: jobPostsGrouped = { pending: [], active: [], completed: [] },
         isLoading: isJobsLoading,
-    } = useJobPosts();
-
-    const {
-        changeStatus,
-        isLoading: isChangingStatus,
-        error: statusChangeError,
-    } = useStatusChange(ROLES.BUSINESS_EMPLOYER);
-
-    const {
-        deleteJobPost,
-        isLoading: isDeleting,
-        error: deleteError,
-    } = useDeleteJobPost(ROLES.BUSINESS_EMPLOYER);
-
+    } = useJobPostsByUser(employer?.user_id, {
+        enabled: !!employer?.user_id,
+    });
+    
+    // Confirm Status Change
     const {
         showModal: openStatusConfirmModal,
         ModalUI: ConfirmStatusModal,
     } = ConfirmStatusChange({
-        title: 'Confirm Status Change',
-        message: (data) => `Are you sure you want to change the status to "${data?.status}"?`,
-        confirmText: 'Yes, Change',
-        cancelText: 'Cancel',
-        onConfirmAction: async ({ jobPostId, status }) => {
+        onConfirm: async ({ jobPostId, status }) => {
             try {
                 setUpdatingId(jobPostId);
                 await changeStatus({ jobPostId, status });
-                queryClient.invalidateQueries(['jobpost']);
+                queryClient.invalidateQueries(['jobPostsByUser', employer?.user_id]);
             } catch (err) {
                 console.error('Status update failed', err);
             } finally {
                 setUpdatingId(null);
+                setSelectedJobPost(null);
             }
         },
     });
 
+    // Confirm Delete Job Post
     const {
         showModal: openDeleteModal,
         ModalUI: ConfirmDeleteModal,
@@ -71,6 +64,7 @@ const ManageJobPost = () => {
         onConfirm: async (job) => {
             try {
                 await deleteJobPost(job.job_post_id);
+                queryClient.invalidateQueries(['jobPostsByUser', employer?.user_id]);
             } catch (err) {
                 console.error('Failed to delete job post', err);
             }
@@ -82,34 +76,21 @@ const ManageJobPost = () => {
         setShowForm(true);
     };
 
+    // Delete Job Post
     const handleDeleteClick = (job) => {
+        setSelectedJobPost(job);
         openDeleteModal(job);
     };
 
+    const { changeStatus, isLoading: isChangingStatus, error: statusChangeError } =
+        useStatusChange(ROLE.BUSINESS_EMPLOYER);
+
+    const { deleteJobPost, isLoading: isDeleting, error: deleteError } =
+        useDeleteJobPost(ROLE.BUSINESS_EMPLOYER);
+
     if (isEmployerLoading || isJobsLoading) return <div className="p-10">Loading...</div>;
-    if (isError || !employer) return <div className="p-10 text-red-600">Error: {error?.message || 'Employer not found.'}</div>;
-
-    const businessEmployerJobs = jobPosts.filter((job) => job.user_id === employer.user_id);
-
-    const pendingJobs = businessEmployerJobs.filter(
-        (job) =>
-            job.status === 'pending' &&
-            job.jobpost_status !== 'deleted'
-    );
-
-    const activeJobs = businessEmployerJobs.filter(
-        (job) =>
-            job.status === 'approved' &&
-            ['active', 'paused'].includes(job.jobpost_status) &&
-            job.jobpost_status !== 'deleted'
-    );
-
-    const completedJobs = businessEmployerJobs.filter(
-        (job) =>
-            job.status === 'approved' &&
-            job.jobpost_status === 'completed' &&
-            job.jobpost_status !== 'deleted'
-    );
+    if (isError || !employer)
+        return <div className="p-10 text-red-600">Error: {error?.message || 'Employer not found.'}</div>;
 
     return (
         <>
@@ -123,9 +104,10 @@ const ManageJobPost = () => {
                             <p className="text-md text-gray-700 mt-1">Welcome, {employer.full_name}</p>
                         </div>
 
+                        {/* Use grouped job data directly */}
                         <JobTable
                             title="Pending Job Post"
-                            jobs={pendingJobs}
+                            jobs={jobPostsGrouped.pending}
                             onStatusChange={openStatusConfirmModal}
                             isChangingStatus={isChangingStatus}
                             updatingId={updatingId}
@@ -135,7 +117,7 @@ const ManageJobPost = () => {
 
                         <JobTable
                             title="Active Job Post"
-                            jobs={activeJobs}
+                            jobs={jobPostsGrouped.active}
                             onStatusChange={openStatusConfirmModal}
                             isChangingStatus={isChangingStatus}
                             updatingId={updatingId}
@@ -145,7 +127,7 @@ const ManageJobPost = () => {
 
                         <JobTable
                             title="Completed Job Post"
-                            jobs={completedJobs}
+                            jobs={jobPostsGrouped.completed}
                             onStatusChange={openStatusConfirmModal}
                             isChangingStatus={isChangingStatus}
                             updatingId={updatingId}
@@ -181,8 +163,8 @@ const ManageJobPost = () => {
                 />
             )}
 
-            <ConfirmDeleteModal />
-            <ConfirmStatusModal />
+            <ConfirmDeleteModal/>
+            <ConfirmStatusModal/>
         </>
     );
 };
@@ -276,9 +258,9 @@ const StatusDropdown = ({ status, onChange }) => (
             backgroundColor: `${statusColors[status?.toLowerCase()] || 'gray'}20`,
         }}
     >
-        <option value="active">Active</option>
-        <option value="paused">Paused</option>
-        <option value="completed">Completed</option>
+        <option value={JOBPOST_STATUS.ACTIVE}>Active</option>
+        <option value={JOBPOST_STATUS.PAUSED}>Paused</option>
+        <option value={JOBPOST_STATUS.COMPLETED}>Completed</option>
     </select>
 );
 

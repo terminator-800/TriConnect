@@ -1,9 +1,10 @@
 import { useState } from 'react';
+import { ROLE } from '../../../../utils/role';
 import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import icons from '../../../assets/svg/Icons';
 import Navbar from '../../Navbar';
-import Feedback from '../Feedback';
+import Feedback from '../../../components/Feedback';
 
 const Sidebar = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
@@ -35,7 +36,7 @@ const Sidebar = () => {
   return (
     <>
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
-        <Navbar userType={"individual_employer"} />
+        <Navbar userType={ROLE.INDIVIDUAL_EMPLOYER} />
       </div>
 
       {/* Sidebar */}
@@ -46,60 +47,60 @@ const Sidebar = () => {
         </div>
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
-          <li className={`${location.pathname.includes('/individual-employer/post') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/post`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.job_post_details} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/individual-employer/post')}
+              onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/post`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Job Post Details
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/individual-employer/manage') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/manage`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.manage_job_post} alt="" className='ml-5' />
             <button
-              onClick={() => navigate('/individual-employer/manage')}
+              onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/manage`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Manage Job Post
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/individual-employer/create') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/create`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.create_job_post} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/individual-employer/create')}
+              onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/create`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Create Job Post
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/individual-employer/view') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/view`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.view_applicant} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/individual-employer/view')}
+              onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/view`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               View Applicant
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/individual-employer/find') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/find`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/individual-employer/find')}
+              onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/find`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Find Agencies
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/individual-employer/message') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/message`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.message} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/individual-employer/message')}
+              onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/message`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Messages
@@ -127,7 +128,12 @@ const Sidebar = () => {
       </div>
 
       {/* Feedback Modal */}
-      {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}
+      {feedbackModalVisible && (
+        <Feedback
+          onClose={handleFeedbackClose}
+          role={ROLE.INDIVIDUAL_EMPLOYER} 
+        />
+      )}
     </>
   );
 };

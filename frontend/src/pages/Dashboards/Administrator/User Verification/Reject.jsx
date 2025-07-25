@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { ROLE, ROLE_LABELS } from '../../../../../utils/role';
 import axios from 'axios';
 
 const Reject = ({ onClose, user, onRejected }) => {
@@ -14,17 +15,14 @@ const Reject = ({ onClose, user, onRejected }) => {
     };
   }, []);
 
-  const roleLabels = {
-    jobseeker: 'Jobseeker',
-    business_employer: 'Business Employer',
-    individual_employer: 'Individual Employer',
-    manpower_provider: 'Agency',
-  };
-
   const rejectMutation = useMutation({
     mutationFn: async () => {
       const response = await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/reject/user/${user.user_id}`
+        `${import.meta.env.VITE_API_URL}/${ROLE.ADMINISTRATOR}/reject/user/${user.user_id}`,
+        {},
+        {
+          withCredentials: true
+        }
       );
       return response.data;
     },
@@ -63,7 +61,7 @@ const Reject = ({ onClose, user, onRejected }) => {
         <div className="mb-4 text-sm text-gray-800 border border-gray-300 p-4 rounded-lg bg-gray-50">
           <p><strong>Full Name:</strong> {user.full_name || user.business_name || user.agency_name || 'N/A'}</p>
           <p><strong>Email:</strong> {user.email || 'N/A'}</p>
-          <p><strong>Role:</strong> {roleLabels[user.role] || user.role}</p>
+          <p><strong>Role:</strong> {ROLE_LABELS[user.role] || user.role}</p>
         </div>
 
         {/* Action Buttons */}

@@ -34,7 +34,6 @@ const messageApi = {
       { withCredentials: true }
     );
   }
-
 };
 
 export default messageApi;

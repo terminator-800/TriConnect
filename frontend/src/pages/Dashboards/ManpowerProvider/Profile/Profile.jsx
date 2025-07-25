@@ -8,7 +8,9 @@ import Security from './Security';
 import VerificationStatus from '../VerificationForm/VerificationStatus';
 
 const ManpowerProviderProfile = () => {
-  const [activeTab, setActiveTab] = useState('personal');
+  const personal = 'personal'
+  const security = 'security'
+  const [activeTab, setActiveTab] = useState(personal);
   const [showForm, setShowForm] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [formData, setFormData] = useState({
@@ -80,22 +82,22 @@ const ManpowerProviderProfile = () => {
 
               <div className="bg-white w-full flex justify-between mt-20 gap-5">
                 <button
-                  onClick={() => setActiveTab('personal')}
+                  onClick={() => setActiveTab(personal)}
                   className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200
-                    ${activeTab === 'personal' ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
+                    ${activeTab === personal ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
                 >
                   Personal Information
                 </button>
                 <button
-                  onClick={() => setActiveTab('security')}
+                  onClick={() => setActiveTab(security)}
                   className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200
-                    ${activeTab === 'security' ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
+                    ${activeTab === security ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
                 >
                   Security
                 </button>
               </div>
 
-              {activeTab === 'personal' && (
+              {activeTab === personal && (
                 <PersonalInfo
                   formData={formData}
                   profileData={profileData}
@@ -106,7 +108,7 @@ const ManpowerProviderProfile = () => {
                 />
               )}
 
-              {activeTab === 'security' && <Security />}
+              {activeTab === security && <Security />}
             </>
           ) : profileData.is_rejected ? (
             <VerificationStatus profileData={profileData} openForm={openForm} />

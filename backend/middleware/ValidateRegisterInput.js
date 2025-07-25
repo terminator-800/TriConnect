@@ -1,9 +1,9 @@
 function validateRegisterInput(req, res, next) {
-    const { email, password } = req.body;
-    if (!email || !password) {
+    const { email, password, role } = req.body;
+    if (!email) {
         return res.status(400).json({ message: "Missing username or password" });
     }
-    console.log("Middleware validating registration input:", { email, password });
+    console.log("Middleware validating registration input:", { email, password, role });
     next(); 
 }
 

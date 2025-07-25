@@ -12,11 +12,12 @@ const ConversationList = ({
   user_id,
 }) => {
   const renderConversationItem = (msg) => {
+    const unkown = 'Unknown'
     const otherUserId = msg.sender_id === user_id ? msg.receiver_id : msg.sender_id;
     const user = allUsers.find((u) => u.user_id === otherUserId);
-    const name = user?.full_name || user?.agency_name || 'Unknown';
+    const name = user?.full_name || user?.agency_name || unkown;
     const initials =
-      name !== 'Unknown'
+      name !== unkown
         ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
         : '??';
 
@@ -57,9 +58,11 @@ const ConversationList = ({
     );
   };
 
-  const dataToRender = selectedTab === 'jobseekers' ? jobseekerConversations : agencyConversations;
+  const jobseeker = 'jobseeker'
+  const manpower = 'manpower'
+  const dataToRender = selectedTab === jobseeker ? jobseekerConversations : agencyConversations;
   const emptyMessage =
-    selectedTab === 'jobseekers'
+    selectedTab === jobseeker
       ? 'No messages from jobseekers'
       : 'No messages from agencies';
 
@@ -67,9 +70,9 @@ const ConversationList = ({
     <div className="w-1/3 border-r border-gray-200">
       <div className="flex">
         <button
-          onClick={() => setSelectedTab('jobseekers')}
+          onClick={() => setSelectedTab(jobseeker)}
           className={`w-1/2 py-3 text-center font-semibold ${
-            selectedTab === 'jobseekers'
+            selectedTab === jobseeker
               ? 'border-b-4 border-blue-600 text-blue-600'
               : 'text-gray-500'
           }`}
@@ -77,9 +80,9 @@ const ConversationList = ({
           Job Seekers
         </button>
         <button
-          onClick={() => setSelectedTab('agencies')}
+          onClick={() => setSelectedTab(manpower)}
           className={`w-1/2 py-3 text-center font-semibold ${
-            selectedTab === 'agencies'
+            selectedTab === manpower
               ? 'border-b-4 border-blue-600 text-blue-600'
               : 'text-gray-500'
           }`}

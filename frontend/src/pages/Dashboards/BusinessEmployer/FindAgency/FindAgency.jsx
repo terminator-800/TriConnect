@@ -1,27 +1,31 @@
 import { useState } from "react";
 import Sidebar from "../Sidebar";
-import MessageAgency from "../../../../../utils/MessageAgency";
-import { useBusinessEmployerProfile } from "../../../../../hooks/useUserProfiles"; // 🔄 Changed hook
-import { useUnmessagedAgencies } from "../../../../../hooks/useUnmessagedAgencies";
-import { ROLES } from "../../../../../utils/role";
-import VerificationStatus from "../../../../pages/Dashboards/BusinessEmployer/Verification Form/VerificationStatus"; // 🔄 Changed path
-import Form from "../../../../pages/Dashboards/BusinessEmployer/Verification Form/Form"; // 🔄 Changed path
+import MessageAgency from "../../../../components/MessageAgency";
+import { useBusinessEmployerProfile } from "../../../../../hooks/useUserProfiles";
+import { useUncontactedAgencies } from "../../../../../hooks/useUncontactedAgencies";
+import { ROLE } from "../../../../../utils/role";
+import VerificationStatus from "../../../../pages/Dashboards/BusinessEmployer/Verification Form/VerificationStatus";
+import Form from "../../../../pages/Dashboards/BusinessEmployer/Verification Form/Form";
+import Pagination from "../../../../components/Pagination";
 
 const FindAgency = () => {
+  // Business Employer Profile
   const {
     data: profileData,
     isLoading: loading,
     isError,
     error,
     refetch,
-  } = useBusinessEmployerProfile(); // 🔄 Changed hook
+  } = useBusinessEmployerProfile();
 
+  // Uncontacted Agencies
   const {
     agencies = [],
     isLoading: isAgenciesLoading,
     error: agencyError,
-  } = useUnmessagedAgencies(profileData?.user_id, ROLES.BUSINESS_EMPLOYER); // 🔄 Changed role
+  } = useUncontactedAgencies(ROLE.BUSINESS_EMPLOYER);
 
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const agenciesPerPage = 4;
   const totalPages = agencies.length > 0
@@ -73,7 +77,7 @@ const FindAgency = () => {
           <MessageAgency
             sender={profileData}
             receiver={selectedAgency}
-            role={ROLES.BUSINESS_EMPLOYER} // 🔄 Changed role
+            role={ROLE.BUSINESS_EMPLOYER}
             onClose={() => setShowApply(false)}
           />
         </div>
@@ -139,54 +143,12 @@ const FindAgency = () => {
                   ))}
                 </div>
 
-                <div className="pl-60 absolute bottom-15 left-1/2 transform -translate-x-1/2 flex items-center gap-2 justify-center">
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded ${currentPage === 1
-                        ? "text-gray-500 cursor-not-allowed"
-                        : "text-blue-700 cursor-pointer"
-                      }`}
-                  >
-                    ◀
-                  </button>
-
-                  {(() => {
-                    let start = Math.max(1, currentPage - 1);
-                    let end = Math.min(start + 2, totalPages);
-                    if (end - start < 2 && start > 1) {
-                      start = Math.max(1, end - 2);
-                    }
-
-                    return Array.from({ length: end - start + 1 }, (_, i) => start + i).map(
-                      (page) => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-1 rounded ${page === currentPage
-                              ? "bg-blue-700 text-white cursor-pointer"
-                              : "bg-gray-200 text-gray-700 cursor-pointer"
-                            }`}
-                        >
-                          {page}
-                        </button>
-                      )
-                    );
-                  })()}
-
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded ${currentPage === totalPages
-                        ? "text-gray-500 cursor-not-allowed"
-                        : "text-blue-700 cursor-pointer"
-                      }`}
-                  >
-                    ▶
-                  </button>
-                </div>
+                {/* Pagination Component */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
+                />
               </>
             )}
           </>

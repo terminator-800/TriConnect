@@ -2,14 +2,21 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const jwt = require('jsonwebtoken');
+const { v4: uuidv4 } = require("uuid");
 
 // === Directory Setup ===
 const baseUploadDir = './uploads';
 const chatUploadDir = './uploads/chat';
-const roles = ['jobseeker', 'business_employer', 'individual_employer', 'manpower_provider'];
+const reportUploadDir = './uploads/reports';
+
+const roles = ['jobseeker', 'business-employer', 'individual-employer', 'manpower-provider'];
 
 if (!fs.existsSync(chatUploadDir)) {
     fs.mkdirSync(chatUploadDir, { recursive: true });
+}
+
+if (!fs.existsSync(reportUploadDir)) {
+    fs.mkdirSync(reportUploadDir, { recursive: true });
 }
 
 // === Multer Storage Config / FILE UPLOAD FOR CHAT MESSAGES ===
@@ -46,28 +53,33 @@ const imageOnlyFilter = (req, file, cb) => {
 const chatImageUpload = multer({ storage, fileFilter: imageOnlyFilter }).single('file');
 
 
+// === Multer Storage Config / FILE UPLOAD FOR REPORTS ===
+let sharedTempFolderId = null;
 
+const reportStorage = multer.diskStorage({
+    destination: (req, _file, cb) => {
+        if (!sharedTempFolderId) {
+            sharedTempFolderId = uuidv4();
+        }
 
+        req.tempFolderId = sharedTempFolderId;
 
+        const folderPath = path.join(__dirname, "..", "uploads", "reports", `temp-${sharedTempFolderId}`);
+        fs.mkdirSync(folderPath, { recursive: true });
+        console.log(`📁 Upload folder created: ${folderPath}`);
+        cb(null, folderPath);
+    },
+    filename: (_req, file, cb) => {
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+        console.log(`📄 Generated filename: ${uniqueName}`);
+        cb(null, uniqueName);
+    }
+});
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+const reportUpload = multer({
+    storage: reportStorage,
+    fileFilter: imageOnlyFilter,
+}).array("proof_files", 5); 
 
 
 
@@ -133,17 +145,17 @@ const jobseekerUpload = multer({
 });
 
 const businessEmployerUpload = multer({
-    storage: makeStorage('business_employer', 'business_name', 'unknown_business'),
+    storage: makeStorage('business-employer', 'business_name', 'unknown_business'),
     fileFilter
 });
 
 const individualEmployerUpload = multer({
-    storage: makeStorage('individual_employer', 'full_name', 'unknown_individual'),
+    storage: makeStorage('individual-employer', 'full_name', 'unknown_individual'),
     fileFilter
 });
 
 const manpowerProviderUpload = multer({
-    storage: makeStorage('manpower_provider', 'agency_name', 'unknown_agency'),
+    storage: makeStorage('manpower-provider', 'agency_name', 'unknown_agency'),
     fileFilter
 });
 
@@ -181,4 +193,5 @@ module.exports = {
     uploadIndividualEmployerFiles,
     uploadManpowerProviderFiles,
     chatImageUpload,
+    reportUpload
 };

@@ -10,6 +10,22 @@ const fetchUsers = async () => {
   }
 };
 
+const fetchAdministratorProfile = async () => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/administrator/profile`, {
+      withCredentials: true,
+    });
+
+    if (response.status === 200) {
+      return response.data; 
+    } else if (response.status === 400) {
+      console.log('Bad request. Please try again.');
+    }
+  } catch (err) {
+    console.log('Failed to fetch profile data', err);
+  }
+};
+
 const fetchBusinessEmployereProfile = async () => {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/business-employer/profile`, {
@@ -76,4 +92,11 @@ const fetchManpowerProviderProfile = async () => {
 };
 
 
-export default { fetchUsers, fetchBusinessEmployereProfile, fetchIndividualEmployerProfile, fetchJobseekerProfile, fetchManpowerProviderProfile }
+export default { 
+  fetchUsers, 
+  fetchBusinessEmployereProfile, 
+  fetchIndividualEmployerProfile, 
+  fetchJobseekerProfile, 
+  fetchManpowerProviderProfile,
+  fetchAdministratorProfile
+}

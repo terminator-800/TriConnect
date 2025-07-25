@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { ROLE } from "../../../../../utils/role";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 
@@ -14,7 +15,7 @@ const JobPostForm = () => {
   const mutation = useMutation({
     mutationFn: async (data) => {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/individual-employer/job-post`,
+        `${import.meta.env.VITE_API_URL}/${ROLE.INDIVIDUAL_EMPLOYER}/job-post`,
         data,
         {
           withCredentials: true,

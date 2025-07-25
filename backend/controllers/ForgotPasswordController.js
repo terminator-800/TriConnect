@@ -2,10 +2,6 @@ const jwt = require("jsonwebtoken");
 const dbPromise = require("../config/DatabaseConnection");
 const nodemailer = require("nodemailer");
 const { updateUserPassword, findUsersEmail } = require("../service/usersQuery");
-const { updateJobseekerPassword } = require("../service/jobseekerQuery");
-const { updateBusinessEmployerPassword } = require("../service/BusinessEmployerQuery");
-const { updateIndividualEmployerPassword } = require("../service/individualEmployerQuery");
-const { updateManpowerProviderPassword } = require("../service/manpowerProviderQuery");
 
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
@@ -59,34 +55,6 @@ const resetPassword = async (req, res) => {
 
     await updateUserPassword(email, password);
 
-    const user = await findUsersEmail(email);
-
-    switch (user.role) {
-      case 'jobseeker':
-        await updateJobseekerPassword(email, password);
-        console.log("Jobseeker password reset.");
-        break;
-
-      case 'individual_employer':
-        await updateIndividualEmployerPassword(email, password);
-        console.log("Individual Employer password reset.");
-        break;
-
-      case 'business_employer':
-        await updateBusinessEmployerPassword(email, password);
-        console.log("Business Employer password reset.");
-        break;
-
-      case 'manpower_provider':
-        await updateManpowerProviderPassword(email, password);
-        console.log("Manpower Provider password reset.");
-        break;
-
-      default:
-        console.warn("Unknown role during password reset.");
-        break;
-    }
-
     res.json({ message: "Password has been reset successfully." });
 
   } catch (error) {
@@ -106,5 +74,5 @@ const resetPassword = async (req, res) => {
 
 module.exports = {
   forgotPassword,
-  resetPassword
+  resetPassword,
 };

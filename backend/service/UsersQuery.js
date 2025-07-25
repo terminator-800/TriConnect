@@ -1,13 +1,15 @@
 const dbPromise = require("../config/DatabaseConnection");
+const bcrypt = require('bcrypt');
 const fs = require('fs').promises;
 const path = require('path');
+const { ROLE } = require("../utils/roles")
 
-async function createUsers(email, password, role) {
+async function createUsers(email, hashedPassword, role) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
             "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-            [email, password, role]
+            [email, hashedPassword, role] 
         );
         return { success: true, user_id: result.insertId };
     } catch (error) {
@@ -27,6 +29,14 @@ async function findUsersEmail(email) {
     } catch (error) {
         return null;
     }
+}
+
+async function markRegistered(email) {
+  const db = await dbPromise;
+  await db.execute(
+    "UPDATE users SET is_registered = ? WHERE email = ?",
+    [1, email]
+  );
 }
 
 async function updateUserPassword(email, password) {
@@ -70,23 +80,23 @@ const uploadUserRequirement = async (data) => {
         const { role } = rows[0];
 
         const roleAllowedFields = {
-            jobseeker: [
+            [ROLE.JOBSEEKER]: [
                 "full_name", "date_of_birth", "phone", "gender",
                 "present_address", "permanent_address",
                 "education", "skills",
                 "government_id", "selfie_with_id", "nbi_barangay_clearance"
             ],
-            business_employer: [
+            [ROLE.BUSINESS_EMPLOYER]: [
                 "business_name", "business_address", "industry", "business_size",
                 "authorized_person", "authorized_person_id",
                 "business_permit_BIR", "DTI", "business_establishment"
             ],
-            individual_employer: [
+            [ROLE.INDIVIDUAL_EMPLOYER]: [
                 "full_name", "date_of_birth", "phone", "gender",
                 "present_address", "permanent_address",
                 "government_id", "selfie_with_id", "nbi_barangay_clearance"
             ],
-            manpower_provider: [
+            [ROLE.MANPOWER_PROVIDER]: [
                 "agency_name", "agency_address", "agency_services",
                 "agency_authorized_person", "dole_registration_number",
                 "mayors_permit", "agency_certificate", "authorized_person_id"
@@ -94,10 +104,10 @@ const uploadUserRequirement = async (data) => {
         };
 
         const tableMap = {
-            jobseeker: { table: "users", idField: "user_id" },
-            business_employer: { table: "users", idField: "user_id" },
-            individual_employer: { table: "users", idField: "user_id" },
-            manpower_provider: { table: "users", idField: "user_id" }
+            [ROLE.JOBSEEKER]: { table: "users", idField: "user_id" },
+            [ROLE.BUSINESS_EMPLOYER]: { table: "users", idField: "user_id" },
+            [ROLE.INDIVIDUAL_EMPLOYER]: { table: "users", idField: "user_id" },
+            [ROLE.MANPOWER_PROVIDER]: { table: "users", idField: "user_id" }
         };
 
         const allowedFields = roleAllowedFields[role];
@@ -126,7 +136,6 @@ const uploadUserRequirement = async (data) => {
             }
         }
 
-        // Set is_submitted = true and is_rejected = false
         fieldsToUpdate.push("is_submitted = ?", "is_rejected = ?");
         values.push(true, false, data.user_id);
 
@@ -155,6 +164,7 @@ async function fetchAllUser() {
                 role,
                 email,
                 is_verified,
+                is_registered,
                 is_submitted,
                 -- Shared fields
                 full_name,
@@ -193,7 +203,7 @@ async function fetchAllUser() {
                 agency_certificate
 
             FROM users
-            WHERE role IN ('jobseeker', 'business_employer', 'individual_employer', 'manpower_provider')
+            WHERE role IN ('jobseeker', 'business-employer', 'individual-employer', 'manpower-provider')
             ORDER BY created_at DESC
         `);
 
@@ -208,7 +218,9 @@ async function verifyUsers(user_id) {
     const db = await dbPromise;
 
     const [userRows] = await db.execute(
-        `SELECT user_id FROM users WHERE user_id = ?`,
+       `SELECT user_id 
+        FROM users 
+        WHERE user_id = ?`,
         [user_id]
     );
 
@@ -217,7 +229,9 @@ async function verifyUsers(user_id) {
     }
 
     const [userUpdateResult] = await db.execute(
-        `UPDATE users SET is_verified = ?, is_rejected = ?, verified_at = NOW() WHERE user_id = ?`,
+       `UPDATE users 
+        SET is_verified = ?, is_rejected = ?, verified_at = NOW() 
+        WHERE user_id = ?`,
         [true, false, user_id]
     );
 
@@ -231,12 +245,18 @@ async function verifyUsers(user_id) {
 async function rejectUsers(user_id) {
     const db = await dbPromise;
 
-    const [userRows] = await db.execute(`SELECT role FROM users WHERE user_id = ?`, [user_id]);
+    const [userRows] = await db.execute(
+       `SELECT role 
+        FROM users 
+        WHERE user_id = ?`, 
+        [user_id]
+    );
+
     if (!userRows.length) throw new Error("User not found.");
     const role = userRows[0].role;
 
     const roleFields = {
-        jobseeker: {
+        [ROLE.JOBSEEKER]: {
             table: "users",
             idField: "user_id",
             resetFields: [
@@ -246,7 +266,7 @@ async function rejectUsers(user_id) {
             ],
             fileFields: ["government_id", "selfie_with_id", "nbi_barangay_clearance"]
         },
-        business_employer: {
+        [ROLE.BUSINESS_EMPLOYER]: {
             table: "users",
             idField: "user_id",
             resetFields: [
@@ -256,7 +276,7 @@ async function rejectUsers(user_id) {
             ],
             fileFields: ["authorized_person_id", "business_permit_BIR", "DTI", "business_establishment"]
         },
-        individual_employer: {
+        [ROLE.INDIVIDUAL_EMPLOYER]: {
             table: "users",
             idField: "user_id",
             resetFields: [
@@ -266,7 +286,7 @@ async function rejectUsers(user_id) {
             ],
             fileFields: ["government_id", "selfie_with_id", "nbi_barangay_clearance"]
         },
-        manpower_provider: {
+        [ROLE.MANPOWER_PROVIDER]: {
             table: "users",
             idField: "user_id",
             resetFields: [
@@ -289,13 +309,11 @@ async function rejectUsers(user_id) {
     );
     const existingData = existingRows[0] || {};
 
-    // Determine folder path
     const rawName = existingData.full_name || existingData.business_name || existingData.agency_name || "unknown";
     const safeName = rawName.replace(/[^a-zA-Z0-9 _.-]/g, "").trim();
 
     const folderPath = path.join(__dirname, "..", "uploads", role, user_id.toString(), safeName);
 
-    // Delete each file
     for (const field of fileFields) {
         const fileName = existingData[field];
         if (fileName) {
@@ -308,14 +326,12 @@ async function rejectUsers(user_id) {
         }
     }
 
-    // Delete the safeName folder
     try {
         await fs.rmdir(folderPath);
     } catch (err) {
         console.warn(`Could not delete folder: ${folderPath}`, err.message);
     }
 
-    // Optionally delete the user_id folder if empty
     const userFolderPath = path.join(__dirname, "..", "uploads", role, user_id.toString());
     try {
         const remainingItems = await fs.readdir(userFolderPath);
@@ -326,7 +342,6 @@ async function rejectUsers(user_id) {
         console.warn(`Could not clean up user folder: ${userFolderPath}`, err.message);
     }
 
-    // Reset fields in database
     const updateQuery = `
         UPDATE ${table}
         SET ${resetFields.map(field => `${field} = NULL`).join(", ")},
@@ -354,5 +369,6 @@ module.exports = {
     getUserInfo,
     fetchAllUser,
     verifyUsers,
-    rejectUsers
+    rejectUsers,
+    markRegistered
 };

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { ROLE, ROLE_LABELS } from '../../../../../utils/role';
 import axios from 'axios';
 
 const Verify = ({ onClose, user, onVerified }) => {
@@ -14,17 +15,14 @@ const Verify = ({ onClose, user, onVerified }) => {
     };
   }, []);
 
-  const roleLabels = {
-    jobseeker: 'Jobseeker',
-    business_employer: 'Business Employer',
-    individual_employer: 'Individual Employer',
-    manpower_provider: 'Agency',
-  };
-
   const verifyMutation = useMutation({
     mutationFn: async () => {
       return await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/verify/user/${user.user_id}`
+        `${import.meta.env.VITE_API_URL}/${ROLE.ADMINISTRATOR}/verify/user/${user.user_id}`,
+        {},
+        {
+          withCredentials: true
+        }
       );
     },
     onSuccess: () => {
@@ -71,7 +69,7 @@ const Verify = ({ onClose, user, onVerified }) => {
             <strong>Email:</strong> {user.email || 'N/A'}
           </p>
           <p>
-            <strong>Role:</strong> {roleLabels[user.role] || user.role}
+            <strong>Role:</strong> {ROLE_LABELS[user.role] || user.role}
           </p>
         </div>
 

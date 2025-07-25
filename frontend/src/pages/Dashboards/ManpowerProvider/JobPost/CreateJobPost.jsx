@@ -50,7 +50,7 @@ const CreateJobPost = () => {
           }}
           onSubmitSuccess={() => {
             setShowForm(false);
-            refetch(); // trigger profile data refresh
+            refetch(); 
           }}
         />
       )}

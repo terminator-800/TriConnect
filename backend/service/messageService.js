@@ -2,12 +2,14 @@ const dbPromise = require("../config/DatabaseConnection");
 const fs = require('fs/promises');
 const path = require('path');
 
-
 const getUserConversations = async (user_id) => {
     const db = await dbPromise;
 
     const [rows] = await db.query(
-        `SELECT conversation_id FROM conversations WHERE user1_id = ? OR user2_id = ?`,
+       `SELECT conversation_id 
+        FROM conversations 
+        WHERE user1_id = ? 
+        OR user2_id = ?`,
         [user_id, user_id]
     );
     return rows;
@@ -17,7 +19,9 @@ const getMessageHistoryByConversationId = async (conversation_id) => {
     const db = await dbPromise;
 
     const [messages] = await db.query(
-        `SELECT * FROM messages WHERE conversation_id = ? ORDER BY created_at ASC`,
+       `SELECT * FROM messages 
+        WHERE conversation_id = ? 
+        ORDER BY created_at ASC`,
         [conversation_id]
     );
     return messages;
@@ -29,7 +33,10 @@ const processSeenMessages = async (messageIds, viewerId) => {
     const placeholders = messageIds.map(() => '?').join(',');
 
     const [ownedRows] = await db.query(
-        `SELECT message_id FROM messages WHERE message_id IN (${placeholders}) AND receiver_id = ?`,
+       `SELECT message_id 
+        FROM messages 
+        WHERE message_id IN (${placeholders}) 
+        AND receiver_id = ?`,
         [...messageIds, viewerId]
     );
     const validMessageIds = ownedRows.map(row => row.message_id);
@@ -39,12 +46,16 @@ const processSeenMessages = async (messageIds, viewerId) => {
     }
 
     const [updateResult] = await db.query(
-        `UPDATE messages SET is_read = TRUE, read_at = NOW() WHERE message_id IN (${validMessageIds.map(() => '?').join(',')})`,
+       `UPDATE messages 
+        SET is_read = TRUE, read_at = NOW() 
+        WHERE message_id IN (${validMessageIds.map(() => '?').join(',')})`,
         validMessageIds
     );
 
     const [detailsRows] = await db.query(
-        `SELECT message_id, sender_id, conversation_id FROM messages WHERE message_id IN (${validMessageIds.map(() => '?').join(',')})`,
+       `SELECT message_id, sender_id, conversation_id 
+        FROM messages 
+        WHERE message_id IN (${validMessageIds.map(() => '?').join(',')})`,
         validMessageIds
     );
 

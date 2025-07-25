@@ -27,6 +27,8 @@ import location from './location.svg';
 import pin from './pin.svg'
 import three_dots from './three_dots.svg';
 import close from './close.svg'
+import verified_check from './verified_check.svg';
+import report_user from './report_user.svg'
 
 const icons = {
     find_agency,
@@ -57,7 +59,9 @@ const icons = {
     location,
     pin,
     three_dots,
-    close
+    close,
+    verified_check,
+    report_user,
 }
 
 export default icons;

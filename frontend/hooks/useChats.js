@@ -6,7 +6,6 @@ import messageApi from '../api/messageApi';
 export const useChat = (roomId, user_id, role) => {
   const [messages, setMessages] = useState([]);
 
-  // 🧠 Log utility
   const log = (label, error) => {
     console.error(`❌ [${label} ERROR]:`, error);
   };

@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { ROLE } from '../../../../../utils/role';
 import axios from 'axios';
 import FileUpload from './FileUpload';
 import PreviewImage from './PreviewImage';
@@ -33,11 +34,10 @@ const ManpowerProviderForm = ({ onClose, onSubmitSuccess }) => {
   const [agency_proof, setAgency_proof] = useState(null);
   const [authorized_agency_id, setAuthorized_agency_id] = useState(null);
 
-  // ✅ React Query mutation
   const mutation = useMutation({
     mutationFn: async (formData) => {
       return await axios.post(
-        `${import.meta.env.VITE_API_URL}/manpower-provider/upload-requirements`,
+        `${import.meta.env.VITE_API_URL}/${ROLE.MANPOWER_PROVIDER}/upload-requirements`,
         formData,
         {
           headers: { 'Content-Type': 'multipart/form-data' },

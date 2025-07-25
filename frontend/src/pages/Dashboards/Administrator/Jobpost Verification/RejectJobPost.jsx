@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { ROLE } from '../../../../../utils/role';
 import axios from 'axios';
 
-const RejectJobPost = ({ jobPost, users, onClose, onRejected }) => {
-  const user = users.find((u) => u.user_id === jobPost.user_id);
-
+const RejectJobPost = ({ jobPost, onClose, onRejected }) => {
   useEffect(() => {
     const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
@@ -16,7 +15,7 @@ const RejectJobPost = ({ jobPost, users, onClose, onRejected }) => {
   const rejectJobPostMutation = useMutation({
     mutationFn: async () => {
       return await axios.put(
-        `${import.meta.env.VITE_API_URL}/admin/reject/jobpost/${jobPost.job_post_id}`,
+        `${import.meta.env.VITE_API_URL}/${ROLE.ADMINISTRATOR}/reject/jobpost/${jobPost.job_post_id}`,
         {},
         { withCredentials: true }
       );
@@ -49,15 +48,13 @@ const RejectJobPost = ({ jobPost, users, onClose, onRejected }) => {
             <strong>Job Title: </strong> {jobPost.job_title}
           </p>
 
-          {/* ✅ Render user details */}
           <div className="text-sm flex gap-1">
             <h3 className="font-medium">
               <strong>Posted by:</strong>
             </h3>
-            {user?.role === 'business_employer' && <p>{user.business_name}</p>}
-            {user?.role === 'individual_employer' && <p>{user.full_name}</p>}
-            {user?.role === 'manpower_provider' && <p>{user.agency_name}</p>}
-            {user?.role === 'jobseeker' && <p>{user.full_name}</p>}
+            {jobPost.role === ROLE.BUSINESS_EMPLOYER && <p>{jobPost.business_name}</p>}
+            {jobPost.role === ROLE.INDIVIDUAL_EMPLOYER && <p>{jobPost.full_name}</p>}
+            {jobPost.role === ROLE.MANPOWER_PROVIDER && <p>{jobPost.agency_name}</p>}
           </div>
         </div>
 

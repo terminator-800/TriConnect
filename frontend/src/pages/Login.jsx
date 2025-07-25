@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import icons from '../assets/svg/Icons';
+import { ROLE } from '../../utils/role';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -14,26 +15,26 @@ const Login = () => {
         try {
             const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`,
                 { email, password },
-                { withCredentials: true });
+                { withCredentials: true });                
 
             if (res.status === 200) {
                 console.log('Login successful:', res.data);
 
                 switch (res.data.role) {
-                    case "jobseeker":
-                        navigate("/jobseeker");
+                    case ROLE.JOBSEEKER:
+                        navigate(`/${ROLE.JOBSEEKER}`);
                         break;
-                    case "business_employer":
-                        navigate("/business-employer");
+                    case ROLE.BUSINESS_EMPLOYER:
+                        navigate(`/${ROLE.BUSINESS_EMPLOYER}`);
                         break;
-                    case "individual_employer":
-                        navigate("/individual-employer");
+                    case ROLE.INDIVIDUAL_EMPLOYER:
+                        navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}`);
                         break;
-                    case "manpower_provider":
-                        navigate("/manpower-provider");
+                    case ROLE.MANPOWER_PROVIDER:
+                        navigate(`/${ROLE.MANPOWER_PROVIDER}`);
                         break;
-                    case "admin":
-                        navigate("/admin");
+                    case ROLE.ADMINISTRATOR:
+                        navigate(`/${ROLE.ADMINISTRATOR}`);
                         break;
                     default:
                         navigate("/");

@@ -1,70 +1,62 @@
-import { ROLES } from '../../../../../utils/role';
-import { format } from 'date-fns';
 import { useEffect, useRef, useState } from 'react';
-import Sidebar from '../Sidebar';
-import { useManpowerProviderProfile } from '../../../../../hooks/useUserProfiles';
-import { useJobPosts } from '../../../../../hooks/useJobposts';
-import icons from '../../../../assets/svg/Icons';
-import { useStatusChange } from '../../../../../hooks/useStatusChange';
 import { useQueryClient } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { ROLE } from '../../../../../utils/role';
+import { JOBPOST_STATUS } from '../../../../../utils/JobPostStatus';
+import icons from '../../../../assets/svg/Icons';
+import Sidebar from '../Sidebar';
 import VerificationStatus from '../../../Dashboards/ManpowerProvider/VerificationForm/VerificationStatus';
 import Form from '../../ManpowerProvider/VerificationForm/Form';
-import ConfirmStatusChange from '../../../../../utils/ConfirmStatusChange';
-import ConfirmDeleteJobPost from '../../../../../utils/ConfirmDeleteJobPost';
+import { useManpowerProviderProfile } from '../../../../../hooks/useUserProfiles';
+import { useJobPostsByUser } from '../../../../../hooks/useJobposts';
+import { useStatusChange } from '../../../../../hooks/useStatusChange';
 import { useDeleteJobPost } from '../../../../../hooks/useDeleteJobPost';
+import ConfirmStatusChange from '../../../../components/ConfirmStatusChange';
+import ConfirmDeleteJobPost from '../../../../components/ConfirmDeleteJobPost';
 
 const ManageJobPost = () => {
+    const [selectedJobPost, setSelectedJobPost] = useState(null);
     const [showForm, setShowForm] = useState(false);
     const [updatingId, setUpdatingId] = useState(null);
     const queryClient = useQueryClient();
 
+    // Manpower Provider Profile
     const {
-        data: agency,
-        isLoading: isAgencyLoading,
+        data: provider,
+        isLoading: isProviderLoading,
         isError,
         error,
         refetch,
     } = useManpowerProviderProfile();
 
+    // Get Job Posts
     const {
-        data: jobPosts = [],
+        data: jobPostsGrouped = { pending: [], active: [], completed: [] },
         isLoading: isJobsLoading,
-    } = useJobPosts();
+    } = useJobPostsByUser(provider?.user_id, {
+        enabled: !!provider?.user_id,
+    });
 
-    const {
-        changeStatus,
-        isLoading: isChangingStatus,
-        error: statusChangeError,
-    } = useStatusChange(ROLES.MANPOWER_PROVIDER);
-
-
-    const {
-        deleteJobPost, isLoading:
-        isDeleting,
-        error: deleteError
-    } = useDeleteJobPost(ROLES.MANPOWER_PROVIDER);
-
+    // Confirm Status Change
     const {
         showModal: openStatusConfirmModal,
         ModalUI: ConfirmStatusModal,
     } = ConfirmStatusChange({
-        title: 'Confirm Status Change',
-        message: (data) => `Are you sure you want to change the status to "${data?.status}"?`,
-        confirmText: 'Yes, Change',
-        cancelText: 'Cancel',
-        onConfirmAction: async ({ jobPostId, status }) => {
+        onConfirm: async ({ jobPostId, status }) => {
             try {
                 setUpdatingId(jobPostId);
                 await changeStatus({ jobPostId, status });
-                queryClient.invalidateQueries(['jobpost']);
+                queryClient.invalidateQueries(['jobPostsByUser', provider?.user_id]);
             } catch (err) {
                 console.error('Status update failed', err);
             } finally {
                 setUpdatingId(null);
+                setSelectedJobPost(null);
             }
         },
     });
 
+    // Confirm Delete Job Post
     const {
         showModal: openDeleteModal,
         ModalUI: ConfirmDeleteModal,
@@ -72,6 +64,7 @@ const ManageJobPost = () => {
         onConfirm: async (job) => {
             try {
                 await deleteJobPost(job.job_post_id);
+                queryClient.invalidateQueries(['jobPostsByUser', provider?.user_id]);
             } catch (err) {
                 console.error('Failed to delete job post', err);
             }
@@ -83,51 +76,37 @@ const ManageJobPost = () => {
         setShowForm(true);
     };
 
+    // Delete Job Post
     const handleDeleteClick = (job) => {
+        setSelectedJobPost(job);
         openDeleteModal(job);
     };
 
-    if (isAgencyLoading || isJobsLoading) return <div className="p-10">Loading...</div>;
-    if (isError || !agency) return <div className="p-10 text-red-600">Error: {error?.message || 'Agency not found.'}</div>;
+    const { changeStatus, isLoading: isChangingStatus, error: statusChangeError } =
+        useStatusChange(ROLE.MANPOWER_PROVIDER);
 
-    const agencyJobs = jobPosts.filter((job) => job.user_id === agency.user_id);
+    const { deleteJobPost, isLoading: isDeleting, error: deleteError } =
+        useDeleteJobPost(ROLE.MANPOWER_PROVIDER);
 
-
-    const pendingJobs = agencyJobs.filter(
-        (job) =>
-            job.status === 'pending' &&
-            job.jobpost_status !== 'deleted' // ⛔ exclude deleted
-    );
-
-    const activeJobs = agencyJobs.filter(
-        (job) =>
-            job.status === 'approved' &&
-            ['active', 'paused'].includes(job.jobpost_status) &&
-            job.jobpost_status !== 'deleted' // ⛔ exclude deleted
-    );
-
-    const completedJobs = agencyJobs.filter(
-        (job) =>
-            job.status === 'approved' &&
-            job.jobpost_status === 'completed' &&
-            job.jobpost_status !== 'deleted' // ⛔ exclude deleted
-    );
+    if (isProviderLoading || isJobsLoading) return <div className="p-10">Loading...</div>;
+    if (isError || !provider)
+        return <div className="p-10 text-red-600">Error: {error?.message || 'Provider not found.'}</div>;
 
     return (
         <>
             <Sidebar />
             <div className="relative min-h-[140vh] bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 p-10">
-                {agency.is_verified ? (
+                {provider.is_verified ? (
                     <>
                         <div>
                             <h1 className="text-5xl font-bold text-blue-900">Manage Job Post</h1>
                             <p className="text-2xl mt-2">View and manage all your job postings</p>
-                            <p className="text-md text-gray-700 mt-1">Welcome, {agency.agency_name}</p>
+                            <p className="text-md text-gray-700 mt-1">Welcome, {provider.agency_name}</p>
                         </div>
 
                         <JobTable
                             title="Pending Job Post"
-                            jobs={pendingJobs}
+                            jobs={jobPostsGrouped.pending}
                             onStatusChange={openStatusConfirmModal}
                             isChangingStatus={isChangingStatus}
                             updatingId={updatingId}
@@ -137,7 +116,7 @@ const ManageJobPost = () => {
 
                         <JobTable
                             title="Active Job Post"
-                            jobs={activeJobs}
+                            jobs={jobPostsGrouped.active}
                             onStatusChange={openStatusConfirmModal}
                             isChangingStatus={isChangingStatus}
                             updatingId={updatingId}
@@ -147,7 +126,7 @@ const ManageJobPost = () => {
 
                         <JobTable
                             title="Completed Job Post"
-                            jobs={completedJobs}
+                            jobs={jobPostsGrouped.completed}
                             onStatusChange={openStatusConfirmModal}
                             isChangingStatus={isChangingStatus}
                             updatingId={updatingId}
@@ -157,11 +136,11 @@ const ManageJobPost = () => {
                     </>
                 ) : (
                     <div className="bg-white shadow-md rounded-3xl p-6 w-full max-w-7xl border border-gray-300 px-20">
-                        <VerificationStatus profileData={agency} openForm={openForm} />
+                        <VerificationStatus profileData={provider} openForm={openForm} />
                         <p className="mt-4 text-sm text-gray-600">
-                            {agency.is_rejected
+                            {provider.is_rejected
                                 ? 'Your verification request was rejected. Please review and resubmit the form.'
-                                : agency.is_submitted
+                                : provider.is_submitted
                                     ? 'Your verification is under review. Please wait for approval.'
                                     : 'You need to submit verification before managing job posts.'}
                         </p>
@@ -278,9 +257,9 @@ const StatusDropdown = ({ status, onChange }) => (
             backgroundColor: `${statusColors[status?.toLowerCase()] || 'gray'}20`,
         }}
     >
-        <option value="active">Active</option>
-        <option value="paused">Paused</option>
-        <option value="completed">Completed</option>
+        <option value={JOBPOST_STATUS.ACTIVE}>Active</option>
+        <option value={JOBPOST_STATUS.PAUSED}>Paused</option>
+        <option value={JOBPOST_STATUS.COMPLETED}>Completed</option>
     </select>
 );
 

@@ -8,7 +8,9 @@ import Security from '../Profile/Security';
 import VerificationStatus from '../Verification Form/VerificationStatus';
 
 const IndividualEmployerProfile = () => {
-  const [activeTab, setActiveTab] = useState('personal');
+  const personal = 'personal'
+  const security = 'security'
+  const [activeTab, setActiveTab] = useState(personal);
   const [formData, setFormData] = useState({
     email: '',
     full_name: '',
@@ -84,20 +86,20 @@ const IndividualEmployerProfile = () => {
 
                 <div className="bg-white w-full flex justify-between mt-20 gap-5">
                   <button
-                    onClick={() => setActiveTab('personal')}
-                    className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200 ${activeTab === 'personal' ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
+                    onClick={() => setActiveTab(personal)}
+                    className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200 ${activeTab === personal ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
                   >
                     Personal Information
                   </button>
                   <button
-                    onClick={() => setActiveTab('security')}
-                    className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200 ${activeTab === 'security' ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
+                    onClick={() => setActiveTab(security)}
+                    className={`px-10 py-1 rounded-md w-full cursor-pointer transition-all duration-200 ${activeTab === security ? 'bg-blue-900 text-white' : 'bg-white border border-blue-900 text-blue-900'}`}
                   >
                     Security
                   </button>
                 </div>
 
-                {activeTab === 'personal' && (
+                {activeTab === personal && (
                   <PersonalInfo
                     formData={formData}
                     profileData={profileData}
@@ -107,7 +109,7 @@ const IndividualEmployerProfile = () => {
                     setFormData={setFormData}
                   />
                 )}
-                {activeTab === 'security' && <Security />}
+                {activeTab === security && <Security />}
               </>
             ) : (
               <VerificationStatus profileData={profileData} openForm={openForm} />

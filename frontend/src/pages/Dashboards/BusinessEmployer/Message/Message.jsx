@@ -1,4 +1,4 @@
-import { ROLES } from '../../../../../utils/role';
+import { ROLE } from '../../../../../utils/role';
 import { useEffect, useRef, useReducer, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useChat } from '../../../../../hooks/useChats';
@@ -26,7 +26,7 @@ const ACTIONS = {
 const initialState = {
   text: '',
   file: null,
-  selectedTab: 'jobseekers',
+  selectedTab: 'jobseeker',
   selectedConversationId: null,
   conversationSummaries: [],
   highlightedConversationId: null,
@@ -74,15 +74,15 @@ const Message = () => {
   const user_id = profile?.user_id;
 
   const { data: allUsers = [] } = useAllUsers();
-  const mutation = useSendMessage(ROLES.BUSINESS_EMPLOYER, user_id);
-  const { messages } = useChat(state.selectedConversationId, user_id, ROLES.BUSINESS_EMPLOYER);
+  const mutation = useSendMessage(ROLE.BUSINESS_EMPLOYER, user_id);
+  const { messages } = useChat(state.selectedConversationId, user_id, ROLE.BUSINESS_EMPLOYER);
 
   const { data: conversationSummaries = [] } = useQuery({
-    queryKey: ['conversationSummaries', ROLES.BUSINESS_EMPLOYER],
+    queryKey: ['conversationSummaries', ROLE.BUSINESS_EMPLOYER],
     queryFn: async () => {
-      const conversations = await messageApi.fetchConversations(ROLES.BUSINESS_EMPLOYER);
+      const conversations = await messageApi.fetchConversations(ROLE.BUSINESS_EMPLOYER);
       const messages = await messageApi.fetchMessagesForConversations(
-        ROLES.BUSINESS_EMPLOYER,
+        ROLE.BUSINESS_EMPLOYER,
         conversations
       );
       const grouped = {};
@@ -116,7 +116,7 @@ const Message = () => {
   }, [state.conversationSummaries, allUsers, user_id]);
 
   const jobseekerConversations = useMemo(
-    () => conversationsWithUsers.filter((item) => item.user?.role === ROLES.JOBSEEKER),
+    () => conversationsWithUsers.filter((item) => item.user?.role === ROLE.JOBSEEKER),
     [conversationsWithUsers]
   );
 
@@ -206,7 +206,7 @@ const Message = () => {
 
     markSeenMutation.mutate({
       ids: unseen,
-      role: ROLES.BUSINESS_EMPLOYER,
+      role: ROLE.BUSINESS_EMPLOYER,
       userId: user_id,
     });
 

@@ -38,7 +38,7 @@ import BusinessEmployerMessage from './pages/Dashboards/BusinessEmployer/Message
 
 // Jobseeker
 import JobseekerFindJob from "./pages/Dashboards/Jobseeker/Find Job/FindJob";
-import JobseekerFindAgency from "./pages/Dashboards/Jobseeker/FindAgency";
+import JobseekerFindAgency from "./pages/Dashboards/Jobseeker/FindAgency/FindAgency";
 import JobseekerMessage from "./pages/Dashboards/Jobseeker/Message/Message";
 
 // Manpower Provider
@@ -52,8 +52,8 @@ import UserVerification from './pages/Dashboards/Administrator/User Verification
 import VerifiedUser from './pages/Dashboards/Administrator/VerifiedUser'
 import JobPostVerification from './pages/Dashboards/Administrator/Jobpost Verification/JobPostVerification'
 import VerifiedJobPost from './pages/Dashboards/Administrator/VerifiedJobPost'
-import ReportedUser from './pages/Dashboards/Administrator/ReportedUser'
-import UserFeedback from './pages/Dashboards/Administrator/UserFeedback'
+import ReportedUsers from './pages/Dashboards/Administrator/ReportedUsers/ReportedUsers'
+import UserFeedback from './pages/Dashboards/Administrator/UserFeedback/UserFeedback'
 
 function App() {
   return (
@@ -145,17 +145,17 @@ function App() {
           <Route path="jobs" element={<ManpowerProviderFindJob />} />
           <Route path="create" element={<ManpowerProviderCreateJobPost />} />
           <Route path="manage" element={<ManpowerProviderManageJobPost />} />
-          <Route path="messages" element={<ManpowerProviderMessage />} />
+          <Route path="message" element={<ManpowerProviderMessage />} />
         </Route>
 
         {/* Administrator */}
-        <Route path="/admin/*" element={<PrivateRoute />}>
+        <Route path="/administrator/*" element={<PrivateRoute />}>
           <Route index element={<AdministratorDashboard />} />
           <Route path="verification" element={<UserVerification />} />
           <Route path="verified" element={<VerifiedUser />} />
           <Route path="job-post-verification" element={<JobPostVerification />} />
           <Route path="verified-job-post" element={<VerifiedJobPost />} />
-          <Route path="reported" element={<ReportedUser />} />
+          <Route path="reported" element={<ReportedUsers />} />
           <Route path="feedback" element={<UserFeedback />} />
         </Route>
 

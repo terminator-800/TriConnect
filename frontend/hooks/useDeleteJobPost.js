@@ -11,8 +11,9 @@ export const useDeleteJobPost = (role) => {
       );
       return response.data;
     },
+    
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['jobpost'] });
+      queryClient.invalidateQueries({ queryKey: ['jobPostsByUser'] });
     },
   });
 

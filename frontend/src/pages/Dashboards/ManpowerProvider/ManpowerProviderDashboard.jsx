@@ -1,3 +1,4 @@
+import { ROLE } from '../../../../utils/role';
 import Navbar from '../../Navbar';
 import Sidebar from './Sidebar';
 
@@ -7,7 +8,7 @@ const ManpowerProviderDashboard = () => {
 
       {/* Navbar */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
-        <Navbar userType={"manpower_provider"} />
+        <Navbar userType={`${ROLE.MANPOWER_PROVIDER}`} />
       </div>
       <Sidebar />
     </div>

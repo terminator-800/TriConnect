@@ -1,4 +1,4 @@
-import { ROLES } from '../../../../../utils/role';
+import { ROLE, ROLE_CATEGORY } from '../../../../../utils/role';
 import { useEffect, useRef, useReducer, useMemo } from 'react';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { useChat } from '../../../../../hooks/useChats';
@@ -26,7 +26,7 @@ const ACTIONS = {
 const initialState = {
   text: '',
   file: null,
-  selectedTab: 'employers',
+  selectedTab: ROLE_CATEGORY.EMPLOYER,
   selectedConversationId: null,
   conversationSummaries: [],
   highlightedConversationId: null,
@@ -75,15 +75,15 @@ const Message = () => {
 
   const { data: allUsers = [] } = useAllUsers();
 
-  const mutation = useSendMessage(ROLES.MANPOWER_PROVIDER, user_id);
-  const { messages } = useChat(state.selectedConversationId, user_id, ROLES.MANPOWER_PROVIDER);
+  const mutation = useSendMessage(ROLE.MANPOWER_PROVIDER, user_id);
+  const { messages } = useChat(state.selectedConversationId, user_id, ROLE.MANPOWER_PROVIDER);
 
   const { data: conversationSummaries = [] } = useQuery({
-    queryKey: ['conversationSummaries', ROLES.MANPOWER_PROVIDER],
+    queryKey: ['conversationSummaries', ROLE.MANPOWER_PROVIDER],
     queryFn: async () => {
-      const conversations = await messageApi.fetchConversations(ROLES.MANPOWER_PROVIDER);
+      const conversations = await messageApi.fetchConversations(ROLE.MANPOWER_PROVIDER);
       const messages = await messageApi.fetchMessagesForConversations(
-        ROLES.MANPOWER_PROVIDER,
+        ROLE.MANPOWER_PROVIDER,
         conversations
       );
       const grouped = {};
@@ -122,13 +122,13 @@ const Message = () => {
         (item) =>
           item.user &&
           (item.user.business_name ||
-            (item.user.full_name && item.user.role === 'individual_employer'))
+            (item.user.full_name && item.user.role === ROLE.INDIVIDUAL_EMPLOYER))
       ),
     [conversationsWithUsers]
   );
 
   const jobseekerConversations = useMemo(
-    () => conversationsWithUsers.filter((item) => item.user?.role === ROLES.JOBSEEKER),
+    () => conversationsWithUsers.filter((item) => item.user?.role === ROLE.JOBSEEKER),
     [conversationsWithUsers]
   );
 
@@ -210,7 +210,7 @@ const Message = () => {
 
     markSeenMutation.mutate({
       ids: unseen,
-      role: ROLES.MANPOWER_PROVIDER,
+      role: ROLE.MANPOWER_PROVIDER,
       userId: user_id,
     });
 

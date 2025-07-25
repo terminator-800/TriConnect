@@ -1,6 +1,7 @@
 const dbPromise = require("../config/DatabaseConnection");
+const { addMonths } = require('date-fns');
 
-const createJobPostQuery = async (user_id, role, job_title, job_type, salary_range, location, required_skill, job_description) => {
+async function createJobPostQuery(user_id, role, job_title, job_type, salary_range, location, required_skill, job_description) {
     try {
         const db = await dbPromise;
         const [result] = await db.execute(
@@ -19,24 +20,85 @@ const createJobPostQuery = async (user_id, role, job_title, job_type, salary_ran
     }
 };
 
-// jobPostModel.js
-const getAllJobPosts = async () => {
+async function getApprovedJobPosts() {
     const db = await dbPromise;
     const [rows] = await db.query(`
-        SELECT 
-            jp.*, 
-            COUNT(ja.application_id) AS applicant_count
-        FROM 
-            job_post jp
-        LEFT JOIN 
-            job_applications ja ON jp.job_post_id = ja.job_post_id
-        GROUP BY 
-            jp.job_post_id
-        ORDER BY 
-            jp.created_at DESC
-    `);
+    SELECT 
+      jp.*,
+      u.full_name,
+      u.business_name,
+      u.agency_name,
+      u.authorized_person,
+      u.agency_authorized_person
+    FROM job_post jp
+    JOIN users u ON jp.user_id = u.user_id
+    WHERE jp.status = 'approved'
+      AND jp.is_verified_jobpost = 1
+      AND jp.jobpost_status = 'active'
+  `);
     return rows;
 };
+
+
+async function getUnappliedJobPosts(applicant_id) {
+    const db = await dbPromise;
+
+    const [jobPosts] = await db.query(
+        `
+    SELECT 
+      jp.*, 
+      u.full_name, 
+      u.business_name, 
+      u.agency_name,
+      u.authorized_person,
+      u.agency_authorized_person
+    FROM job_post jp
+    LEFT JOIN users u ON jp.user_id = u.user_id
+    WHERE jp.status = 'approved'
+      AND jp.is_verified_jobpost = 1
+      AND jp.jobpost_status = 'active'
+      AND jp.user_id != ? -- 🔹 exclude user's own job posts
+      AND jp.job_post_id NOT IN (
+        SELECT ja.job_post_id
+        FROM job_applications ja
+        WHERE ja.applicant_id = ?
+      )
+    `,
+        [applicant_id, applicant_id]
+    );
+
+    return jobPosts;
+};
+
+async function getPendingJobPosts(user_id) {
+    const db = await dbPromise;
+
+    const [rows] = await db.query(`
+    SELECT 
+      jp.*, 
+      u.full_name,
+      u.business_name,
+      u.agency_name,
+      COUNT(ja.application_id) AS applicant_count
+    FROM 
+      job_post jp
+    LEFT JOIN 
+      users u ON jp.user_id = u.user_id
+    LEFT JOIN 
+      job_applications ja ON jp.job_post_id = ja.job_post_id
+    WHERE 
+      (? IS NULL OR jp.user_id = ?) 
+      AND jp.status = 'pending'
+      AND COALESCE(jp.jobpost_status, '') != 'deleted'
+    GROUP BY 
+      jp.job_post_id
+    ORDER BY 
+      jp.created_at DESC
+  `, [user_id, user_id]);
+
+    return rows;
+}
+
 
 const getJobPostById = async (jobPostId) => {
     const db = await dbPromise;
@@ -44,7 +106,7 @@ const getJobPostById = async (jobPostId) => {
     return rows[0] || null;
 };
 
-const createJobPostWithSubscriptionLogic = async ({
+async function createJobPostWithSubscriptionLogic({
     user_id,
     role,
     job_title,
@@ -53,7 +115,7 @@ const createJobPostWithSubscriptionLogic = async ({
     location,
     required_skill,
     job_description
-}) => {
+}) {
     const db = await dbPromise;
 
     // Step 1: Validate required fields
@@ -138,11 +200,50 @@ const createJobPostWithSubscriptionLogic = async ({
     return { success: true, job_post_id: insertResult.insertId };
 };
 
-const softDeleteJobPostById = async (jobPostId) => {
+async function getJobPostsByUserGrouped(user_id) {
+    const db = await dbPromise;
+
+    const [rows] = await db.query(`
+    SELECT 
+      jp.*, 
+      u.full_name, 
+      u.business_name, 
+      u.agency_name,
+      COUNT(ja.application_id) AS applicant_count,
+      CASE
+        WHEN jp.status = 'pending' AND (jp.jobpost_status != 'deleted' OR jp.jobpost_status IS NULL)
+          THEN 'pending'
+        WHEN jp.status = 'approved' AND jp.jobpost_status IN ('active', 'paused')
+          THEN 'active'
+        WHEN jp.status = 'approved' AND jp.jobpost_status = 'completed'
+          THEN 'completed'
+        ELSE NULL
+      END AS category
+    FROM job_post jp
+    LEFT JOIN users u ON jp.user_id = u.user_id
+    LEFT JOIN job_applications ja ON jp.job_post_id = ja.job_post_id
+    WHERE jp.user_id = ?
+      AND (jp.jobpost_status != 'deleted' OR jp.jobpost_status IS NULL)
+      AND (
+        (jp.status = 'pending') OR
+        (jp.status = 'approved' AND jp.jobpost_status IN ('active', 'paused', 'completed'))
+      )
+    GROUP BY jp.job_post_id
+    ORDER BY jp.created_at DESC
+  `, [user_id]);
+
+    const grouped = { pending: [], active: [], completed: [] };
+    for (const row of rows) {
+        if (row.category) grouped[row.category].push(row);
+    }
+
+    return grouped;
+}
+
+async function softDeleteJobPostById(jobPostId) {
     const expiresAt = addMonths(new Date(), 1);
 
     const db = await dbPromise;
-
 
     const softDeleteQuery = `
     UPDATE job_post 
@@ -156,10 +257,13 @@ const softDeleteJobPostById = async (jobPostId) => {
 
 module.exports = {
     createJobPostQuery,
-    getAllJobPosts,
+    getApprovedJobPosts,
+    getUnappliedJobPosts,
+    getJobPostsByUserGrouped,
+    getPendingJobPosts,
     createJobPostWithSubscriptionLogic,
     getJobPostById,
-    softDeleteJobPostById
+    softDeleteJobPostById,
 }
 
 

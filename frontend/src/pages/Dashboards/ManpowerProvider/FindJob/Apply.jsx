@@ -67,8 +67,8 @@ const Apply = ({ jobPost, employer, onClose }) => {
         file_url: data.file_url,
       });
 
-      queryClient.invalidateQueries(['jobpost']);
       queryClient.invalidateQueries(['jobApplications', profileData.user_id]);
+      queryClient.invalidateQueries(['jobPostsByUser']);
 
       setTimeout(() => {
         setSuccess(false);

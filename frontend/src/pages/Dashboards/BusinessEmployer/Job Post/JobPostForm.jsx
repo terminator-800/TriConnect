@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useMutation } from '@tanstack/react-query';
+import { ROLE } from '../../../../../utils/role';
 import axios from "axios";
 
 const JobPostForm = () => {
@@ -23,7 +24,7 @@ const JobPostForm = () => {
             };
 
             const response = await axios.post(
-                `${import.meta.env.VITE_API_URL}/business-employer/job-post`,
+                `${import.meta.env.VITE_API_URL}/${ROLE.BUSINESS_EMPLOYER}/job-post`,
                 data,
                 {
                     withCredentials: true,

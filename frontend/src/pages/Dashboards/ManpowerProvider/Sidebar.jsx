@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { ROLE } from '../../../../utils/role';
 import axios from 'axios';
 import icons from '../../../assets/svg/Icons';
 import Navbar from '../../Navbar';
-import Feedback from '../Feedback';
+import Feedback from '../../../components/Feedback';
 
 const Sidebar = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
@@ -36,7 +37,7 @@ const Sidebar = () => {
     <>
       {/* Navbar */}
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
-        <Navbar userType={"manpower_provider"} />
+        <Navbar userType={ROLE.MANPOWER_PROVIDER} />
       </div>
 
       {/* Sidebar */}
@@ -48,40 +49,40 @@ const Sidebar = () => {
         </div>
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
-          <li className={`${location.pathname.includes('/manpower-provider/jobs') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.MANPOWER_PROVIDER}/jobs`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_job} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/manpower-provider/jobs')}
+              onClick={() => navigate(`/${ROLE.MANPOWER_PROVIDER}/jobs`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Find Jobs
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/manpower-provider/manage') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.MANPOWER_PROVIDER}/manage`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/manpower-provider/manage')}
+              onClick={() => navigate(`/${ROLE.MANPOWER_PROVIDER}/manage`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Manage Job Post
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/manpower-provider/create') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.MANPOWER_PROVIDER}/create`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/manpower-provider/create')}
+              onClick={() => navigate(`/${ROLE.MANPOWER_PROVIDER}/create`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Create Job Post
             </button>
           </li>
 
-          <li className={`${location.pathname.includes('/manpower-provider/messages') ? 'bg-gray-500' : ''} flex`}>
+          <li className={`${location.pathname.includes(`/${ROLE.MANPOWER_PROVIDER}/message`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.message} alt="" className='ml-5 w-[27px]' />
             <button
-              onClick={() => navigate('/manpower-provider/messages')}
+              onClick={() => navigate(`/${ROLE.MANPOWER_PROVIDER}/message`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
             >
               Messages
@@ -109,7 +110,12 @@ const Sidebar = () => {
       </div>
 
       {/* Feedback Modal */}
-      {feedbackModalVisible && <Feedback onClose={handleFeedbackClose} />}
+      {feedbackModalVisible && (
+        <Feedback
+          onClose={handleFeedbackClose}
+          role={ROLE.MANPOWER_PROVIDER}
+        />
+      )}
     </>
   );
 };

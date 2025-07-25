@@ -6,17 +6,22 @@ const ConversationList = ({
   selectedConversationId,
   setSelectedConversationId,
   employerConversations,
-  jobseekerConversations, // ✅ updated name
+  jobseekerConversations, 
   allUsers,
   highlightedConversationId,
   user_id
 }) => {
+
+  const unknown = 'Unknown'
+  const employer = 'employer'
+  const jobseeker = 'jobseeker'
+
   const renderConversationItem = (msg) => {
     const otherUserId = msg.sender_id === user_id ? msg.receiver_id : msg.sender_id;
     const user = allUsers.find((u) => u.user_id === otherUserId);
-    const name = user?.business_name || user?.full_name || 'Unknown';
+    const name = user?.business_name || user?.full_name || unknown;
 
-    const initials = name !== 'Unknown'
+    const initials = name !== unknown
       ? name.split(' ').map((n) => n[0]).join('').toUpperCase().slice(0, 2)
       : '??';
 
@@ -59,11 +64,11 @@ const ConversationList = ({
     );
   };
 
-  const dataToRender = selectedTab === 'employers'
+  const dataToRender = selectedTab === employer
     ? employerConversations
     : jobseekerConversations ?? [];
 
-  const emptyMessage = selectedTab === 'employers'
+  const emptyMessage = selectedTab === employer
     ? 'No messages from employers'
     : 'No messages from jobseekers';
 
@@ -71,9 +76,9 @@ const ConversationList = ({
     <div className="w-1/3 border-r border-gray-200">
       <div className="flex">
         <button
-          onClick={() => setSelectedTab('employers')}
+          onClick={() => setSelectedTab(employer)}
           className={`w-1/2 py-3 text-center font-semibold ${
-            selectedTab === 'employers'
+            selectedTab === employer
               ? 'border-b-4 border-blue-600 text-blue-600'
               : 'text-gray-500'
           }`}
@@ -81,9 +86,9 @@ const ConversationList = ({
           Employers
         </button>
         <button
-          onClick={() => setSelectedTab('jobseekers')}
+          onClick={() => setSelectedTab(jobseeker)}
           className={`w-1/2 py-3 text-center font-semibold ${
-            selectedTab === 'jobseekers'
+            selectedTab === jobseeker
               ? 'border-b-4 border-blue-600 text-blue-600'
               : 'text-gray-500'
           }`}

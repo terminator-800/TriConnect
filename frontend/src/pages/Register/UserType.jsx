@@ -3,14 +3,13 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import icons from '../../assets/svg/Icons'
 import Navbar from '../Navbar'
-const Register = () => {
+import { ROLE } from '../../../utils/role'
 
-  const jobseeker = "jobseeker"
-  const employer = "employer"
-  const manpower_provider = "manpower-provider"
+const Register = () => {
 
   const [isSelected, setSelectOption] = useState(null)
   const navigate = useNavigate()
+  const employer = "employer"
 
   const handleSelect = (option) => {
     setSelectOption(option)
@@ -39,8 +38,8 @@ const Register = () => {
             src={icons.select_jobseeker}
             alt=""
             className={`cursor-pointer transform transition-transform duration-300 
-             ${isSelected === jobseeker ? "scale-105 w-65" : "scale-100 w-60"}`}
-            onClick={() => handleSelect(jobseeker)}
+             ${isSelected === ROLE.JOBSEEKER ? "scale-105 w-65" : "scale-100 w-60"}`}
+            onClick={() => handleSelect(ROLE.JOBSEEKER)}
           />
 
           <img
@@ -55,8 +54,8 @@ const Register = () => {
             src={icons.select_manpower_provider}
             alt=""
             className={`cursor-pointer transform transition-transform duration-300 
-             ${isSelected === manpower_provider ? "scale-105 w-65" : "scale-100 w-60"}`}
-            onClick={() => handleSelect(manpower_provider)}
+             ${isSelected === ROLE.MANPOWER_PROVIDER ? "scale-105 w-65" : "scale-100 w-60"}`}
+            onClick={() => handleSelect(ROLE.MANPOWER_PROVIDER)}
           />
         </div>
 

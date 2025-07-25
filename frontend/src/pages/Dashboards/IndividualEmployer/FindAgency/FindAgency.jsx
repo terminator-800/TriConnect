@@ -1,13 +1,15 @@
 import { useState } from "react";
 import Sidebar from "../Sidebar";
-import MessageAgency from "../../../../../utils/MessageAgency";
+import MessageAgency from "../../../../components/MessageAgency";
 import { useIndividualEmployerProfile } from "../../../../../hooks/useUserProfiles";
-import { useUnmessagedAgencies } from "../../../../../hooks/useUnmessagedAgencies";
-import { ROLES } from "../../../../../utils/role";
+import { useUncontactedAgencies } from "../../../../../hooks/useUncontactedAgencies";
+import { ROLE } from "../../../../../utils/role";
 import VerificationStatus from "../../../../pages/Dashboards/IndividualEmployer/Verification Form/VerificationStatus";
 import Form from "../../../../pages/Dashboards/IndividualEmployer/Verification Form/Form";
+import Pagination from "../../../../components/Pagination";
 
 const FindAgency = () => {
+  // Individual Employer Profile
   const {
     data: profileData,
     isLoading: loading,
@@ -16,12 +18,14 @@ const FindAgency = () => {
     refetch,
   } = useIndividualEmployerProfile();
 
+  // Uncontacted Agencies
   const {
     agencies = [],
     isLoading: isAgenciesLoading,
     error: agencyError,
-  } = useUnmessagedAgencies(profileData?.user_id, ROLES.INDIVIDUAL_EMPLOYER);
+  } = useUncontactedAgencies(ROLE.INDIVIDUAL_EMPLOYER);
 
+  // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const agenciesPerPage = 4;
   const totalPages = agencies.length > 0
@@ -73,7 +77,7 @@ const FindAgency = () => {
           <MessageAgency
             sender={profileData}
             receiver={selectedAgency}
-            role={ROLES.INDIVIDUAL_EMPLOYER}
+            role={ROLE.INDIVIDUAL_EMPLOYER}
             onClose={() => setShowApply(false)}
           />
         </div>
@@ -139,54 +143,12 @@ const FindAgency = () => {
                   ))}
                 </div>
 
-                <div className="pl-60 absolute bottom-15 left-1/2 transform -translate-x-1/2 flex items-center gap-2 justify-center">
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded ${currentPage === 1
-                        ? "text-gray-500 cursor-not-allowed"
-                        : "text-blue-700 cursor-pointer"
-                      }`}
-                  >
-                    ◀
-                  </button>
-
-                  {(() => {
-                    let start = Math.max(1, currentPage - 1);
-                    let end = Math.min(start + 2, totalPages);
-                    if (end - start < 2 && start > 1) {
-                      start = Math.max(1, end - 2);
-                    }
-
-                    return Array.from({ length: end - start + 1 }, (_, i) => start + i).map(
-                      (page) => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-1 rounded ${page === currentPage
-                              ? "bg-blue-700 text-white cursor-pointer"
-                              : "bg-gray-200 text-gray-700 cursor-pointer"
-                            }`}
-                        >
-                          {page}
-                        </button>
-                      )
-                    );
-                  })()}
-
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded ${currentPage === totalPages
-                        ? "text-gray-500 cursor-not-allowed"
-                        : "text-blue-700 cursor-pointer"
-                      }`}
-                  >
-                    ▶
-                  </button>
-                </div>
+                {/* Pagination Component */}
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  setCurrentPage={setCurrentPage}
+                />
               </>
             )}
           </>

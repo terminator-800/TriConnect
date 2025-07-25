@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query';
-
+import { ROLE } from '../../../../../utils/role';
 import axios from "axios"
 import Agreement from '../../Agreement'
 import FileUpload from './FileUpload'
@@ -60,7 +60,7 @@ const Form = ({ onClose, onSubmitSuccess }) => {
       if (jsSelfieID) formData.append("selfie_with_id", jsSelfieID);
       if (jsNBIBarangayClearance) formData.append("nbi_barangay_clearance", jsNBIBarangayClearance);
 
-      return axios.post(`${import.meta.env.VITE_API_URL}/jobseeker/upload-requirements`, formData, {
+      return axios.post(`${import.meta.env.VITE_API_URL}/${ROLE.JOBSEEKER}/upload-requirements`, formData, {
         withCredentials: true,
         headers: { 'Content-Type': 'multipart/form-data' },
       });

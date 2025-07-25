@@ -1,5 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
+import { ROLE } from '../utils/role';
 import userApi from '../api/userApi';
+import axios from 'axios'
+
+export const useAdministratorProfile = () =>
+  useQuery({
+    queryKey: ['administrator'],
+    queryFn: userApi.fetchAdministratorProfile,
+  });
 
 export const useJobseekerProfile = () =>
   useQuery({
@@ -35,9 +43,27 @@ export const useSubmittedUsers = () =>
   useQuery({
     queryKey: ['submittedUsers'],
     queryFn: async () => {
-      const users = await userApi.fetchUsers();
-      return users.filter(
-        (user) => user.is_submitted === 1 && user.is_verified !== 1
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/${ROLE.ADMINISTRATOR}/submittedUsers`,
+        {
+          withCredentials: true,
+        }
       );
+      return response.data;
     },
   });
+
+export const useVerifiedUsers = () =>
+  useQuery({
+    queryKey: ['verifiedUsers'],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/${ROLE.ADMINISTRATOR}/verifiedUsers`,
+        {
+          withCredentials: true,
+        }
+      );
+      return response.data;
+    },
+  });
+
