@@ -1,5 +1,6 @@
 require('dotenv').config();
 console.log("🌍 CLIENT_ORIGIN:", process.env.CLIENT_ORIGIN);
+
 const userSocketMap = {};
 const express = require("express");
 const cors = require("cors");
@@ -42,7 +43,7 @@ const administratorRoute = require("./routes/administratorRoute");
 const jobPostRoute = require("./routes/jobPostRoute")
 
 app.use(cors({
-  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+  origin: process.env.CLIENT_ORIGIN,
   credentials: true
 }));
 
