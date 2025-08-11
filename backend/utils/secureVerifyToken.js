@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-const { getUserInfo } = require("../service/usersQuery");
+const { getUserInfo } = require("../service/usersQuery2");
 const { ROLE } = require("../utils/roles");
 
 const allowedRoles = [
