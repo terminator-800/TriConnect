@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { handleMessageUpload } = require('../../service/handle-message-upload');
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 
 const contactAgency = async (req, res) => {
     const { receiver_id, message } = req.body;

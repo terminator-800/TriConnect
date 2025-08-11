@@ -1,5 +1,5 @@
 const { getUserConversations } = require("../../../service/messageService/get-user-conversations-service")
-const pool = require("../../../config/databaseConnection");
+const pool = require("../../../config/databaseConnection2");
 
 const conversations = async (req, res) => {
     let connection;

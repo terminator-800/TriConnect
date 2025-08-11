@@ -1,6 +1,6 @@
 const { getUncontactedAgencies } = require("../../helpers/get-uncontacted-agency-helper");
 const { ROLE } = require("../../utils/roles");
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 
 const uncontactedAgencies = async (req, res) => {
   let connection;

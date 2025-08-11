@@ -2,7 +2,7 @@ require('dotenv').config();
 const { findUsersEmail } = require("../../service/find-user-email-service");
 const { markRegistered } = require("../../service/mark-registered-service")
 const jwt = require("jsonwebtoken");
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 
 const verifyEmail = async (req, res) => {
   let connection

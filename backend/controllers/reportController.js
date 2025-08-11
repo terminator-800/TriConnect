@@ -1,5 +1,5 @@
 const { moveFilesAndInsertToDB } = require("../service/report-service")
-const pool = require("../config/databaseConnection");
+const pool = require("../config/databaseConnection2");
 
 const {
   getTempPath,

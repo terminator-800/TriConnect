@@ -1,4 +1,4 @@
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 
 const rejectApplication = async (req, res) => {
   let connection;

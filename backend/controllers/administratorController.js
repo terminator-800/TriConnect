@@ -1,6 +1,6 @@
 require('dotenv').config();
 const { ROLE } = require("../utils/roles")
-const pool = require("../config/databaseConnection");
+const pool = require("../config/databaseConnection2");
 const { fetchAllUser, getUserInfo } = require("../service/usersQuery");
 const { getPendingJobPosts } = require("../service/jobPostQuery")
 const { format } = require('date-fns');
@@ -25,7 +25,7 @@ const {
 
 const bcrypt = require('bcrypt');
 const jwt = require("jsonwebtoken");
-const dbPromise = require("../config/databaseConnection")
+const dbPromise = require("../config/databaseConnection2")
 
 const {
     validateUserId,

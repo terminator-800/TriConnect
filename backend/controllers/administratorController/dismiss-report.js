@@ -1,4 +1,4 @@
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 const { fetchProofFiles, deleteProofRecords, deleteReportRecord, deleteFiles, deleteReportFolder } = require("../../helpers/dismiss-report-helper");
 
 const dismissReport = async (req, res) => {

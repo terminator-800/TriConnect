@@ -1,5 +1,5 @@
 const { handleMessageUpload } = require("../../../service/handle-message-upload");
-const pool = require("../../../config/databaseConnection")
+const pool = require("../../../config/databaseConnection2")
 
 const replyMessage = async (req, res) => {
   let connection;

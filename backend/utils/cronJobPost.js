@@ -1,5 +1,5 @@
 const cron = require('node-cron');
-const dbPromise = require('../config/databaseConnection');
+const dbPromise = require('../config/databaseConnection2');
 const { getAllJobPosts } = require('../service/jobPostQuery');
 
 const timestamp = () => new Date().toISOString();

@@ -1,7 +1,7 @@
 const { findUsersEmail } = require("../../service/find-user-email-service");
 const { ROLE } = require("../../utils/roles");
 const nodemailer = require("nodemailer");
-const pool = require("../../config/databaseConnection")
+const pool = require("../../config/databaseConnection2")
 const jwt = require("jsonwebtoken");
 
 const { JWT_SECRET, EMAIL_USER, EMAIL_PASS, API_BASE_URL } = process.env;

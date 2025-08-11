@@ -5,7 +5,7 @@ const { ROLE } = require("../../utils/roles")
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 
 
 const { CLIENT_ORIGIN, JWT_SECRET, EMAIL_USER, EMAIL_PASS } = process.env;

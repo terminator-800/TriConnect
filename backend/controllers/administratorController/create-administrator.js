@@ -1,4 +1,4 @@
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 const bcrypt = require('bcrypt');
 
 const createAdministrator = async () => {

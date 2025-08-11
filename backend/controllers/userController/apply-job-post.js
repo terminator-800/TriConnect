@@ -1,6 +1,6 @@
 const { handleMessageUpload } = require('../../service/handle-message-upload');
 const { insertJobApplication, transferTempFilesIfConversationExists } = require("../../helpers/apply-job-post-helper");
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 
 const apply = async (req, res) => {
   let connection;

@@ -1,4 +1,4 @@
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 const { format } = require('date-fns'); 
 
 const submittedUsers = async (req, res) => {

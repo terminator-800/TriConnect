@@ -1,5 +1,5 @@
 const { processSeenMessages } = require("../../../service/messageService/process-seen-message-service");
-const pool = require("../../../config/databaseConnection");
+const pool = require("../../../config/databaseConnection2");
 
 const markAsSeen = async (req, res) => {
   let connection;

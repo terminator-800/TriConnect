@@ -1,4 +1,4 @@
-const pool = require("../../config/databaseConnection");
+const pool = require("../../config/databaseConnection2");
 const { getApplicantsByEmployer } = require("../../service/get-applicants-by-employer-service");
 
 const viewApplicants = async (req, res) => {
