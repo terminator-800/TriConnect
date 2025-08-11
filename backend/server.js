@@ -40,20 +40,8 @@ const verifyToken = require("./utils/verifyToken");
 const administratorRoute = require("./routes/administratorRoute");
 const jobPostRoute = require("./routes/jobPostRoute")
 
-const allowedOrigins = [
-  'http://localhost:5173',
-  'https://tri-connect.vercel.app',
-  'https://tri-connect-1wzr-jx7hvhled-terminator-800s-projects.vercel.app'
-];
-
 app.use(cors({
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true); // allow server-to-server or curl requests
-    if (allowedOrigins.includes(origin)) {
-      return callback(null, true);
-    }
-    callback(new Error('Not allowed by CORS'));
-  },
+  origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
   credentials: true
 }));
 
@@ -99,7 +87,7 @@ async function startServer() {
     console.error("❌ Failed to start server:", error.message);
     process.exit(1);
   } finally {
-    if (connection) connection.release();
+    if (connection) connection.release(); 
   }
 }
 
