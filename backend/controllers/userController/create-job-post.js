@@ -1,6 +1,6 @@
 const { createJobPosts } = require("../../service/create-job-post-service"); 
 const { ROLE } = require("../../utils/roles");
-const pool = require("../../config/databaseConnection2");
+const pool = require("../../config/databaseConnection");
 
 const allowedRoles = [
     ROLE.BUSINESS_EMPLOYER,

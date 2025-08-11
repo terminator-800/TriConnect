@@ -1,5 +1,5 @@
 const { Server } = require("socket.io");
-const pool = require("./databaseConnection2");
+const pool = require("./databaseConnection");
 
 function initializeSocket(server, userSocketMap) {
   const io = new Server(server, {

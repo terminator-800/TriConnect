@@ -1,5 +1,5 @@
 const { format } = require("date-fns")
-const pool = require("../../config/databaseConnection2");
+const pool = require("../../config/databaseConnection");
 
 const reportedUsers = async (req, res) => {
     let connection;

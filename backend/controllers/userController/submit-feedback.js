@@ -1,5 +1,5 @@
 const { hasSubmittedFeedback, saveFeedback } = require("../../helpers/feedback-helper");
-const pool = require("../../config/databaseConnection2");
+const pool = require("../../config/databaseConnection");
 
 const submitFeedback = async (req, res) => {
     let connection;

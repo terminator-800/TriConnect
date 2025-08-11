@@ -12,7 +12,7 @@ const io = initializeSocket(server, userSocketMap);
 app.set('io', io);
 app.set('userSocketMap', userSocketMap);
 require('./utils/cronJobPost');
-const pool = require("./config/databaseConnection2");
+const pool = require("./config/databaseConnection");
 
 // Your DB setup
 const { createJobseekerTable } = require("./Schema/jobseekerSchema");

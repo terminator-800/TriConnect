@@ -2,7 +2,7 @@ require('dotenv').config();
 const jwt = require("jsonwebtoken");
 const { getMessageHistoryByConversationId, processSeenMessages } = require("../../../service/messageService")
 const { handleMessageUpload } = require('../../../service/handle-message-upload');
-const pool = require("../../../config/databaseConnection2");
+const pool = require("../../../config/databaseConnection");
 
 // const conversations = async (req, res) => {
 //   let connection;

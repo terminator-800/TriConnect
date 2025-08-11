@@ -1,7 +1,7 @@
 const { updateUserPassword } = require("../../service/update-user-password-service");
 const { findUsersEmail } = require("../../service/find-user-email-service");
 const jwt = require("jsonwebtoken");
-const pool = require("../../config/databaseConnection2")
+const pool = require("../../config/databaseConnection")
 const nodemailer = require("nodemailer");
 
 const forgotPassword = async (req, res) => {

@@ -1,6 +1,6 @@
 const { format } = require('date-fns');
 const { ROLE } = require('../../utils/roles');
-const pool = require('../../config/databaseConnection2');
+const pool = require('../../config/databaseConnection');
 
 const allowedRoles = [
   ROLE.JOBSEEKER,

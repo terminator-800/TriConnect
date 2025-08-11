@@ -1,7 +1,7 @@
 require('dotenv').config();
 const { deleteJobPost } = require("../../service/delete-job-post-service");
 const { getJobPostById } = require("../../service/job-post-by-id-service");
-const pool = require("../../config/databaseConnection2");
+const pool = require("../../config/databaseConnection");
 
 const softDeleteJobPost = async (req, res) => {
     const deleted = 'deleted';

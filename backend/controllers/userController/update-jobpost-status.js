@@ -1,5 +1,5 @@
 require('dotenv').config();
-const pool = require("../../config/databaseConnection2");
+const pool = require("../../config/databaseConnection");
 const { updateStatus } = require("../../helpers/update-job-post-status-helper")
 
 const updateJobPostStatus = async (req, res) => {

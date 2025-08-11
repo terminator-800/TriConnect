@@ -1,5 +1,5 @@
 const { getApprovedJobPosts } = require("../../service/get-approved-job-post-service");
-const pool = require("../../config/databaseConnection2");
+const pool = require("../../config/databaseConnection");
 
 const approvedJobPosts = async (req, res) => {
     let connection
