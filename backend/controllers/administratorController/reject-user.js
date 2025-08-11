@@ -1,4 +1,4 @@
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 const { getRoleConfig, deleteUserFilesAndFolders } = require("../../helpers/reject-user-helper");
 
 const rejectUser = async (req, res) => {

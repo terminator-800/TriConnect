@@ -1,4 +1,4 @@
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 const {  validateUserId, validateAdminRole, restrictUserInDB } = require("../../helpers/restrict-user-helper");
 
 const restrictUser = async (req, res) => {

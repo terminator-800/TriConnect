@@ -1,4 +1,4 @@
-const pool = require("../../../config/DatabaseConnection");
+const pool = require("../../../config/databaseConnection");
 const { getMessageHistoryByConversationId } = require("../../../service/messageService/get-message-history-service");
 
 const messageHistory = async (req, res) => {

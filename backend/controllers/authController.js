@@ -1,7 +1,7 @@
 const { findUsersEmail } = require("../service/find-user-email-service");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const pool = require("../config/DatabaseConnection");
+const pool = require("../config/databaseConnection");
 
 const login = async (req, res) => {
   let connection;

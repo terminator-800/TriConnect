@@ -1,7 +1,7 @@
 const { uploadUserRequirement } = require("../../service/upload-user-requirement-service");
 const { getUserInfo } = require("../../service/get-user-information-service");
 const { ROLE } = require("../../utils/roles");
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 const jwt = require("jsonwebtoken");
 
 const uploadRequirement = async (req, res) => {

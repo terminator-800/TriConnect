@@ -1,5 +1,5 @@
 const { getJobPostsByUserGrouped } = require("../../service/get-job-post-by-user-grouped-service");
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 
 const jobPostsByUser = async (req, res) => {
     let connection;

@@ -1,4 +1,4 @@
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 const { format } = require("date-fns");
 const { getApplicantsByEmployer } = require("../../service/get-applicants-by-employer-service");
 

@@ -1,4 +1,4 @@
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 const { ROLE } = require("../../utils/roles");
 const { format } = require("date-fns");
 

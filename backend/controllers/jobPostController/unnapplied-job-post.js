@@ -1,6 +1,6 @@
 const { getUnappliedJobPosts } = require("../../service/get-unnapplied-job-post-service");
 const { ROLE } = require("../../utils/roles");
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 
 const unappliedJobPosts = async (req, res) => {
     let connection;

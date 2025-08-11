@@ -1,4 +1,4 @@
-const pool = require("../../config/DatabaseConnection");
+const pool = require("../../config/databaseConnection");
 
 const verifyUser = async (req, res) => {
     const { user_id } = req.params;
