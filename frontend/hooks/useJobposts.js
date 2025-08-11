@@ -1,13 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import axios from 'axios';
 import { ROLE } from '../utils/role';
-import jobpostApi from '../api/jobpostApi';
-
-// export const useJobPosts = () =>
-//   useQuery({
-//     queryKey: ['jobpost'],
-//     queryFn: jobpostApi.fetchAllJobPost,
-//   });
 
 export const usePendingJobPosts = () =>
   useQuery({
@@ -50,11 +43,11 @@ export const useJobPostsByUser = (category) =>
     queryFn: async () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/jobPosts${category ? `?category=${category}` : ''}`,
-        { withCredentials: true } 
+        { withCredentials: true }
       );
       return response.data;
     },
-    enabled: true, 
+    enabled: true,
   });
 
 
