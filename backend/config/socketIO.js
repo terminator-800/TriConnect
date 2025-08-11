@@ -1,10 +1,23 @@
 const { Server } = require("socket.io");
 const pool = require("./databaseConnection");
 
+const allowedOrigins = [
+  'http://localhost:5173',
+  'https://tri-connect.vercel.app',
+  'https://tri-connect-1wzr-jx7hvhled-terminator-800s-projects.vercel.app'
+];
+
+
 function initializeSocket(server, userSocketMap) {
   const io = new Server(server, {
     cors: {
-      origin: process.env.CLIENT_ORIGIN || "http://localhost:5173",
+      origin: function (origin, callback) {
+        if (!origin) return callback(null, true); // allow server-to-server or curl requests
+        if (allowedOrigins.includes(origin)) {
+          return callback(null, true);
+        }
+        callback(new Error('Not allowed by CORS'));
+      },
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -105,7 +118,7 @@ function initializeSocket(server, userSocketMap) {
 
         if (messages.length > 0) {
           console.log(`📨 Sending ${messages.length} queued messages to user ${userId}`);
-          
+
           // For each message, get the sender name from the appropriate table
           for (const message of messages) {
             try {
@@ -114,11 +127,11 @@ function initializeSocket(server, userSocketMap) {
                 'SELECT role FROM users WHERE user_id = ?',
                 [message.sender_id]
               );
-              
+
               if (userResult.length > 0) {
                 const senderRole = userResult[0].role;
                 let tableName;
-                
+
                 switch (senderRole) {
                   case 'jobseeker':
                     tableName = 'jobseeker';
@@ -138,17 +151,17 @@ function initializeSocket(server, userSocketMap) {
                   default:
                     tableName = 'users';
                 }
-                
+
                 // Get the sender name from the appropriate table
                 const [nameResult] = await conn.query(
-                  `SELECT full_name FROM ${tableName} WHERE ${tableName === 'jobseeker' ? 'jobseeker_id' : 
+                  `SELECT full_name FROM ${tableName} WHERE ${tableName === 'jobseeker' ? 'jobseeker_id' :
                     tableName === 'business_employer' ? 'business_employer_id' :
-                    tableName === 'individual_employer' ? 'individual_employer_id' :
-                    tableName === 'manpower_provider' ? 'manpower_provider_id' :
-                    'user_id'} = ?`,
+                      tableName === 'individual_employer' ? 'individual_employer_id' :
+                        tableName === 'manpower_provider' ? 'manpower_provider_id' :
+                          'user_id'} = ?`,
                   [message.sender_id]
                 );
-                
+
                 if (nameResult.length > 0) {
                   message.sender_name = nameResult[0].full_name;
                 } else {
@@ -161,7 +174,7 @@ function initializeSocket(server, userSocketMap) {
               console.log('Could not get sender name for message:', error.message);
               message.sender_name = 'Unknown User';
             }
-            
+
             socket.emit('receiveMessage', message);
           }
         }
@@ -175,10 +188,10 @@ function initializeSocket(server, userSocketMap) {
   const emitGlobalMessage = (message) => {
     // Emit to specific room
     io.to(message.conversation_id.toString()).emit('receiveMessage', message);
-    
+
     // Emit globally to all connected users
     io.emit('receiveMessage', message);
-    
+
     // Emit conversation update
     io.emit('conversationUpdate', {
       conversation_id: message.conversation_id,
