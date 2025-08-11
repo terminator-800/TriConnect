@@ -1,4 +1,5 @@
 require('dotenv').config();
+console.log("🌍 CLIENT_ORIGIN:", process.env.CLIENT_ORIGIN);
 const userSocketMap = {};
 const express = require("express");
 const cors = require("cors");
