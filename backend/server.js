@@ -32,7 +32,7 @@ const { feedback } = require("./Schema/feedbackSchema");
 // Routes
 const jobseekerRoute = require("./routes/jobseekerRoute");
 const businessEmployerRoute = require("./routes/businessEmployerRoute");
-const individualEmployerRoute = require("./routes/IndividualEmployerRoute");
+const individualEmployerRoute = require("./routes/individualEmployerRoute");
 const manpowerProviderRoute = require("./routes/manpowerproviderRoute");
 const authRoute = require("./routes/authRoute");
 const forgotPasswordRoute = require("./routes/forgotPasswordRoute");
