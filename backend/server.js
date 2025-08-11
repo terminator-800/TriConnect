@@ -1,5 +1,5 @@
-const userSocketMap = {};
 require('dotenv').config();
+const userSocketMap = {};
 const express = require("express");
 const cors = require("cors");
 const cookieParser = require('cookie-parser');
@@ -11,8 +11,8 @@ const server = http.createServer(app);
 const io = initializeSocket(server, userSocketMap);
 app.set('io', io);
 app.set('userSocketMap', userSocketMap);
-require('./utils/cronJobPost');
 const pool = require("./config/databaseConnection");
+require('./utils/cronJobPost');
 
 // Your DB setup
 const { createJobseekerTable } = require("./Schema/jobseekerSchema");
