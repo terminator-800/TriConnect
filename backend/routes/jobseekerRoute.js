@@ -11,11 +11,11 @@ const { apply } = require("../controllers/userController/apply-job-post.js")
 const { uncontactedAgencies } = require("../controllers/userController/uncontacted-agency.js")
 const { contactAgency } = require("../controllers/userController/contact-agency.js")
 // const { appliedJobPost } = require("../controllers/userController/applied-job-post.js")
-const { authenticate } = require("../middleware/authenticate")
+const { authenticate } = require("../middleware/authenticate2.js")
 const { reportUser, reportedUsers } = require("../controllers/reportController.js")
 const { submitFeedback } = require("../controllers/userController/submit-feedback.js");
-const validateRegisterInput = require("../middleware/validateRegisterInput");
-const { uploadJobseekerFiles, chatImageUpload, reportUpload } = require("../middleware/UploadFiles")
+const validateRegisterInput = require("../middleware/validateRegisterInput2.js");
+const { uploadJobseekerFiles, chatImageUpload, reportUpload } = require("../middleware/uploadFiles2.js")
 const router = express.Router();
 
 router.post("/register/jobseeker", validateRegisterInput, registerUser);

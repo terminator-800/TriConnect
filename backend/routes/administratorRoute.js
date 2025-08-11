@@ -13,7 +13,7 @@ const { restrictUser } = require("../controllers/administratorController/restric
 const { dismissReport } = require("../controllers/administratorController/dismiss-report");
 const { usersFeedbacks } = require("../controllers/administratorController/users-feedbacks");
 const { getUserProfile } = require("../controllers/userController/user-profile")
-const { authenticate } = require("../middleware/authenticate")
+const { authenticate } = require("../middleware/authenticate2")
 const router = express.Router();
 
 router.post("/administrator/", createAdministrator)
