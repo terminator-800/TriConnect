@@ -14,7 +14,7 @@ const { contactAgency } = require("../controllers/userController/contact-agency.
 const { authenticate } = require("../middleware/authenticate2.js")
 const { reportUser, reportedUsers } = require("../controllers/reportController.js")
 const { submitFeedback } = require("../controllers/userController/submit-feedback.js");
-const validateRegisterInput = require("../middleware/validateRegisterInput2.js");
+const validateRegisterInput = require("../middleware/validateRegisterInput.js");
 const { uploadJobseekerFiles, chatImageUpload, reportUpload } = require("../middleware/uploadFiles2.js")
 const router = express.Router();
 
