@@ -1,27 +1,14 @@
-import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { ROLE } from '../../../../utils/role';
 import icons from '../../../assets/svg/Icons';
 import Navbar from '../../Navbar';
+import { useLogout } from '../../../../hooks/useLogout';
 
 const AdminSidebar = () => {
 
     const navigate = useNavigate();
     const location = useLocation();
-
-    const handleLogout = async () => {
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, {
-                withCredentials: true,
-            });
-            if (response.status === 200) {
-                console.log('Logged out successfully');
-                navigate("/login");
-            }
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
+    const { logout, isLoading: isLoggingOut } = useLogout();
 
     return (
         <>
@@ -32,23 +19,13 @@ const AdminSidebar = () => {
             {/* Sidebar */}
             <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
 
-                <div className=' flex flex-col items-center mt-30 mb-10'>
-                    <div className="bg-gray-900 w-16 h-16 rounded-full flex justify-center items-center text-lg font-bold mb-5">
-                    </div>
-                    <p className='text-blue-900 font-bold italic'>Administrator</p>
-                </div>
+                <ul className="list-none p-0 space-y-4 flex-1 flex flex-col mb-6 mt-30">
 
-                <div className="flex ml-5">
-                    <img src={icons.dashboard} alt="Dashboard Icon" className="w-[27px]" />
-                    <h2 className="text-2xl font-bold ml-5 text-black">Dashboard</h2>
-                </div>
-
-                <ul className="list-none p-0 space-y-4 flex-1 flex flex-col mt-8">
                     <li className={`${location.pathname === `/${ROLE.ADMINISTRATOR}/verification` ? 'bg-gray-500' : ''} flex`}>
                         <img src={icons.user_verification} alt="" className="ml-5 w-[27px]" />
                         <button
                             onClick={() => navigate(`/${ROLE.ADMINISTRATOR}/verification`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             User Verification
                         </button>
@@ -58,7 +35,7 @@ const AdminSidebar = () => {
                         <img src={icons.verified_user} alt="" className="ml-5 w-[27px]" />
                         <button
                             onClick={() => navigate(`/${ROLE.ADMINISTRATOR}/verified`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             Verified User
                         </button>
@@ -78,7 +55,7 @@ const AdminSidebar = () => {
                         <img src={icons.verified_job_post} alt="" className="ml-5 w-[27px]" />
                         <button
                             onClick={() => navigate(`/${ROLE.ADMINISTRATOR}/verified-job-post`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             Verified Job Post
                         </button>
@@ -88,7 +65,7 @@ const AdminSidebar = () => {
                         <img src={icons.reported_user} alt="" className="ml-5 w-[27px]" />
                         <button
                             onClick={() => navigate(`/${ROLE.ADMINISTRATOR}/reported`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             Reported User
                         </button>
@@ -98,7 +75,7 @@ const AdminSidebar = () => {
                         <img src={icons.user_feedback} alt="" className="ml-5 w-[27px]" />
                         <button
                             onClick={() => navigate(`/${ROLE.ADMINISTRATOR}/feedback`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             User Feedback
                         </button>
@@ -106,10 +83,10 @@ const AdminSidebar = () => {
 
                     <div className="mt-auto mb-4 flex justify-center">
                         <button
-                            onClick={handleLogout}
+                            onClick={logout}
                             className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
                         >
-                            Sign out
+                            {isLoggingOut ? 'Signing out...' : 'Sign out'}
                         </button>
                     </div>
                 </ul>

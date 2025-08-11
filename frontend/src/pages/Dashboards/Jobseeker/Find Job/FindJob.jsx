@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useJobseekerProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import Sidebar from "../Sidebar"
 import BrowseJob from "./BrowseJob"
 import VerificationStatus from '../Verification Form/VerificationStatus'
 import Form from "../Verification Form/Form";
+import { ROLE } from "../../../../../utils/role";
 
 const FindJob = () => {
   const [showForm, setShowForm] = useState(false);
@@ -13,7 +14,7 @@ const FindJob = () => {
     isLoading: loadingProfile,
     isError,
     refetch,
-  } = useJobseekerProfile();
+  } = useUserProfile(ROLE.JOBSEEKER);
 
   if (loadingProfile) return <div>Loading profile...</div>;
   if (isError) return <div>Failed to load profile.</div>;

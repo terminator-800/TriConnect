@@ -1,22 +1,21 @@
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from 'axios';
-import socket from '../utils/socket';
-
 const API = import.meta.env.VITE_API_URL;
 
-export const useSendMessage = (role, user_id) => {
+export const useSendMessage = (role) => {
+  
+  const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ receiver_id, message_text, file, conversation_id }) => {
+    mutationFn: async ({ receiver_id, message_text, files, conversation_id }) => {
       const formData = new FormData();
-      formData.append('sender_id', user_id);
       formData.append('receiver_id', receiver_id);
       formData.append('message_text', message_text || '');
-      formData.append('conversation_id', conversation_id); 
+      formData.append('conversation_id', conversation_id);
 
-      if (file) {
-        formData.append('file', file);
-      }
+      files.forEach((file) => {
+        formData.append('files', file);
+      });
 
       const res = await axios.post(
         `${API}/${role}/messages/send`,
@@ -30,6 +29,10 @@ export const useSendMessage = (role, user_id) => {
       );
 
       return res.data;
+    },
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries(['messages', variables.conversation_id]);
     },
 
     onError: (error) => {

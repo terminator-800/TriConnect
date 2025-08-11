@@ -1,139 +1,243 @@
-const dbPromise = require("../config/DatabaseConnection");
+// const { format } = require('date-fns');
+// const { getRoleConfig, deleteUserFilesAndFolders } = require('../helpers/reject-user-helper');
 
-const findOrCreateAdmin = async ({ email, hashedPassword }) => {
-  const db = await dbPromise;
 
-  const [rows] = await db.execute(
-    `SELECT * FROM users 
-     WHERE email = ? 
-     AND role = 'administrator'`,
-    [email]
-  );
+// // const findOrCreateAdmin = async (pool, { email, hashedPassword }) => {
+// //   const connection = await pool.getConnection();
+// //   try {
+// //     const [rows] = await connection.execute(
+// //       `SELECT * FROM users 
+// //        WHERE email = ? 
+// //        AND role = 'administrator'`,
+// //       [email]
+// //     );
 
-  if (rows.length > 0) {
-    return { alreadyExists: true, user: rows[0] };
-  }
+// //     if (rows.length > 0) {
+// //       return { alreadyExists: true, user: rows[0] };
+// //     }
 
-  const [result] = await db.execute(
-    `INSERT INTO users (
-      email, 
-      password, 
-      role, 
-      is_registered,
-      is_verified,
-      is_submitted,
-      verified_at
-    ) VALUES (?, ?, 'administrator', ?, ?, ?, NOW())`,
-    [email, hashedPassword, 1, 1, 1]
-  );
+// //     const [result] = await connection.execute(
+// //       `INSERT INTO users (
+// //         email, 
+// //         password, 
+// //         role, 
+// //         is_registered,
+// //         is_verified,
+// //         is_submitted,
+// //         verified_at
+// //       ) VALUES (?, ?, 'administrator', ?, ?, ?, NOW())`,
+// //       [email, hashedPassword, 1, 1, 1]
+// //     );
 
-  return {
-    alreadyExists: false,
-    user: {
-      user_id: result.insertId,
-      email,
-      role: 'administrator',
-      is_registered: 1,
-      is_verified: 1,
-      is_submitted: 1,
-      verified_at: new Date().toISOString(),
-    },
-  };
-};
+// //     return {
+// //       alreadyExists: false,
+// //       user: {
+// //         user_id: result.insertId,
+// //         email,
+// //         role: 'administrator',
+// //         is_registered: 1,
+// //         is_verified: 1,
+// //         is_submitted: 1,
+// //         verified_at: new Date().toISOString(),
+// //       },
+// //     };
+// //   } catch (error) {
+// //     console.error("Error in findOrCreateAdmin:", error);
+// //     throw error;
+// //   } finally {
+// //     connection.release();
+// //   }
+// // };
 
-const getSubmittedUsers = async () => {
-  const db = await dbPromise;
-  const [rows] = await db.query(`
-    SELECT * FROM users 
-    WHERE is_submitted = 1 
-      AND is_verified != 1
-      AND is_registered = 1
-      AND role != 'administrator'
-  `);
 
-  return rows;
-};
 
-const getJobPostById = async (jobPostId) => {
-  const db = await dbPromise;
-  const [rows] = await db.query(
-    `SELECT * FROM job_post 
-    WHERE job_post_id = ?`,
-    [jobPostId]
-  );
-  return rows[0] || null;
-};
+// // async function verifyUsers(pool, user_id) {
+// //   const connection = await pool.getConnection();
+// //   try {
+// //     const [userRows] = await connection.execute(
+// //       `SELECT user_id FROM users WHERE user_id = ?`,
+// //       [user_id]
+// //     );
+// //     if (userRows.length === 0) {
+// //       throw new Error('User not found.');
+// //     }
 
-const rejectJobPostIfExists = async (jobPostId) => {
-  const db = await dbPromise;
-  const jobPost = await getJobPostById(jobPostId);
+// //     const [updateResult] = await connection.execute(
+// //       `UPDATE users 
+// //              SET is_verified = ?, is_rejected = ?, verified_at = NOW() 
+// //              WHERE user_id = ?`,
+// //       [true, false, user_id]
+// //     );
 
-  if (!jobPost) {
-    return { success: false, message: 'Jobpost not found.' };
-  }
+// //     if (updateResult.affectedRows === 0) {
+// //       throw new Error('User verification failed in users table.');
+// //     }
 
-  await db.query(
-    `UPDATE job_post 
-   SET 
-     status = 'rejected', 
-     is_verified_jobpost = FALSE
-   WHERE job_post_id = ?`,
-    [jobPostId]
-  );
+// //     return { success: true, user_id };
+// //   } catch (error) {
+// //     console.error("Error verifying user:", error);
+// //     throw error;
+// //   } finally {
+// //     connection.release();
+// //   }
+// // }
 
-  return { success: true, message: 'Jobpost rejected successfully.' };
-};
+// // async function rejectUsers(pool, user_id) {
+// //   const connection = await pool.getConnection();
+// //   try {
+// //     const [userRows] = await connection.execute(
+// //       `SELECT role FROM users WHERE user_id = ?`, [user_id]
+// //     );
+// //     if (!userRows.length) throw new Error("User not found.");
 
-const approveJobPostIfExists = async (jobPostId) => {
-  const db = await dbPromise;
-  const jobPost = await getJobPostById(jobPostId);
+// //     const role = userRows[0].role;
+// //     const { table, idField, resetFields, fileFields } = getRoleConfig(role);
 
-  if (!jobPost) {
-    return { success: false, message: 'Jobpost not found.' };
-  }
+// //     const [existingRows] = await connection.execute(
+// //       `SELECT ${resetFields.join(", ")} FROM ${table} WHERE ${idField} = ?`, [user_id]
+// //     );
+// //     const existingData = existingRows[0] || {};
 
-  await db.query(
-    `UPDATE job_post
-   SET 
-     status = 'approved',
-     jobpost_status = 'active',
-     rejection_reason = NULL,
-     approved_at = NOW(),
-     is_verified_jobpost = TRUE
-   WHERE job_post_id = ?`,
-    [jobPostId]
-  );
+// //     const displayName = existingData.full_name || existingData.business_name || existingData.agency_name;
+// //     const fileList = fileFields.map(field => existingData[field]).filter(Boolean);
 
-  return { success: true, message: 'Jobpost approved successfully.' };
-};
+// //     await deleteUserFilesAndFolders(role, user_id, displayName, fileList);
 
-const getUserFeedbacks = async () => {
-  const db = await dbPromise;
+// //     const resetQuery = `
+// //       UPDATE ${table}
+// //       SET ${resetFields.map(f => `${f} = NULL`).join(", ")}
+// //       WHERE ${idField} = ?
+// //     `;
+// //     await connection.execute(resetQuery, [user_id]);
 
-  const [rows] = await db.execute(`
-    SELECT 
-      f.feedback_id,
-      f.role,
-      f.message,
-      DATE_FORMAT(f.created_at, '%M %d, %Y, at %h:%i %p') AS date_submitted,
-      CASE 
-        WHEN f.role IN ('jobseeker', 'individual-employer') THEN u.full_name
-        WHEN f.role = 'business-employer' THEN u.business_name
-        WHEN f.role = 'manpower-provider' THEN u.agency_name
-        ELSE NULL
-      END AS user_name
-    FROM feedback f
-    JOIN users u ON f.user_id = u.user_id
-    ORDER BY f.created_at DESC
-  `);
+// //     // Update user table status
+// //     const userStatusQuery = `
+// //       UPDATE users
+// //       SET is_verified = false,
+// //           is_submitted = false,
+// //           is_rejected = true,
+// //           verified_at = NULL
+// //       WHERE user_id = ?
+// //     `;
+// //     await connection.execute(userStatusQuery, [user_id]);
 
-  return rows;
-};
+// //     return {
+// //       success: true,
+// //       message: `${role} requirements rejected, files and folders removed, and rejection recorded.`
+// //     };
 
-module.exports = {
-  findOrCreateAdmin,
-  rejectJobPostIfExists,
-  approveJobPostIfExists,
-  getSubmittedUsers,
-  getUserFeedbacks
-};
+// //   } catch (error) {
+// //     console.error("Error rejecting user:", error);
+// //     throw error;
+// //   } finally {
+// //     connection.release();
+// //   }
+// // }
+
+// // async function rejectJobPostIfExists(pool, jobPostId) {
+// //   const connection = await pool.getConnection();
+// //   try {
+// //     const jobPost = await getJobPostById(pool, jobPostId);
+// //     if (!jobPost) {
+// //       return { success: false, message: 'Jobpost not found.' };
+// //     }
+
+// //     await connection.query(
+// //       `UPDATE job_post 
+// //        SET 
+// //          status = 'rejected', 
+// //          is_verified_jobpost = FALSE
+// //        WHERE job_post_id = ?`,
+// //       [jobPostId]
+// //     );
+
+// //     return { success: true, message: 'Jobpost rejected successfully.' };
+// //   } catch (error) {
+// //     console.error("Error in rejectJobPostIfExists:", error);
+// //     throw error;
+// //   } finally {
+// //     connection.release();
+// //   }
+// // };
+
+// // async function getJobPostById(connection, jobPostId) {
+// //   try {
+// //     const [rows] = await connection.query(
+// //       `SELECT * FROM job_post 
+// //        WHERE job_post_id = ?`,
+// //       [jobPostId]
+// //     );
+// //     return rows[0] || null;
+// //   } catch (error) {
+// //     console.error("Error in getJobPostById:", error);
+// //     throw error;
+// //   } finally {
+// //     connection.release();
+// //   }
+// // };
+
+// // async function approveJobPostIfExists(pool, jobPostId) {
+// //   const connection = await pool.getConnection();
+// //   try {
+// //     const jobPost = await getJobPostById(pool, jobPostId);
+// //     if (!jobPost) {
+// //       return { success: false, message: 'Jobpost not found.' };
+// //     }
+
+// //     await connection.query(
+// //       `UPDATE job_post
+// //        SET 
+// //          status = 'approved',
+// //          jobpost_status = 'active',
+// //          rejection_reason = NULL,
+// //          approved_at = NOW(),
+// //          is_verified_jobpost = TRUE
+// //        WHERE job_post_id = ?`,
+// //       [jobPostId]
+// //     );
+
+// //     return { success: true, message: 'Jobpost approved successfully.' };
+// //   } catch (error) {
+// //     console.error("Error in approveJobPostIfExists:", error);
+// //     throw error;
+// //   } finally {
+// //     connection.release();
+// //   }
+// // };
+
+// // async function getUserFeedbacks(connection) {
+// //   const [rows] = await connection.query(`
+// //     SELECT
+// //       feedback.feedback_id,
+// //       feedback.user_id,
+// //       feedback.role,
+// //       feedback.message,
+// //       DATE_FORMAT(feedback.created_at, '%Y %m %d, %h:%i %p') AS submitted_at,
+// //       CASE
+// //         WHEN feedback.role = 'jobseeker' THEN jobseeker.full_name
+// //         WHEN feedback.role = 'business-employer' THEN business_employer.business_name
+// //         WHEN feedback.role = 'individual-employer' THEN individual_employer.full_name
+// //         WHEN feedback.role = 'manpower-provider' THEN manpower_provider.agency_name 
+// //         ELSE NULL
+// //       END AS user_name
+// //     FROM feedback feedback
+// //     LEFT JOIN jobseeker jobseeker ON feedback.user_id = jobseeker.jobseeker_id
+// //     LEFT JOIN business_employer business_employer ON feedback.user_id = business_employer.business_employer_id
+// //     LEFT JOIN individual_employer individual_employer ON feedback.user_id = individual_employer.individual_employer_id
+// //     LEFT JOIN manpower_provider manpower_provider ON feedback.user_id = manpower_provider.manpower_provider_id
+// //     ORDER BY feedback.created_at DESC
+// //   `);
+// //   return rows;
+// // }
+
+
+// module.exports = {
+//   // findOrCreateAdmin,
+//   // verifyUsers,
+//   // rejectUsers,
+//   // rejectJobPostIfExists,
+//   // approveJobPostIfExists,
+//   // getSubmittedUsers,
+//   // getUserFeedbacks,
+//   // getJobPostById
+// };

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import Sidebar from "../Sidebar";
 import MessageAgency from "../../../../components/MessageAgency";
-import { useJobseekerProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import { useUncontactedAgencies } from "../../../../../hooks/useUncontactedAgencies";
 import { ROLE } from "../../../../../utils/role";
 import VerificationStatus from "../../../../pages/Dashboards/Jobseeker/Verification Form/VerificationStatus";
@@ -14,7 +14,7 @@ const FindAgency = () => {
     isError,
     error,
     refetch,
-  } = useJobseekerProfile();
+  } = useUserProfile(ROLE.JOBSEEKER);
 
   const {
     agencies = [],

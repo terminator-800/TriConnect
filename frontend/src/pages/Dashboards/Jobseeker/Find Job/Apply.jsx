@@ -1,15 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useJobseekerProfile } from '../../../../../hooks/useUserProfiles';
-import { ROLE } from '../../../../../utils/role';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
+import { useConversations } from '../../../../../hooks/CHAT';
+import { ROLE } from '../../../../../utils/role';
 import axios from 'axios';
 import icons from '../../../../assets/svg/Icons';
 import socket from '../../../../../utils/socket';
 
-const Apply = ({ jobPost, employer, onClose }) => {
+const Apply = ({ employer, onClose }) => {
     const queryClient = useQueryClient();
     const [message, setMessage] = useState('');
-    const [file, setFile] = useState(null);
+    const [files, setFiles] = useState(null);
     const [success, setSuccess] = useState(false);
 
     useEffect(() => {
@@ -19,27 +19,19 @@ const Apply = ({ jobPost, employer, onClose }) => {
         };
     }, []);
 
-    const {
-        data: profileData,
-        isLoading: loadingProfile,
-        isError: profileError,
-    } = useJobseekerProfile();
-
+    const { data: conversations } = useConversations(ROLE.JOBSEEKER);
+    console.log(conversations, 'conversations');
+    
     const mutation = useMutation({
-        mutationFn: async ({ job_post_id, sender_id, receiver_id, message, file }) => {
-            const user_small_id = Math.min(sender_id, receiver_id);
-            const user_large_id = Math.max(sender_id, receiver_id);
+        mutationFn: async ({ job_post_id, receiver_id, message, files }) => {
 
             const formData = new FormData();
             formData.append("job_post_id", job_post_id);
-            formData.append("sender_id", sender_id);
             formData.append("receiver_id", receiver_id);
-            formData.append("user_small_id", user_small_id);
-            formData.append("user_large_id", user_large_id);
             formData.append("message", message);
 
-            if (file) {
-                formData.append("file", file);
+            if (files) {
+                formData.append("files", files);
             }
 
             const res = await axios.post(
@@ -58,16 +50,15 @@ const Apply = ({ jobPost, employer, onClose }) => {
         onSuccess: (data) => {
             setSuccess(true);
             setMessage('');
-            setFile(null);
+            setFiles(null);
 
             socket.emit("sendMessage", {
-                sender_id: profileData.user_id,
                 receiver_id: employer.user_id,
                 message_text: message,
                 file_url: data.file_url,
             });
 
-            queryClient.invalidateQueries(['jobApplications', profileData.user_id]);
+            // queryClient.invalidateQueries(['jobApplications', profileData.user_id]);
             queryClient.invalidateQueries(['jobPostsByUser']);
 
             setTimeout(() => {
@@ -81,18 +72,18 @@ const Apply = ({ jobPost, employer, onClose }) => {
         },
     });
 
-    const handleSubmit = async () => {
-        if (!profileData?.user_id || !message.trim()) return;
-
-        const sender_id = profileData.user_id;
-        const receiver_id = employer.user_id;
+    const handleSubmit = () => {
+        
+        if (!message.trim() && !files) {
+            alert('Please enter a message or attach a file.');
+            return;
+        }
 
         mutation.mutate({
-            job_post_id: jobPost.job_post_id,
-            sender_id,
-            receiver_id,
+            job_post_id: employer.job_post_id,
+            receiver_id: employer.user_id,
             message,
-            file,
+            files: files
         });
     };
 
@@ -142,13 +133,13 @@ const Apply = ({ jobPost, employer, onClose }) => {
                             name="image"
                             accept="image/*,.pdf,.doc,.docx"
                             className="hidden"
-                            onChange={(e) => setFile(e.target.files[0])}
+                            onChange={(e) => setFiles(e.target.files[0])}
                         />
                     </div>
 
-                    {file && (
+                    {files && (
                         <p className="text-sm text-gray-700 mt-2">
-                            Selected: <strong>{file.name}</strong>
+                            Selected: <strong>{files.name}</strong>
                         </p>
                     )}
                 </label>
@@ -157,8 +148,9 @@ const Apply = ({ jobPost, employer, onClose }) => {
             <div className="flex justify-end gap-3 mt-4">
                 <button
                     onClick={handleSubmit}
-                    disabled={isSubmitting || loadingProfile || !message.trim()}
-                    className={`px-4 py-2 rounded-xl text-white cursor-pointer ${isSubmitting || loadingProfile
+                    disabled={isSubmitting || !message.trim()}
+                    className={`px-4 py-2 rounded-xl text-white cursor-pointer
+                         ${isSubmitting
                         ? 'bg-gray-500 cursor-not-allowed'
                         : 'bg-blue-900 hover:bg-blue-800'
                         }`}
@@ -168,7 +160,6 @@ const Apply = ({ jobPost, employer, onClose }) => {
             </div>
 
             {success && <p className="text-green-600 mt-3">Application sent successfully!</p>}
-            {profileError && <p className="text-red-600 mt-3">Failed to load profile data.</p>}
         </div>
     );
 };

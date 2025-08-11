@@ -1,80 +1,97 @@
-const dbPromise = require("../config/DatabaseConnection");
-const { moveFilesAndInsertToDB } = require("../service/reportQuery")
+const { moveFilesAndInsertToDB } = require("../service/report-service")
+const pool = require("../config/databaseConnection");
 
 const {
   getTempPath,
   getFinalPath,
   deleteFolderIfExists,
-} = require("../utils/reportFileHelpers");
+} = require("../helpers/report-file-helpers");
 
 const {
   findExistingReport,
   insertNewReport,
   getReportedUsersBy,
-} = require("../service/reportQuery");
+} = require("../service/report-service");
 
 const reportUser = async (req, res) => {
-  const db = await dbPromise;
+        let connection;
 
-  try {
-    const { reason, message, reportedUserId, conversationId } = req.body;
-    const reportedBy = req.user?.user_id;
-    const files = req.files || [];
-    const tempFolderId = req.tempFolderId;
+        try {
+          connection = await pool.getConnection();
+          await connection.beginTransaction();
 
-    // Validate required fields
-    if (!reportedBy || !reportedUserId || !reason) {
-      return res.status(400).json({ error: 'Missing required fields.' });
-    }
+          const { reason, message, reportedUserId, conversationId } = req.body;
+          console.log(req.body, 'request body');
+          
+          const reportedBy = req.user?.user_id;
+          const files = req.files || [];
+          const tempFolderId = req.tempFolderId;
 
-    const tempPath = getTempPath(tempFolderId);
+          // Validate required fields
+          if (!reportedBy || !reportedUserId || !reason) {
+            return res.status(400).json({ error: 'Missing required fields.' });
+          }
 
-    // Prevent duplicate report by same user on same target
-    const existing = await findExistingReport(db, reportedBy, reportedUserId);
-    if (existing.length > 0) {
-      deleteFolderIfExists(tempPath); 
-      return res.status(409).json({ error: 'You have already reported this user.' });
-    }
+          const tempPath = getTempPath(tempFolderId);
 
-    // Insert new report entry
-    const reportId = await insertNewReport(
-      db,
-      reportedBy,
-      reportedUserId,
-      reason,
-      message,
-      conversationId
-    );
+          const existing = await findExistingReport(connection, reportedBy, reportedUserId);
 
-    const finalPath = getFinalPath(reportId); 
+          if (existing.length > 0) {
+            deleteFolderIfExists(tempPath);
+            return res.status(409).json({ error: 'You have already reported this user.' });
+          }
 
-    await moveFilesAndInsertToDB(files, tempPath, finalPath, reportId, db);
+          // Insert new report entry
+          const reportId = await insertNewReport(
+            connection,
+            reportedBy,
+            reportedUserId,
+            reason,
+            message,
+            conversationId
+          );
 
-    // Remove temporary folder after move
-    deleteFolderIfExists(tempPath);
+          const finalPath = getFinalPath(reportId);
 
-    res.status(200).json({ message: 'Report submitted successfully.' });
-  } catch (error) {
-    console.error('❌ Report submission failed:', error);
-    res.status(500).json({ error: 'Failed to submit report.' });
-  }
+          await moveFilesAndInsertToDB(files, tempPath, finalPath, reportId, connection);
+
+          deleteFolderIfExists(tempPath);
+
+          await connection.commit();
+
+          res.status(200).json({ message: 'Report submitted successfully.' });
+        } catch (error) {
+
+          if (connection) await connection.rollback()
+          console.error('❌ Report submission failed:', error);
+
+          res.status(500).json({ error: 'Failed to submit report.' });
+
+        } finally {
+          if (connection) connection.release();
+        }
 };
 
 const reportedUsers = async (req, res) => {
-  const db = await dbPromise;
-  const reportedBy = req.user?.user_id;
+        let connection;
+        const reportedBy = req.user?.user_id;
 
-  if (!reportedBy) {
-    return res.status(400).json({ error: "User ID missing in token." });
-  }
+        if (!reportedBy) {
+          return res.status(400).json({ error: "User ID missing in token." });
+        }
 
-  try {
-    const reportedIds = await getReportedUsersBy(db, reportedBy);
-    res.status(200).json(reportedIds);
-  } catch (error) {
-    console.error("Error fetching reported users:", error);
-    res.status(500).json({ error: "Failed to fetch reported users." });
-  }
+        try {
+          connection = await pool.getConnection();
+
+          const reportedIds = await getReportedUsersBy(connection, reportedBy);
+          res.status(200).json(reportedIds);
+        } catch (error) {
+          console.error("Error fetching reported users:", error);
+          res.status(500).json({ error: "Failed to fetch reported users." });
+
+        } finally {
+          if (connection) connection.release();
+        }
 };
 
 module.exports = { reportUser, reportedUsers };

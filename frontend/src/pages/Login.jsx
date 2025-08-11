@@ -1,45 +1,19 @@
 import { useState } from 'react';
-import axios from 'axios';
 import { useNavigate, Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import icons from '../assets/svg/Icons';
-import { ROLE } from '../../utils/role';
+import { useLogin } from '../../hooks/useLogin';
 
 const Login = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
+    const { login, isLoading } = useLogin();
 
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
-            const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`,
-                { email, password },
-                { withCredentials: true });                
-
-            if (res.status === 200) {
-                console.log('Login successful:', res.data);
-
-                switch (res.data.role) {
-                    case ROLE.JOBSEEKER:
-                        navigate(`/${ROLE.JOBSEEKER}`);
-                        break;
-                    case ROLE.BUSINESS_EMPLOYER:
-                        navigate(`/${ROLE.BUSINESS_EMPLOYER}`);
-                        break;
-                    case ROLE.INDIVIDUAL_EMPLOYER:
-                        navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}`);
-                        break;
-                    case ROLE.MANPOWER_PROVIDER:
-                        navigate(`/${ROLE.MANPOWER_PROVIDER}`);
-                        break;
-                    case ROLE.ADMINISTRATOR:
-                        navigate(`/${ROLE.ADMINISTRATOR}`);
-                        break;
-                    default:
-                        navigate("/");
-                }
-            }
+            await login({ email, password });
         } catch (error) {
             alert('Login failed: ' + (error.response?.data?.message || 'Unknown error'));
             setEmail('');
@@ -90,7 +64,9 @@ const Login = () => {
                             value={password}
                             onChange={e => setPassword(e.target.value)}
                         />
-                        <button type="submit" className='bg-blue-900 text-white mt-2 mb-2 rounded pt-2 pb-2 cursor-pointer text-[20px]'>Login</button>
+                        <button type="submit" disabled={isLoading} className='bg-blue-900 text-white mt-2 mb-2 rounded pt-2 pb-2 cursor-pointer text-[20px]'>
+                          {isLoading ? 'Signing in...' : 'Login'}
+                        </button>
                         <button type="button" className='text-[20px] text-gray-600 self-start mt-1 hover:text-blue-600 cursor-pointer '
                             onClick={() => navigate('/forgot-password')}
                         >Forgot password?</button>

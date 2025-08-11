@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { format } from 'date-fns';
 import { useVerifiedUsers } from '../../../../hooks/useUserProfiles';
 import { ROLE, ROLE_LABELS } from '../../../../utils/role';
 import ViewDocument from './ViewDocument';
@@ -11,6 +10,8 @@ const VerifiedUser = () => {
     const usersPerPage = 4;
 
     const { data: verifiedUsers = [], isLoading, isError, error } = useVerifiedUsers();
+    console.log(verifiedUsers, 'verified users');
+    
     const [selectedUser, setSelectedUser] = useState(null);
 
     // pagination
@@ -89,15 +90,11 @@ const VerifiedUser = () => {
                                                     <span className="text-gray-800">
                                                         {user.verified_at ? (
                                                             <>
-                                                                {format(new Date(user.verified_at), 'MMMM d, yyyy')}
-                                                                <br />
-                                                                <span className="text-gray-500 text-xs">
-                                                                    {format(new Date(user.verified_at), 'h:mm a')}
-                                                                </span>
+                                                            <span className='text-gray-500'>
+                                                                {user.verified_at}
+                                                            </span>
                                                             </>
-                                                        ) : (
-                                                            '—'
-                                                        )}
+                                                        ): 'N/A'}
                                                     </span>
                                                     <button
                                                         className="bg-gray-200 px-4 py-1 rounded text-sm cursor-pointer"
@@ -115,7 +112,6 @@ const VerifiedUser = () => {
                         </div>
                     )}
                 </div>
-
 
                 <div className='mt-10 mb-10'>
                     <Pagination

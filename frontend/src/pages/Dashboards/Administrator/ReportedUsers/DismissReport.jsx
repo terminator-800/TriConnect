@@ -30,12 +30,12 @@ const DismissReport = (onDone) => {
     if (!reportData) return;
 
     dismissReport(
-      { reportId: reportData.reportId }, // Send the report ID to API
+      { reportId: reportData.reportId }, 
       {
         onSuccess: () => {
           alert(`Report for "${reportData.name}" has been dismissed.`);
           hideModal();
-          if (onDone) onDone(); // Close ViewReportedUser modal if passed
+          if (onDone) onDone(); 
         },
         onError: () => {
           alert('Something went wrong while dismissing the report.');

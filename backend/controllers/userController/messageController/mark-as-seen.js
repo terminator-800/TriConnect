@@ -1,0 +1,61 @@
+const { processSeenMessages } = require("../../../service/messageService/process-seen-message-service");
+const pool = require("../../../config/DatabaseConnection");
+
+const markAsSeen = async (req, res) => {
+  let connection;
+  const viewer_id = req.user.user_id;
+
+  const { message_id } = req.body;
+
+  if (!Array.isArray(message_id) || message_id.length === 0) {
+    return res.status(400).json({ error: 'Invalid message_ids' });
+  }
+
+  try {
+    connection = await pool.getConnection();
+
+    const { validMessageIds, updated, messageDetails } = await processSeenMessages(connection, message_id, viewer_id);
+
+    if (validMessageIds.length === 0) {
+      return res.status(403).json({ error: 'No messages belong to the viewer' });
+    }
+
+    const senderToMessages = {};
+    for (const msg of messageDetails) {
+      if (!senderToMessages[msg.sender_id]) {
+        senderToMessages[msg.sender_id] = {
+          conversation_id: msg.conversation_id,
+          message_ids: [],
+        };
+      }
+      senderToMessages[msg.sender_id].message_ids.push(msg.message_id);
+    }
+
+    const io = req.app.get('io');
+    const userSocketMap = req.app.get('userSocketMap');
+
+    for (const [senderId, data] of Object.entries(senderToMessages)) {
+      const senderSocketId = userSocketMap[senderId];
+      if (senderSocketId) {
+        io.to(senderSocketId).emit('messagesSeen', data);
+      }
+    }
+
+    console.log(`✅ Viewer ${viewer_id} marked messages as seen:`, validMessageIds);
+
+    return res.json({
+      success: true,
+      updated,
+      seenMessageIds: validMessageIds,
+    });
+  } catch (error) {
+    console.error(`❌ Error in markAsSeen for viewerId ${viewer_id}:`, error);
+    return res.status(500).json({ error: 'Internal server error' });
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+module.exports = {
+    markAsSeen
+}

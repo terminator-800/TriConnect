@@ -1,65 +1,84 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useStatusChange } from '../../hooks/useStatusChange';
 
-const ConfirmStatusChange = ({ title = 'Confirm Status Change', onConfirm }) => {
-  const [visible, setVisible] = useState(false);
-  const [statusData, setStatusData] = useState(null);
+const ConfirmStatusChange = ({ onClose, data, role }) => {
+  if (!data) return null;
 
-  const showModal = (data) => {
-    setStatusData(data);
-    setVisible(true);
+  const { changeStatus, isLoading } = useStatusChange(role);
+
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
-  };
-
-  const hideModal = () => {
-    setVisible(false);
-    setStatusData(null);
-    document.body.style.overflow = 'auto';
-  };
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
   const handleConfirm = async () => {
-    if (statusData) {
-      await onConfirm(statusData);
-      hideModal();
+    try {
+      await changeStatus({
+        jobPostId: data.jobPostId,
+        status: data.status,
+      });
+      onClose();
+    } catch (err) {
+      console.error('Error changing status:', err);
     }
   };
 
-  const ModalUI = () =>
-    visible && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm">
-        <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 relative border border-gray-300">
+  return (
+    <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative border border-gray-300">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl cursor-pointer"
+        >
+          &times;
+        </button>
+
+        <h2 className="text-xl font-bold mb-4 text-center text-blue-700">Change Status</h2>
+        <p className="text-gray-700 text-center mb-4">
+          Are you sure you want to change the status to <strong>{data.status}</strong>?
+        </p>
+
+        <div className="mb-4 text-sm text-gray-800 border border-gray-300 p-4 rounded-lg bg-gray-50">
+          <p><strong>Job Title:</strong> {data.job_title}</p>
+          <p><strong>Location:</strong> {data.location}</p>
+          <p><strong>Salary:</strong> {data.salary_range}</p>
+        </div>
+
+        <div className="flex justify-center gap-4">
           <button
-            onClick={hideModal}
-            className="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-xl font-bold cursor-pointer"
-            title="Close"
+            onClick={handleConfirm}
+            disabled={isLoading}
+            className="bg-blue-700 hover:bg-blue-600 text-white px-6 py-2 rounded-lg cursor-pointer"
           >
-            &times;
+            {isLoading ? 'Changing...' : 'Yes, Change'}
           </button>
-          <div className="p-6">
-            <h2 className="text-lg font-semibold">{title}</h2>
-            <p className="mt-2">
-              Are you sure you want to change the status to{' '}
-              <strong>{statusData?.status}</strong>?
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button
-                onClick={hideModal}
-                className="px-4 py-2 bg-gray-200 rounded cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleConfirm}
-                className="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer"
-              >
-                Yes, Change
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={onClose}
+            className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg cursor-pointer"
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
         </div>
       </div>
-    );
+    </div>
+  );
+};
 
-  return { showModal, ModalUI };
+ConfirmStatusChange.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  data: PropTypes.shape({
+    jobPostId: PropTypes.number.isRequired,
+    status: PropTypes.string.isRequired,
+    job_title: PropTypes.string,
+    location: PropTypes.string,
+    salary_range: PropTypes.string,
+  }),
+  role: PropTypes.string.isRequired, 
 };
 
 export default ConfirmStatusChange;

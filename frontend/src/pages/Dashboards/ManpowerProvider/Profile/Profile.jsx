@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useManpowerProviderProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../VerificationForm/Form';
 import PersonalInfo from './PersonalInfo';
 import Security from './Security';
 import VerificationStatus from '../VerificationForm/VerificationStatus';
+import { ROLE } from '../../../../../utils/role';
 
 const ManpowerProviderProfile = () => {
   const personal = 'personal'
@@ -26,7 +27,10 @@ const ManpowerProviderProfile = () => {
     isError,
     error,
     refetch,
-  } = useManpowerProviderProfile();
+  } = useUserProfile(ROLE.MANPOWER_PROVIDER);
+
+  console.log(profileData, 'profileData');
+  
 
   useEffect(() => {
     if (profileData) {

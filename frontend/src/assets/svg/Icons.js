@@ -28,7 +28,8 @@ import pin from './pin.svg'
 import three_dots from './three_dots.svg';
 import close from './close.svg'
 import verified_check from './verified_check.svg';
-import report_user from './report_user.svg'
+import report_user from './report_user.svg';
+import send from './send.svg';
 
 const icons = {
     find_agency,
@@ -62,6 +63,7 @@ const icons = {
     close,
     verified_check,
     report_user,
+    send
 }
 
 export default icons;

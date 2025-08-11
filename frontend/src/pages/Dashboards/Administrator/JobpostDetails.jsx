@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import { ROLE } from '../../../../utils/role';
-import { format } from 'date-fns';
 
 const JobpostDetails = ({ jobPost, onClose }) => {
     if (!jobPost) return null;
-
+    
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflow;
         document.body.style.overflow = 'hidden';
@@ -14,9 +13,9 @@ const JobpostDetails = ({ jobPost, onClose }) => {
     }, []);
 
     const getSubmitterName = () => {
-        if (jobPost.role === ROLE.BUSINESS_EMPLOYER) return jobPost.business_name || 'Unknown Business';
+        if (jobPost.role === ROLE.BUSINESS_EMPLOYER) return jobPost.authorized_person || 'Unknown Business';
         if (jobPost.role === ROLE.INDIVIDUAL_EMPLOYER) return jobPost.full_name || 'Unknown Individual';
-        if (jobPost.role === ROLE.MANPOWER_PROVIDER) return jobPost.agency_name || 'Unknown Agency';
+        if (jobPost.role === ROLE.MANPOWER_PROVIDER) return jobPost.agency_authorized_person || 'Unknown Agency';
         return 'Unknown';
     };
 
@@ -39,7 +38,7 @@ const JobpostDetails = ({ jobPost, onClose }) => {
                     <p><span className='font-semibold'>Salary:</span> {jobPost.salary_range}</p>
                     <p>
                         <span className='font-semibold'>Verified:</span>{' '}
-                        {format(new Date(jobPost.approved_at), 'MMMM dd, yyyy h:mm a')}
+                        {jobPost.created_at}
                     </p>
                     <p>
                         <span className='font-semibold'>Submitted by:</span> {getSubmitterName()}

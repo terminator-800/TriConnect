@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useSubmitFeedback } from "../../hooks/useSubmitFeedback";
-import { ROLE } from "../../utils/role"; // Assuming you store roles here
 
 const Feedback = ({ onClose, role }) => {
   const [message, setMessage] = useState('');

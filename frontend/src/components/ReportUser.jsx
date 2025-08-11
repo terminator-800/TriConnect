@@ -1,18 +1,19 @@
 import { useState } from "react";
-import icons from "../assets/svg/Icons";
-import { useReportUser } from "../../hooks/useReportUser";
+import { useReportUser } from "../../hooks/REPORT";
 import { ROLE } from "../../utils/role";
+import icons from "../assets/svg/Icons";
 
-const ReportUser = ({ reportedUser, conversationId, onClose }) => {
+const ReportUser = ({ reportedUser, conversationId, onClose, role }) => {
     const [reason, setReason] = useState("");
     const [message, setMessage] = useState("");
     const [files, setFiles] = useState([]);
+    console.log(reportedUser, 'reported user in report user');
 
     const handleFileChange = (e) => {
         setFiles([...e.target.files]);
     };
 
-    const { mutate: submitReport, isPending } = useReportUser(onClose);
+    const { mutate: submitReport, isPending } = useReportUser(role, onClose);
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -30,14 +31,17 @@ const ReportUser = ({ reportedUser, conversationId, onClose }) => {
         const formData = new FormData();
         formData.append("reason", reason);
         formData.append("message", message);
-        formData.append("reportedUserId", reportedUser?.user_id);
+        formData.append("reportedUserId", reportedUser?.sender_id);
         formData.append("conversationId", conversationId);
         files.forEach((file) => formData.append("proof_files", file));
 
+
         submitReport({
             formData,
-            role: ROLE.JOBSEEKER
+            role
         });
+
+        if (onClose) onClose();
     };
 
 

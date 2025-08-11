@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
-import { ROLE_LABELS, roleColors, getInitials } from '../../../../../utils/role';
+import { ROLE_LABELS, getInitials } from '../../../../../utils/role';
 
 const ViewFeedback = ({ feedback, onClose }) => {
+
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflow;
         document.body.style.overflow = 'hidden';

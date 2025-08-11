@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useJobseekerProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
+import { ROLE } from '../../../../../utils/role';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../Verification Form/Form';
@@ -8,8 +9,8 @@ import Security from './Security';
 import VerificationStatus from '../Verification Form/VerificationStatus';
 
 const JobseekerProfile = () => {
-  const personal = 'personal'
-  const security = 'security'
+  const personal = 'personal';
+  const security = 'security';
   const [activeTab, setActiveTab] = useState(personal);
   const [showForm, setShowForm] = useState(false);
   const [editMode, setEditMode] = useState(false);
@@ -20,13 +21,13 @@ const JobseekerProfile = () => {
     gender: '',
   });
 
-   const {
+  const {
     data: profileData,
     isLoading: loading,
     isError,
     refetch,
-  } = useJobseekerProfile();
-
+  } = useUserProfile(ROLE.JOBSEEKER);
+  
   useEffect(() => {
     if (profileData) {
       setFormData({
@@ -50,6 +51,7 @@ const JobseekerProfile = () => {
   return (
     <>
       <Sidebar />
+      
       <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-40">
         <div className="bg-white shadow-md rounded-3xl p-6 w-full max-w-7xl border border-gray-300 px-20">
           {profileData.is_verified ? (

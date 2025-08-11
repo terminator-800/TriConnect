@@ -1,374 +1,362 @@
-const dbPromise = require("../config/DatabaseConnection");
-const bcrypt = require('bcrypt');
-const fs = require('fs').promises;
-const path = require('path');
-const { ROLE } = require("../utils/roles")
+// const bcrypt = require('bcrypt');
+// const fs = require('fs').promises;
+// const path = require('path');
+// const { ROLE } = require("../utils/roles")
+// const pool = require("../config/DatabaseConnection");
 
-async function createUsers(email, hashedPassword, role) {
-    try {
-        const db = await dbPromise;
-        const [result] = await db.execute(
-            "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
-            [email, hashedPassword, role] 
-        );
-        return { success: true, user_id: result.insertId };
-    } catch (error) {
-        return { success: false, error };
-    }
-}
+// // create users
+// // async function createUsers(pool, email, hashedPassword, role) {
+// //     const connection = await pool.getConnection();
+// //     try {
+// //         await connection.beginTransaction();
 
-async function findUsersEmail(email) {
-    try {
-        
-        const db = await dbPromise;
-        const [rows] = await db.execute(
-            "SELECT * FROM users WHERE email = ?",
-            [email]
-        );
-        return rows.length > 0 ? rows[0] : null;
-    } catch (error) {
-        return null;
-    }
-}
+// //         const [result] = await connection.execute(
+// //             "INSERT INTO users (email, password, role) VALUES (?, ?, ?)",
+// //             [email, hashedPassword, role]
+// //         );
 
-async function markRegistered(email) {
-  const db = await dbPromise;
-  await db.execute(
-    "UPDATE users SET is_registered = ? WHERE email = ?",
-    [1, email]
-  );
-}
+// //         const userId = result.insertId;
 
-async function updateUserPassword(email, password) {
-    try {
-        const db = await dbPromise;
-        const [result] = await db.execute(
-            "UPDATE users SET password = ? WHERE email = ?",
-            [password, email]
-        );
-        return result;
-    } catch (error) {
-        console.error("Error updating password:", error);
-        throw error;
-    }
-}
+// //         // Insert into role-specific table
+// //         switch (role) {
+// //             case 'jobseeker':
+// //                 await connection.execute(
+// //                     "INSERT INTO jobseeker (jobseeker_id) VALUES (?)",
+// //                     [userId]
+// //                 );
+// //                 break;
 
-async function getUserInfo(user_id) {
-    try {
-        const db = await dbPromise;
-        const [rows] = await db.execute(
-            "SELECT * FROM users WHERE user_id = ?",
-            [user_id]
-        );
-        return rows.length > 0 ? rows[0] : null;
-    } catch (error) {
-        console.error("Error fetching user info by ID:", error);
-        return null;
-    }
-}
+// //             case 'business-employer':
+// //                 await connection.execute(
+// //                     "INSERT INTO business_employer (business_employer_id) VALUES (?)",
+// //                     [userId]
+// //                 );
+// //                 break;
 
-const uploadUserRequirement = async (data) => {
-    try {
-        const db = await dbPromise;
+// //             case 'individual-employer':
+// //                 await connection.execute(
+// //                     "INSERT INTO individual_employer (individual_employer_id) VALUES (?)",
+// //                     [userId]
+// //                 );
+// //                 break;
 
-        const [rows] = await db.execute(
-            "SELECT user_id, role FROM users WHERE user_id = ?",
-            [data.user_id]
-        );
-        if (!rows.length) return { success: false, message: "User not found." };
+// //             case 'manpower-provider':
+// //                 await connection.execute(
+// //                     "INSERT INTO manpower_provider (manpower_provider_id) VALUES (?)",
+// //                     [userId]
+// //                 );
+// //                 break;
 
-        const { role } = rows[0];
+// //             case 'administrator':
+// //                 await connection.execute(
+// //                     "INSERT INTO administrator (administrator_id) VALUES (?)",
+// //                     [userId]
+// //                 );
+// //                 break;
 
-        const roleAllowedFields = {
-            [ROLE.JOBSEEKER]: [
-                "full_name", "date_of_birth", "phone", "gender",
-                "present_address", "permanent_address",
-                "education", "skills",
-                "government_id", "selfie_with_id", "nbi_barangay_clearance"
-            ],
-            [ROLE.BUSINESS_EMPLOYER]: [
-                "business_name", "business_address", "industry", "business_size",
-                "authorized_person", "authorized_person_id",
-                "business_permit_BIR", "DTI", "business_establishment"
-            ],
-            [ROLE.INDIVIDUAL_EMPLOYER]: [
-                "full_name", "date_of_birth", "phone", "gender",
-                "present_address", "permanent_address",
-                "government_id", "selfie_with_id", "nbi_barangay_clearance"
-            ],
-            [ROLE.MANPOWER_PROVIDER]: [
-                "agency_name", "agency_address", "agency_services",
-                "agency_authorized_person", "dole_registration_number",
-                "mayors_permit", "agency_certificate", "authorized_person_id"
-            ]
-        };
+// //             default:
+// //                 throw new Error("Unsupported role type.");
+// //         }
 
-        const tableMap = {
-            [ROLE.JOBSEEKER]: { table: "users", idField: "user_id" },
-            [ROLE.BUSINESS_EMPLOYER]: { table: "users", idField: "user_id" },
-            [ROLE.INDIVIDUAL_EMPLOYER]: { table: "users", idField: "user_id" },
-            [ROLE.MANPOWER_PROVIDER]: { table: "users", idField: "user_id" }
-        };
+// //         await connection.commit();
+// //         return { success: true, user_id: userId };
 
-        const allowedFields = roleAllowedFields[role];
-        const { table, idField } = tableMap[role];
+// //     } catch (error) {
+// //         await connection.rollback();
+// //         return { success: false, error };
+// //     } finally {
+// //         connection.release();
+// //     }
+// // }
 
-        if (!allowedFields || !table || !idField)
-            return { success: false, message: `Unsupported role: ${role}` };
+// // find user email
+// // async function findUsersEmail(pool, email) {
+// //     let connection;
+// //     try {
+// //         connection = await pool.getConnection();
+// //         const [rows] = await connection.execute(
+// //             "SELECT * FROM users WHERE email = ?",
+// //             [email]
+// //         );
+// //         return rows.length > 0 ? rows[0] : null;
+// //     } catch (error) {
+// //         console.error("Error finding user by email:", error);
+// //         return null;
+// //     } finally {
+// //         if (connection) connection.release();
+// //     }
+// // }
 
-        const [roleRows] = await db.execute(
-            `SELECT ${idField} FROM ${table} WHERE user_id = ?`,
-            [data.user_id]
-        );
+// // async function markRegistered(pool, email) {
+// //     const connection = await pool.getConnection();
+// //     try {
+// //         await connection.execute(
+// //             "UPDATE users SET is_registered = ? WHERE email = ?",
+// //             [1, email]
+// //         );
+// //     } catch (error) {
+// //         console.error("Error marking user as registered:", error);
+// //         throw error;
+// //     } finally {
+// //         connection.release();
+// //     }
+// // }
 
-        if (!roleRows.length)
-            await db.execute(`INSERT INTO ${table} (${idField}) VALUES (?)`, [data.user_id]);
+// // async function updateUserPassword(pool, email, password) {
+// //     const connection = await pool.getConnection();
+// //     try {
+// //         const [result] = await connection.execute(
+// //             "UPDATE users SET password = ? WHERE email = ?",
+// //             [password, email]
+// //         );
+// //         return result;
+// //     } catch (error) {
+// //         console.error("Error updating password:", error);
+// //         throw error;
+// //     } finally {
+// //         connection.release();
+// //     }
+// // }
 
-        const fieldsToUpdate = [], values = [];
+// // async function getUserInfo(pool, user_id) {
+// //     let connection;
 
-        for (const field of allowedFields) {
-            if (field === "phone" && data.contact_number) {
-                fieldsToUpdate.push("phone = ?");
-                values.push(data.contact_number);
-            } else if (data[field] !== undefined) {
-                fieldsToUpdate.push(`${field} = ?`);
-                values.push(data[field]);
-            }
-        }
+// //     try {
+// //         connection = await pool.getConnection();
 
-        fieldsToUpdate.push("is_submitted = ?", "is_rejected = ?");
-        values.push(true, false, data.user_id);
+// //         const [rows] = await connection.execute(
+// //             "SELECT * FROM users WHERE user_id = ?",
+// //             [user_id]
+// //         );
 
-        const query = `UPDATE ${table} SET ${fieldsToUpdate.join(", ")} WHERE ${idField} = ?`;
-        const [result] = await db.execute(query, values);
+// //         return rows.length > 0 ? rows[0] : null;
+// //     } catch (error) {
+// //         console.error("Error fetching user info by ID:", error);
+// //         return null;
+// //     } finally {
+// //         if (connection) connection.release();
+// //     }
+// // }
 
-        return {
-            success: true,
-            message: `Requirements submitted for ${role}.`,
-            affectedRows: result.affectedRows
-        };
-    } catch (err) {
-        console.error("Upload error:", err);
-        return { success: false, error: err.message };
-    }
-};
+// // async function uploadUserRequirement(pool, payload) {
+// //     const connection = await pool.getConnection();
+// //     try {
+// //         await connection.beginTransaction();
+// //         console.log(payload.role, 'uploadUserRequirement');
 
-// Fetch for admin 
-async function fetchAllUser() {
-    try {
-        const db = await dbPromise;
+// //         switch (payload.role) {
+// //             case 'jobseeker':
+// //                 await connection.execute(
+// //                     `UPDATE jobseeker SET 
+// //                         full_name = ?, 
+// //                         date_of_birth = ?, 
+// //                         phone = ?, 
+// //                         gender = ?, 
+// //                         present_address = ?, 
+// //                         permanent_address = ?, 
+// //                         education = ?, 
+// //                         skills = ?, 
+// //                         government_id = ?, 
+// //                         selfie_with_id = ?, 
+// //                         nbi_barangay_clearance = ?
+// //                     WHERE jobseeker_id = ?`,
+// //                     [
+// //                         payload.full_name,
+// //                         payload.date_of_birth,
+// //                         payload.phone,
+// //                         payload.gender,
+// //                         payload.present_address,
+// //                         payload.permanent_address,
+// //                         payload.education,
+// //                         payload.skills,
+// //                         payload.government_id,
+// //                         payload.selfie_with_id,
+// //                         payload.nbi_barangay_clearance,
+// //                         payload.user_id,
+// //                     ]
+// //                 );
+// //                 break;
 
-        const [users] = await db.execute(`
-            SELECT 
-                user_id,
-                role,
-                email,
-                is_verified,
-                is_registered,
-                is_submitted,
-                -- Shared fields
-                full_name,
-                date_of_birth,
-                gender,
-                phone,
-                present_address,
-                permanent_address,
-                created_at,
+// //             case 'individual-employer':
+// //                 await connection.execute(
+// //                     `UPDATE individual_employer SET 
+// //                         full_name = ?, 
+// //                         date_of_birth = ?, 
+// //                         phone = ?, 
+// //                         gender = ?, 
+// //                         present_address = ?, 
+// //                         permanent_address = ?, 
+// //                         government_id = ?, 
+// //                         selfie_with_id = ?, 
+// //                         nbi_barangay_clearance = ?
+// //                     WHERE individual_employer_id = ?`,
+// //                     [
+// //                         payload.full_name,
+// //                         payload.date_of_birth,
+// //                         payload.phone,
+// //                         payload.gender,
+// //                         payload.present_address,
+// //                         payload.permanent_address,
+// //                         payload.government_id,
+// //                         payload.selfie_with_id,
+// //                         payload.nbi_barangay_clearance,
+// //                         payload.user_id,
+// //                     ]
+// //                 );
+// //                 break;
 
-                -- Jobseeker
-                education,
-                skills,
-                government_id,
-                selfie_with_id,
-                nbi_barangay_clearance,
+// //             case 'business-employer':
+// //                 await connection.execute(
+// //                     `UPDATE business_employer SET 
+// //                         business_name = ?, 
+// //                         business_address = ?, 
+// //                         industry = ?, 
+// //                         business_size = ?, 
+// //                         authorized_person = ?, 
+// //                         authorized_person_id = ?, 
+// //                         business_permit_BIR = ?, 
+// //                         DTI = ?, 
+// //                         business_establishment = ?
+// //                     WHERE business_employer_id = ?`,
+// //                     [
+// //                         payload.business_name,
+// //                         payload.business_address,
+// //                         payload.industry,
+// //                         payload.business_size,
+// //                         payload.authorized_person,
+// //                         payload.authorized_person_id,
+// //                         payload.business_permit_BIR,
+// //                         payload.DTI,
+// //                         payload.business_establishment,
+// //                         payload.user_id,
+// //                     ]
+// //                 );
+// //                 break;
 
-                -- Business Employer
-                business_name,
-                business_address,
-                industry,
-                business_size,
-                authorized_person,
-                authorized_person_id,
-                business_permit_BIR,
-                DTI,
-                business_establishment,
+// //             case 'manpower-provider':
+// //                 await connection.execute(
+// //                     `UPDATE manpower_provider SET 
+// //                         agency_name = ?, 
+// //                         agency_address = ?, 
+// //                         agency_services = ?, 
+// //                         agency_authorized_person = ?, 
+// //                         dole_registration_number = ?, 
+// //                         mayors_permit = ?, 
+// //                         agency_certificate = ?, 
+// //                         authorized_person_id = ?
+// //                     WHERE manpower_provider_id = ?`,
+// //                     [
+// //                         payload.agency_name,
+// //                         payload.agency_address,
+// //                         payload.agency_services,
+// //                         payload.agency_authorized_person,
+// //                         payload.dole_registration_number,
+// //                         payload.mayors_permit,
+// //                         payload.agency_certificate,
+// //                         payload.authorized_person_id,
+// //                         payload.user_id,
+// //                     ]
+// //                 );
+// //                 break;
 
-                -- Manpower Provider
-                agency_name,
-                agency_address,
-                agency_services,
-                agency_authorized_person,
-                dole_registration_number,
-                mayors_permit,
-                agency_certificate
+// //             default:
+// //                 throw new Error("Unknown role during requirement upload");
+// //         }
 
-            FROM users
-            WHERE role IN ('jobseeker', 'business-employer', 'individual-employer', 'manpower-provider')
-            ORDER BY created_at DESC
-        `);
+// //         // ✅ Update user status with logic for rejected/submitted/verified
+// //         await connection.execute(
+// //             `UPDATE users 
+// //              SET 
+// //                 is_submitted = TRUE, 
+// //                 is_verified = FALSE, 
+// //                 is_rejected = CASE 
+// //                     WHEN is_rejected = TRUE THEN FALSE 
+// //                     ELSE is_rejected 
+// //                 END 
+// //              WHERE user_id = ?`,
+// //             [payload.user_id]
+// //         );
 
-        return users;
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        throw error;
-    }
-}
+// //         await connection.commit();
+// //     } catch (error) {
+// //         await connection.rollback();
+// //         throw error;
+// //     } finally {
+// //         connection.release();
+// //     }
+// // }
 
-async function verifyUsers(user_id) {
-    const db = await dbPromise;
 
-    const [userRows] = await db.execute(
-       `SELECT user_id 
-        FROM users 
-        WHERE user_id = ?`,
-        [user_id]
-    );
 
-    if (userRows.length === 0) {
-        throw new Error('User not found.');
-    }
 
-    const [userUpdateResult] = await db.execute(
-       `UPDATE users 
-        SET is_verified = ?, is_rejected = ?, verified_at = NOW() 
-        WHERE user_id = ?`,
-        [true, false, user_id]
-    );
 
-    if (userUpdateResult.affectedRows === 0) {
-        throw new Error('User verification failed in users table.');
-    }
 
-    return { success: true, user_id };
-}
 
-async function rejectUsers(user_id) {
-    const db = await dbPromise;
 
-    const [userRows] = await db.execute(
-       `SELECT role 
-        FROM users 
-        WHERE user_id = ?`, 
-        [user_id]
-    );
+// // Fetch for admin 
+// async function fetchAllUser(pool) {
+//     const connection = await pool.getConnection();
+//     try {
+//         const [users] = await connection.execute(`
+//       SELECT 
+//         u.user_id, u.role, u.email, u.is_verified, u.is_registered, u.is_submitted,
+//         u.is_rejected, u.is_subscribed, u.subscription_start, u.subscription_end,
+//         u.account_status, u.status_reason, u.status_updated_at, u.created_at,
 
-    if (!userRows.length) throw new Error("User not found.");
-    const role = userRows[0].role;
+//         -- Jobseeker fields
+//         js.full_name AS js_full_name, js.date_of_birth AS js_dob, js.phone AS js_phone,
+//         js.gender AS js_gender, js.present_address AS js_present_address,
+//         js.permanent_address AS js_permanent_address, js.education, js.skills,
+//         js.government_id AS js_government_id, js.selfie_with_id AS js_selfie_with_id,
+//         js.nbi_barangay_clearance AS js_nbi_barangay_clearance,
 
-    const roleFields = {
-        [ROLE.JOBSEEKER]: {
-            table: "users",
-            idField: "user_id",
-            resetFields: [
-                "full_name", "date_of_birth", "phone", "gender",
-                "present_address", "permanent_address", "education", "skills",
-                "government_id", "selfie_with_id", "nbi_barangay_clearance"
-            ],
-            fileFields: ["government_id", "selfie_with_id", "nbi_barangay_clearance"]
-        },
-        [ROLE.BUSINESS_EMPLOYER]: {
-            table: "users",
-            idField: "user_id",
-            resetFields: [
-                "business_name", "business_address", "industry", "business_size",
-                "authorized_person", "authorized_person_id",
-                "business_permit_BIR", "DTI", "business_establishment"
-            ],
-            fileFields: ["authorized_person_id", "business_permit_BIR", "DTI", "business_establishment"]
-        },
-        [ROLE.INDIVIDUAL_EMPLOYER]: {
-            table: "users",
-            idField: "user_id",
-            resetFields: [
-                "full_name", "date_of_birth", "phone", "gender",
-                "present_address", "permanent_address",
-                "government_id", "selfie_with_id", "nbi_barangay_clearance"
-            ],
-            fileFields: ["government_id", "selfie_with_id", "nbi_barangay_clearance"]
-        },
-        [ROLE.MANPOWER_PROVIDER]: {
-            table: "users",
-            idField: "user_id",
-            resetFields: [
-                "agency_name", "agency_address", "agency_services",
-                "agency_authorized_person", "dole_registration_number",
-                "mayors_permit", "agency_certificate", "authorized_person_id"
-            ],
-            fileFields: ["dole_registration_number", "mayors_permit", "agency_certificate", "authorized_person_id"]
-        }
-    };
+//         -- Individual Employer fields
+//         ie.full_name AS ie_full_name, ie.date_of_birth AS ie_dob, ie.phone AS ie_phone,
+//         ie.gender AS ie_gender, ie.present_address AS ie_present_address,
+//         ie.permanent_address AS ie_permanent_address,
+//         ie.government_id AS ie_government_id, ie.selfie_with_id AS ie_selfie_with_id,
+//         ie.nbi_barangay_clearance AS ie_nbi_barangay_clearance,
 
-    const config = roleFields[role];
-    if (!config) throw new Error(`Unsupported role: ${role}`);
+//         -- Business Employer fields
+//         be.business_name, be.business_address, be.industry, be.business_size,
+//         be.authorized_person, be.authorized_person_id,
+//         be.business_permit_BIR, be.DTI, be.business_establishment,
 
-    const { table, idField, resetFields, fileFields } = config;
+//         -- Manpower Provider fields
+//         mp.agency_name, mp.agency_address, mp.agency_services, mp.agency_authorized_person,
+//         mp.dole_registration_number, mp.mayors_permit, mp.agency_certificate,
+//         mp.authorized_person_id AS mp_authorized_person_id
 
-    const [existingRows] = await db.execute(
-        `SELECT ${resetFields.join(", ")} FROM ${table} WHERE ${idField} = ?`,
-        [user_id]
-    );
-    const existingData = existingRows[0] || {};
+//       FROM users u
+//       LEFT JOIN jobseeker js ON u.user_id = js.jobseeker_id AND u.role = 'jobseeker'
+//       LEFT JOIN individual_employer ie ON u.user_id = ie.individual_employer_id AND u.role = 'individual-employer'
+//       LEFT JOIN business_employer be ON u.user_id = be.business_employer_id AND u.role = 'business-employer'
+//       LEFT JOIN manpower_provider mp ON u.user_id = mp.manpower_provider_id AND u.role = 'manpower-provider'
+      
+//       WHERE u.role IN ('jobseeker', 'business-employer', 'individual-employer', 'manpower-provider')
+//       ORDER BY u.created_at DESC
+//     `);
+//         return users;
+//     } catch (error) {
+//         console.error("Error fetching users:", error);
+//         throw error;
+//     } finally {
+//         connection.release();
+//     }
+// }
 
-    const rawName = existingData.full_name || existingData.business_name || existingData.agency_name || "unknown";
-    const safeName = rawName.replace(/[^a-zA-Z0-9 _.-]/g, "").trim();
 
-    const folderPath = path.join(__dirname, "..", "uploads", role, user_id.toString(), safeName);
 
-    for (const field of fileFields) {
-        const fileName = existingData[field];
-        if (fileName) {
-            const fullPath = path.join(folderPath, fileName);
-            try {
-                await fs.unlink(fullPath);
-            } catch (err) {
-                console.warn(`Could not delete file: ${fullPath}`, err.message);
-            }
-        }
-    }
 
-    try {
-        await fs.rmdir(folderPath);
-    } catch (err) {
-        console.warn(`Could not delete folder: ${folderPath}`, err.message);
-    }
 
-    const userFolderPath = path.join(__dirname, "..", "uploads", role, user_id.toString());
-    try {
-        const remainingItems = await fs.readdir(userFolderPath);
-        if (remainingItems.length === 0) {
-            await fs.rmdir(userFolderPath);
-        }
-    } catch (err) {
-        console.warn(`Could not clean up user folder: ${userFolderPath}`, err.message);
-    }
 
-    const updateQuery = `
-        UPDATE ${table}
-        SET ${resetFields.map(field => `${field} = NULL`).join(", ")},
-            is_verified = false,
-            is_submitted = false,
-            is_rejected = true,
-            verified_at = NULL
-        WHERE ${idField} = ?
-    `;
 
-    const [updateResult] = await db.execute(updateQuery, [user_id]);
-    if (updateResult.affectedRows === 0) throw new Error("Failed to reject user submission.");
-
-    return {
-        success: true,
-        message: `${role} requirements rejected, files and folders removed, and rejection recorded.`
-    };
-}
-
-module.exports = {
-    findUsersEmail,
-    createUsers,
-    updateUserPassword,
-    uploadUserRequirement,
-    getUserInfo,
-    fetchAllUser,
-    verifyUsers,
-    rejectUsers,
-    markRegistered
-};
+// module.exports = {
+//     // findUsersEmail,
+//     // createUsers,
+//     // updateUserPassword,
+//     // uploadUserRequirement,
+//     // getUserInfo,
+//     fetchAllUser,
+//     // markRegistered
+// };

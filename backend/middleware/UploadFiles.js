@@ -19,25 +19,7 @@ if (!fs.existsSync(reportUploadDir)) {
     fs.mkdirSync(reportUploadDir, { recursive: true });
 }
 
-// === Multer Storage Config / FILE UPLOAD FOR CHAT MESSAGES ===
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        try {
-            const tempDir = path.join(chatUploadDir, 'temp');
-            fs.mkdirSync(tempDir, { recursive: true });
-            cb(null, tempDir);
-        } catch (error) {
-            cb(new Error('Failed to create temp upload directory'), false);
-        }
-    },
-    filename: (_req, file, cb) => {
-        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
-        cb(null, uniqueName);
-    }
-});
-
-
-// ✅ Restrict to only images and single file upload
+// ✅ File filter must be declared BEFORE using it
 const imageOnlyFilter = (req, file, cb) => {
     const allowedMimeTypes = [
         'image/png', 'image/jpeg', 'image/jpg',
@@ -50,7 +32,46 @@ const imageOnlyFilter = (req, file, cb) => {
     cb(null, true);
 };
 
-const chatImageUpload = multer({ storage, fileFilter: imageOnlyFilter }).single('file');
+// === Multer Storage Config / FILE UPLOAD FOR CHAT MESSAGES ===
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        try {
+            const { conversation_id, receiver_id } = req.body;
+            const sender_id = req.user.user_id;
+
+            if (!sender_id || !receiver_id) {
+                return cb(new Error('Missing sender_id or receiver_id'), false);
+            }
+
+            let destinationDir;
+
+            if (conversation_id) {
+                // Use conversation ID to build the upload path
+                destinationDir = path.join(chatUploadDir, conversation_id);
+            } else {
+                // Use temp directory based on sender_id and receiver_id (either order)
+                destinationDir = path.join(chatUploadDir, `${sender_id}_${receiver_id}`);
+            }
+
+            fs.mkdirSync(destinationDir, { recursive: true });
+            cb(null, destinationDir);
+        } catch (error) {
+            console.error('❌ Multer destination error:', error);
+            cb(new Error('Failed to determine destination folder'), false);
+        }
+    },
+
+    filename: (_req, file, cb) => {
+        const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
+});
+
+
+const chatImageUpload = multer({
+    storage,
+    fileFilter: imageOnlyFilter
+}).array('files', 10); // accept up to 10 files under the "files" field
 
 
 // === Multer Storage Config / FILE UPLOAD FOR REPORTS ===
@@ -79,7 +100,7 @@ const reportStorage = multer.diskStorage({
 const reportUpload = multer({
     storage: reportStorage,
     fileFilter: imageOnlyFilter,
-}).array("proof_files", 5); 
+}).array("proof_files", 5);
 
 
 

@@ -1,14 +1,15 @@
 import Sidebar from './Sidebar'
 import Pagination from '../../../components/Pagination'
 import { useState } from 'react'
-import { format } from 'date-fns'
 import icons from '../../../assets/svg/Icons'
 import { useVerifiedJobPosts } from '../../../../hooks/useJobposts'
 import { ROLE, ROLE_LABELS } from '../../../../utils/role'
 import JobpostDetails from './JobpostDetails'
 
 const VerifiedJobPost = () => {
-  const { data: verifiedJobPosts = [], isLoading, isError } = useVerifiedJobPosts()
+  const { data: verifiedJobPosts = [], isLoading, isError } = useVerifiedJobPosts();
+  console.log(verifiedJobPosts, 'verified job posts data');
+  
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedJobPost, setSelectedJobPost] = useState(null)
 
@@ -92,8 +93,7 @@ const VerifiedJobPost = () => {
                       <img src={icons.verified_check} alt="verified" className="w-6" /> Verified
                     </span>
                     <span className="text-gray-500">
-                      Verified on {format(new Date(job.approved_at), 'MMMM dd, yyyy')} at{' '}
-                      {format(new Date(job.approved_at), 'h:mm a')}
+                      Verified on {job.approved_at} at{' '}
                     </span>
                   </div>
                 </div>

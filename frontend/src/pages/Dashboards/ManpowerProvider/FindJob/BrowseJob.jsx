@@ -1,7 +1,7 @@
 import { ROLE } from '../../../../../utils/role';
 import { useState } from 'react';
 import { useUnappliedJobPosts } from '../../../../../hooks/useJobposts';
-import { useManpowerProviderProfile } from '../../../../../hooks/useUserProfiles';
+import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { formatDistanceToNow } from 'date-fns';
 import Pagination from '../../../../components/Pagination';
 import icons from '../../../../assets/svg/Icons';
@@ -12,17 +12,14 @@ const BrowseJob = () => {
     const [selectedJobPost, setSelectedJobPost] = useState(null);
     const [currentPage, setCurrentPage] = useState(1);
     const [isModalOpen, setIsModalOpen] = useState(false);
-    
-    const { data: manpowerData } = useManpowerProviderProfile();
-    const manpowerId = manpowerData?.user_id;
-    
+
     const {
         data: filteredJobPosts = [],
         isLoading: loadingJobPosts,
         isError: errorJobPosts,
-    } = useUnappliedJobPosts(manpowerId?.user_id);
-    
-    
+    } = useUnappliedJobPosts(ROLE.MANPOWER_PROVIDER);
+
+
     //   Pagination
     const postsPerPage = 4;
     const startIndex = (currentPage - 1) * postsPerPage;
@@ -30,10 +27,6 @@ const BrowseJob = () => {
         startIndex,
         startIndex + postsPerPage
     );
-
-    const getRelativeTime = (dateString) => {
-        return formatDistanceToNow(new Date(dateString), { addSuffix: true });
-    };
 
     return (
         <>
@@ -68,8 +61,8 @@ const BrowseJob = () => {
                             <div
                                 key={post.job_post_id}
                                 onClick={() => setSelectedJobPost(post)}
-                                className="border border-gray-300 rounded-xl py-5 px-5 shadow-md bg-white cursor-pointer hover:bg-gray-50 h-[23.3vh] max-h-[23.3vh] overflow-hidden"
-                            >
+                                className={`border border-gray-300 rounded-xl py-5 px-5 shadow-md cursor-pointer h-[23.3vh] max-h-[23.3vh] overflow-hidden
+                                        ${selectedJobPost?.job_post_id === post.job_post_id ? 'bg-gray-200' : 'bg-white hover:bg-gray-100'}`}                            >
                                 <div className="mb-4">
                                     <h3 className="text-xl font-bold truncate">
                                         {post.job_title}
@@ -92,7 +85,7 @@ const BrowseJob = () => {
                                         <p className="text-gray-500 truncate">{post.location}</p>
                                     </div>
                                     <span className="text-sm text-gray-500 ml-3 truncate">
-                                        Posted: {getRelativeTime(post.approved_at)}
+                                        Posted: {post.approved_at}
                                     </span>
                                 </div>
                             </div>
@@ -100,7 +93,7 @@ const BrowseJob = () => {
                     )}
                 </div>
 
-                <div className="w-full bg-white border border-gray-300 py-5 px-7 rounded-xl overflow-y-auto h-[100vh]">
+                <div className="w-full bg-gray-200 border border-gray-300 py-5 px-7 rounded-xl overflow-y-auto h-[100vh]">
                     {selectedJobPost ? (
                         <>
                             <div className="flex gap-10 mb-10 mt-5 items-center">
@@ -155,7 +148,7 @@ const BrowseJob = () => {
                                     </span>
                                     <span className="text-gray-700">
                                         <strong>Posted:</strong>{' '}
-                                        {getRelativeTime(selectedJobPost.approved_at)}
+                                        {selectedJobPost.approved_at}
                                     </span>
                                 </div>
                             </div>
@@ -193,9 +186,6 @@ const BrowseJob = () => {
             {isModalOpen && selectedJobPost && (
                 <div className="fixed inset-0 bg-opacity-40 flex justify-center items-center z-50">
                     <Apply
-                        jobPost={{
-                            job_post_id: selectedJobPost.job_post_id,
-                        }}
                         employer={selectedJobPost}
                         onClose={() => {
                             setIsModalOpen(false);

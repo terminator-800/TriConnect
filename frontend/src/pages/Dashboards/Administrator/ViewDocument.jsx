@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { documentMap, infoMap, getImagePath } from '../../../../utils/getImagePath';
 
 const ViewDocument = ({ user, onClose }) => {
+    
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflow;
         document.body.style.overflow = 'hidden';

@@ -20,17 +20,16 @@ export const ROLE_LABELS = {
   [ROLE.MANPOWER_PROVIDER]: 'Manpower Provider',
 };
 
- export const roleColors = {
-    'manpower-provider': 'text-orange-500',
-    'business-employer': 'text-green-600',
-    'individual-employer': 'text-yellow-500',
-    'jobseeker': 'text-blue-600',
-  };
+export const roleColors = {
+  'manpower-provider': 'text-orange-500',
+  'business-employer': 'text-green-600',
+  'individual-employer': 'text-yellow-500',
+  'jobseeker': 'text-blue-600',
+};
 
- export const getInitials = (name) => {
-    if (!name) return 'NA';
-    const words = name.split(' ');
-    const first = words[0]?.charAt(0).toUpperCase() || '';
-    const second = words[1]?.charAt(0).toUpperCase() || '';
-    return `${first}${second}`;
-  };
+export const getInitials = (entity = '') => {
+  const parts = entity.trim().split(/\s+/);
+  if (parts.length === 0) return '';
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+};

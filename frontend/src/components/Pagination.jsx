@@ -1,4 +1,3 @@
-// Gigamit nako ni para sa 'VerifiedUser' sa administrator
 const Pagination = ({ currentPage, totalPages, setCurrentPage }) => {
     const generatePageNumbers = () => {
         let start = Math.max(1, currentPage - 1);

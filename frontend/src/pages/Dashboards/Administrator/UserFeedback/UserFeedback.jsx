@@ -1,8 +1,8 @@
+import { ROLE_LABELS, roleColors, getInitials } from '../../../../../utils/role';
+import { useUserFeedbacks } from '../../../../../hooks/useUserFeedbacks';
+import { useState } from 'react';
 import Sidebar from '../Sidebar';
 import Pagination from '../../../../components/Pagination';
-import { useState } from 'react';
-import { useUserFeedbacks } from '../../../../../hooks/useUserFeedbacks';
-import { ROLE_LABELS, roleColors, getInitials } from '../../../../../utils/role';
 import ViewFeedback from './ViewFeedback';
 
 const UserFeedback = () => {
@@ -11,19 +11,22 @@ const UserFeedback = () => {
   const itemsPerPage = 4;
 
   const { feedbacks = [], isLoading, error } = useUserFeedbacks();
-  
+
   if (isLoading) return <div>Loading feedbacks...</div>;
   if (error) return <div>Error loading feedbacks: {error.message}</div>;
 
-  const mappedFeedbacks = feedbacks.map((fb) => ({
-    id: fb.feedback_id,
-    name: fb.user_name,
-    type: fb.role,
-    color: roleColors[fb.role] || 'text-gray-500',
-    date: fb.date_submitted,
-    message: fb.message,
-    initials: getInitials(fb.user_name),
-  }));
+  const mappedFeedbacks = feedbacks.map((fb) => {
+    const name = fb.user_name || 'Unknown';
+    return {
+      id: fb.feedback_id ?? 'N/A',                  
+      name,
+      type: fb.role || 'Unknown',
+      color: roleColors[fb.role] || 'text-gray-500',
+      date: fb.submitted_at || 'Unknown',
+      message: fb.message || 'No message provided',
+      initials: getInitials(name) || 'Unknown',           
+    };
+  });
 
   const totalPages = Math.ceil(mappedFeedbacks.length / itemsPerPage);
   const currentItems = mappedFeedbacks.slice(
@@ -60,7 +63,7 @@ const UserFeedback = () => {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {currentItems.map((fb) => (
-                  <tr key={fb.id}>
+                  <tr key={`${fb.id}-${fb.date}`}>
                     <td className="px-6 py-4 flex items-center">
                       <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
                         <span className="text-xs font-bold text-gray-600 italic">

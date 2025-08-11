@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useBusinessEmployerProfile } from "../../../../../hooks/useUserProfiles";
-import Form from '../Verification Form/Form';
+import { useUserProfile } from '../../../../../hooks/useUserProfiles';
+import { ROLE } from '../../../../../utils/role';
+import Form from '../VerificationForm/Form';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import PersonalInfo from '../Profile/PersonalInfo';
 import Security from '../Profile/Security';
-import VerificationStatus from '../Verification Form/VerificationStatus';
+import VerificationStatus from '../VerificationForm/VerificationStatus';
 
 const Profile = () => {
   const personal = 'personal'
@@ -20,8 +21,8 @@ const Profile = () => {
     isError,
     error,
     refetch,
-  } = useBusinessEmployerProfile();
-
+  } = useUserProfile(ROLE.BUSINESS_EMPLOYER);
+  
   const [formData, setFormData] = useState({
     email: '',
     business_name: '',

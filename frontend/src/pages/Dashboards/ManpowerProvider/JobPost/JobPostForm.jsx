@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { useMutation } from "@tanstack/react-query";
-import axios from "axios";
+import { ROLE } from "../../../../../utils/role";
+import { useCreateJobPost } from "../../../../../hooks/useCreateJobPost";
 
 const JobPostForm = () => {
     const [job_title, setJobTitle] = useState("");
@@ -11,50 +11,19 @@ const JobPostForm = () => {
     const [job_description, setJobDescription] = useState("");
     const [agreeToReview, setAgreeToReview] = useState(false);
 
-    const createJobPost = async (data) => {
-        const response = await axios.post(
-            `${import.meta.env.VITE_API_URL}/manpower-provider/job-post`,
-            data,
-            {
-                withCredentials: true,
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            }
-        );
-        return response;
-    };
-
-    const { mutate, isLoading } = useMutation({
-        mutationFn: createJobPost,
-        onSuccess: (response) => {
-            if (response.status === 201) {
-                console.log("this is line 38: ", response.data);
-                alert("Job post created successfully!");
-                setJobTitle("");
-                setJobType("");
-                setSalaryRange("");
-                setLocation("");
-                setRequiredSkill("");
-                setJobDescription("");
-                setAgreeToReview(false);
-            }
-        },
-        onError: (error) => {
-            const status = error.response?.status;
-            const message = error.response?.data?.error;
-
-            if (status === 403 && message?.includes("maximum")) {
-                alert("Monthly limit reached. Subscribe to extend to 10 job posts a month.");
-            } else {
-                console.error("Error creating job post:", message || error.message);
-                alert("An error occurred while creating the job post.");
-            }
-        },
+    const mutation = useCreateJobPost(ROLE.INDIVIDUAL_EMPLOYER, () => {
+        setJobTitle("");
+        setJobType("");
+        setSalaryRange("");
+        setLocation("");
+        setRequiredSkill("");
+        setJobDescription("");
+        setAgreeToReview(false);
     });
 
     const handleSubmit = (e) => {
         e.preventDefault();
+
         const data = {
             job_title,
             job_type,
@@ -63,7 +32,8 @@ const JobPostForm = () => {
             required_skill,
             job_description,
         };
-        mutate(data);
+
+        mutation.mutate(data);
     };
 
     return (
@@ -131,7 +101,7 @@ const JobPostForm = () => {
                         <label htmlFor="required_skill" className="font-medium">Required Skill</label>
                         <input
                             type="text"
-                            placeholder="e.g., Carpentry, Driving, MS Office"
+                            placeholder="e.g., Babysitting, Housekeeping, Elder Care"
                             className="p-2 outline-none rounded border border-gray-300"
                             value={required_skill}
                             onChange={(e) => setRequiredSkill(e.target.value)}
@@ -166,9 +136,9 @@ const JobPostForm = () => {
                     <button
                         type="submit"
                         className="bg-blue-900 text-white rounded-xl px-10 shadow-md py-2 text-2xl cursor-pointer"
-                        disabled={isLoading}
+                        disabled={mutation.isLoading}
                     >
-                        {isLoading ? "Submitting..." : "Confirm"}
+                        {mutation.isLoading ? "Submitting..." : "Confirm"}
                     </button>
                 </form>
             </div>

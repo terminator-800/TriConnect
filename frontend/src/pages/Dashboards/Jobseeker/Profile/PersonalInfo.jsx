@@ -99,16 +99,7 @@ const PersonalInfo = ({
                     />
                 ) : (
                     <p className='border border-gray-300 rounded-md px-2 py-1 mt-1 mb-5'>
-                        {profileData.date_of_birth
-                            ? new Date(profileData.date_of_birth).toLocaleString('en-PH', {
-                                year: 'numeric',
-                                month: 'long',
-                                day: 'numeric',
-                                hour: 'numeric',
-                                minute: '2-digit',
-                                hour12: true,
-                            })
-                            : 'N/A'}
+                        {profileData.date_of_birth}
                     </p>
                 )}
             </div>

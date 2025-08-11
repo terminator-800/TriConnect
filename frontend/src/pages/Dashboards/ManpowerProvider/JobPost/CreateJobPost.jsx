@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { useManpowerProviderProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import Sidebar from "../Sidebar";
 import VerificationStatus from "../VerificationForm/VerificationStatus";
 import Form from '../VerificationForm/Form';
 import JobPostForm from "./JobPostForm";
+import { ROLE } from "../../../../../utils/role";
 
 const CreateJobPost = () => {
   const [showForm, setShowForm] = useState(false);
@@ -12,7 +13,7 @@ const CreateJobPost = () => {
     data: profileData,
     isLoading: loadingProfile,
     refetch
-  } = useManpowerProviderProfile();
+  } = useUserProfile(ROLE.MANPOWER_PROVIDER);
 
   if (loadingProfile) return <div>Loading profile...</div>;
 

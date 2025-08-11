@@ -1,10 +1,10 @@
 import { useState } from 'react'
 import { ROLE } from '../../../../utils/role';
-import axios from 'axios';
 import { useNavigate, useLocation } from 'react-router-dom';
 import icons from '../../../assets/svg/Icons'
 import Navbar from '../../Navbar';
 import Feedback from '../../../components/Feedback';
+import { useLogout } from '../../../../hooks/useLogout';
 
 
 const Sidebar = () => {
@@ -12,19 +12,7 @@ const Sidebar = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleLogout = async () => {
-        try {
-            const response = await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, {
-                withCredentials: true,
-            });
-            if (response.status === 200) {
-                console.log('Logged out successfully');
-                navigate("/login");
-            }
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
-    };
+    const { logout, isLoading: isLoggingOut } = useLogout();
 
     const handleFeedbackOpen = () => {
         setFeedbackModalVisible(true);
@@ -44,20 +32,14 @@ const Sidebar = () => {
             {/* Sidebar */}
             <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
 
-                {/* svg here */}
-                <div className='flex'>
-                    <img src={icons.dashboard} alt="" className='mb-6 mt-30 ml-5' />
-                    <h2 className="text-2xl font-bold mb-6 mt-30 ml-5 text-black">Dashboard</h2>
-                </div>
-
-                <ul className="list-none p-0 space-y-4 flex-1 flex flex-col">
-                    <li className={`${location.pathname.includes(`/${ROLE.BUSINESS_EMPLOYER}/post`) ? 'bg-gray-500' : ''} flex`}>
-                        <img src={icons.job_post_details} alt="" className='ml-5 w-[27px]' />
+                <ul className="list-none p-0 space-y-4 flex-1 flex flex-col mb-6 mt-30">
+                    <li className={`${location.pathname.includes(`/${ROLE.BUSINESS_EMPLOYER}/dashboard`) ? 'bg-gray-500' : ''} flex`}>
+                        <img src={icons.dashboard} alt="" className='w-[27px] ml-5' />
                         <button
-                            onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/post`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/dashboard`)}
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
-                            Job Post Details
+                            Dashboard
                         </button>
                     </li>
 
@@ -65,7 +47,7 @@ const Sidebar = () => {
                         <img src={icons.manage_job_post} alt="" className='ml-5' />
                         <button
                             onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/manage`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2  font-medium"
                         >
                             Manage Job Post
                         </button>
@@ -75,7 +57,7 @@ const Sidebar = () => {
                         <img src={icons.create_job_post} alt="" className='ml-5 w-[27px]' />
                         <button
                             onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/create`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2  font-medium"
                         >
                             Create Job Post
                         </button>
@@ -85,7 +67,7 @@ const Sidebar = () => {
                         <img src={icons.view_applicant} alt="" className='ml-5 w-[27px]' />
                         <button
                             onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/view`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             View Applicant
                         </button>
@@ -95,7 +77,7 @@ const Sidebar = () => {
                         <img src={icons.find_agency} alt="" className='ml-5 w-[27px]' />
                         <button
                             onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/find`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             Find Agencies
                         </button>
@@ -105,7 +87,7 @@ const Sidebar = () => {
                         <img src={icons.message} alt="" className='ml-5 w-[27px]' />
                         <button
                             onClick={() => navigate(`/${ROLE.BUSINESS_EMPLOYER}/message`)}
-                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             Messages
                         </button>
@@ -114,7 +96,7 @@ const Sidebar = () => {
                     <li className="mt-auto flex justify-center">
                         <button
                             onClick={handleFeedbackOpen}
-                            className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             Add Feedback
                         </button>
@@ -122,10 +104,10 @@ const Sidebar = () => {
 
                     <li className="mt-0 flex justify-center">
                         <button
-                            onClick={handleLogout}
-                            className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 text-xl font-medium"
+                            onClick={logout}
+                            className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
-                            Sign out
+                            {isLoggingOut ? 'Signing out...' : 'Sign out'}
                         </button>
                     </li>
 
@@ -136,7 +118,7 @@ const Sidebar = () => {
             {feedbackModalVisible && (
                 <Feedback
                     onClose={handleFeedbackClose}
-                    role={ROLE.BUSINESS_EMPLOYER} // Pass the role here
+                    role={ROLE.BUSINESS_EMPLOYER} 
                 />
             )}
         </>

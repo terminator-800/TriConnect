@@ -1,24 +1,23 @@
 import { useState } from "react";
 import Sidebar from "../Sidebar";
 import MessageAgency from "../../../../components/MessageAgency";
-import { useBusinessEmployerProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import { useUncontactedAgencies } from "../../../../../hooks/useUncontactedAgencies";
 import { ROLE } from "../../../../../utils/role";
-import VerificationStatus from "../../../../pages/Dashboards/BusinessEmployer/Verification Form/VerificationStatus";
-import Form from "../../../../pages/Dashboards/BusinessEmployer/Verification Form/Form";
+import VerificationStatus from "../../../../pages/Dashboards/BusinessEmployer/VerificationForm/VerificationStatus";
+import Form from "../../../../pages/Dashboards/BusinessEmployer/VerificationForm/Form";
 import Pagination from "../../../../components/Pagination";
 
 const FindAgency = () => {
-  // Business Employer Profile
+
   const {
     data: profileData,
     isLoading: loading,
     isError,
     error,
     refetch,
-  } = useBusinessEmployerProfile();
+  } = useUserProfile(ROLE.BUSINESS_EMPLOYER);
 
-  // Uncontacted Agencies
   const {
     agencies = [],
     isLoading: isAgenciesLoading,
@@ -75,7 +74,6 @@ const FindAgency = () => {
       {showApply && selectedAgency && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
           <MessageAgency
-            sender={profileData}
             receiver={selectedAgency}
             role={ROLE.BUSINESS_EMPLOYER}
             onClose={() => setShowApply(false)}

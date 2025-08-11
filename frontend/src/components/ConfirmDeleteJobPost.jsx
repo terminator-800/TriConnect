@@ -1,58 +1,80 @@
-import { useState } from 'react';
+import { useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { useDeleteJobPost } from '../../hooks/useDeleteJobPost';
 
-const ConfirmDeleteJobPost = ({ onConfirm }) => {
-  const [visible, setVisible] = useState(false);
-  const [jobToDelete, setJobToDelete] = useState(null);
+const ConfirmDeleteJobPost = ({ onClose, data, role }) => {
+  if (!data) return null;
 
-  const showModal = (job) => {
-    setJobToDelete(job);
-    setVisible(true);
+  const { deleteJobPost, isLoading } = useDeleteJobPost(role);
+
+  useEffect(() => {
+    const originalStyle = window.getComputedStyle(document.body).overflow;
     document.body.style.overflow = 'hidden';
-  };
+    return () => {
+      document.body.style.overflow = originalStyle;
+    };
+  }, []);
 
-  const hideModal = () => {
-    setVisible(false);
-    setJobToDelete(null);
-    document.body.style.overflow = 'auto';
-  };
-
-  const handleConfirm = async () => {
-    if (jobToDelete) {
-      await onConfirm(jobToDelete);
-      hideModal();
+  const handleDelete = async () => {
+    try {
+      await deleteJobPost(data.job_post_id);
+      onClose();
+    } catch (err) {
+      console.error('Error deleting job post:', err);
     }
   };
 
-  const ModalUI = () =>
-    visible && (
-      <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 backdrop-blur-sm">
-        <div className="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 relative border border-gray-300">
+  return (
+    <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
+      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative border border-gray-300">
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl cursor-pointer"
+        >
+          &times;
+        </button>
+
+        <h2 className="text-xl font-bold mb-4 text-center text-red-600">Delete Job Post</h2>
+        <p className="text-gray-700 text-center mb-4">
+          Are you sure you want to <strong>delete</strong> this job post?
+        </p>
+
+        <div className="mb-4 text-sm text-gray-800 border border-gray-300 p-4 rounded-lg bg-gray-50">
+          <p><strong>Job Title:</strong> {data.job_title}</p>
+          <p><strong>Location:</strong> {data.location}</p>
+          <p><strong>Salary:</strong> {data.salary_range}</p>
+        </div>
+
+        <div className="flex justify-center gap-4">
           <button
-            onClick={hideModal}
-            className="absolute top-2 right-2 text-gray-600 hover:text-red-500 text-xl font-bold cursor-pointer"
-            title="Close"
+            onClick={handleDelete}
+            disabled={isLoading}
+            className="bg-red-600 hover:bg-red-500 text-white px-6 py-2 rounded-lg cursor-pointer"
           >
-            &times;
+            {isLoading ? 'Deleting...' : 'Yes, Delete'}
           </button>
-          <div className="p-6">
-            <h2 className="text-lg font-semibold">Confirm Deletion</h2>
-            <p className="mt-2">
-              Are you sure you want to delete <strong>{jobToDelete?.job_title}</strong>?
-            </p>
-            <div className="mt-4 flex justify-end gap-2">
-              <button onClick={hideModal} className="px-4 py-2 bg-gray-200 rounded cursor-pointer">
-                Cancel
-              </button>
-              <button onClick={handleConfirm} className="px-4 py-2 bg-red-600 text-white rounded cursor-pointer">
-                Delete
-              </button>
-            </div>
-          </div>
+          <button
+            onClick={onClose}
+            className="bg-gray-300 hover:bg-gray-400 text-black px-6 py-2 rounded-lg cursor-pointer"
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
         </div>
       </div>
-    );
+    </div>
+  );
+};
 
-  return { showModal, ModalUI };
+ConfirmDeleteJobPost.propTypes = {
+  onClose: PropTypes.func.isRequired,
+  role: PropTypes.string.isRequired,
+  data: PropTypes.shape({
+    jobPostId: PropTypes.number.isRequired,
+    job_title: PropTypes.string,
+    location: PropTypes.string,
+    salary_range: PropTypes.string,
+  }),
 };
 
 export default ConfirmDeleteJobPost;

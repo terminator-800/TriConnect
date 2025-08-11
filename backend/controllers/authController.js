@@ -1,12 +1,15 @@
+const { findUsersEmail } = require("../service/find-user-email-service");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-const { findUsersEmail, getUserInfo } = require("../service/usersQuery");
+const pool = require("../config/DatabaseConnection");
 
 const login = async (req, res) => {
+  let connection;
   const { email, password } = req.body;
 
   try {
-    const user = await findUsersEmail(email);
+    connection = await pool.getConnection();
+    const user = await findUsersEmail(connection, email);
 
     if (!user) {
       return res.status(401).json({ message: "Invalid email or password" });
@@ -49,6 +52,8 @@ const login = async (req, res) => {
   } catch (error) {
     console.error("Error during login:", error);
     res.status(500).json({ message: "Server error" });
+  } finally {
+    if (connection) connection.release();
   }
 };
 

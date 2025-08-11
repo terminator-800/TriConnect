@@ -1,12 +1,12 @@
-import { useState } from "react";
-import Sidebar from "../Sidebar";
-import MessageAgency from "../../../../components/MessageAgency";
-import { useIndividualEmployerProfile } from "../../../../../hooks/useUserProfiles";
 import { useUncontactedAgencies } from "../../../../../hooks/useUncontactedAgencies";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
+import { useState } from "react";
 import { ROLE } from "../../../../../utils/role";
 import VerificationStatus from "../../../../pages/Dashboards/IndividualEmployer/Verification Form/VerificationStatus";
-import Form from "../../../../pages/Dashboards/IndividualEmployer/Verification Form/Form";
+import MessageAgency from "../../../../components/MessageAgency";
 import Pagination from "../../../../components/Pagination";
+import Sidebar from "../Sidebar";
+import Form from "../../../../pages/Dashboards/IndividualEmployer/Verification Form/Form";
 
 const FindAgency = () => {
   // Individual Employer Profile
@@ -16,7 +16,7 @@ const FindAgency = () => {
     isError,
     error,
     refetch,
-  } = useIndividualEmployerProfile();
+  } = useUserProfile(ROLE.INDIVIDUAL_EMPLOYER);
 
   // Uncontacted Agencies
   const {

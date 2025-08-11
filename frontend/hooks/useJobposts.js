@@ -15,37 +15,48 @@ export const usePendingJobPosts = () =>
     queryFn: async () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/${ROLE.ADMINISTRATOR}/pendingJobPosts`,
+        { withCredentials: true }
+      );
+      return response.data;
+    },
+  });
+
+export const useUnappliedJobPosts = () =>
+  useQuery({
+    queryKey: ['unappliedJobPosts'],
+    queryFn: async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/unappliedJobPosts`,
+          {
+            withCredentials: true,
+          }
+        );
+        return response.data;
+      } catch (error) {
+        console.error('❌ Error fetching unapplied job posts:', error);
+        throw error;
+      }
+    },
+    staleTime: 1000 * 60,
+    retry: 1,
+    refetchOnWindowFocus: false,
+  });
+
+
+export const useJobPostsByUser = (category) =>
+  useQuery({
+    queryKey: ['jobPostsByUser', category],
+    queryFn: async () => {
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}/jobPosts${category ? `?category=${category}` : ''}`,
         { withCredentials: true } 
       );
       return response.data;
     },
+    enabled: true, 
   });
 
-export const useUnappliedJobPosts = (user_id) =>
-  useQuery({
-    queryKey: ['unappliedJobPosts', user_id],
-    queryFn: async () => {
-      if (!user_id) return [];
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/unappliedJobPosts?user_id=${user_id}`
-      );
-      return response.data;
-    },
-    enabled: !!user_id,
-  });
-
-export const useJobPostsByUser = (user_id, category) =>
-  useQuery({
-    queryKey: ['jobPostsByUser', user_id, category],
-    queryFn: async () => {
-      if (!user_id) return [];
-      const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/jobPosts?user_id=${user_id}${category ? `&category=${category}` : ''}`
-      );
-      return response.data;
-    },
-    enabled: !!user_id,
-  });
 
 export const useVerifiedJobPosts = () =>
   useQuery({

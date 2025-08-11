@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { ROLE } from "../../../../../utils/role";
-import axios from "axios";
-import { useMutation } from "@tanstack/react-query";
+import { useCreateJobPost } from "../../../../../hooks/useCreateJobPost";
 
 const JobPostForm = () => {
   const [job_title, setJobTitle] = useState("");
@@ -12,44 +11,17 @@ const JobPostForm = () => {
   const [job_description, setJobDescription] = useState("");
   const [agreeToReview, setAgreeToReview] = useState(false);
 
-  const mutation = useMutation({
-    mutationFn: async (data) => {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/${ROLE.INDIVIDUAL_EMPLOYER}/job-post`,
-        data,
-        {
-          withCredentials: true,
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      return response;
-    },
-    onSuccess: (res) => {
-      if (res.status === 201) {
-        alert("Job post created successfully!");
-        setJobTitle("");
-        setJobType("");
-        setSalaryRange("");
-        setLocation("");
-        setRequiredSkill("");
-        setJobDescription("");
-        setAgreeToReview(false);
-      }
-    },
-    onError: (error) => {
-      const status = error.response?.status;
-      const message = error.response?.data?.error;
+  const onSuccessCallback = () => {
+    setJobTitle("");
+    setJobType("");
+    setSalaryRange("");
+    setLocation("");
+    setRequiredSkill("");
+    setJobDescription("");
+    setAgreeToReview(false);
+  };
 
-      if (status === 403 && message?.includes("maximum")) {
-        alert("Monthly limit reached. Subscribe to extend to 10 job posts a month.");
-      } else {
-        console.error("Error creating job post:", message || error.message);
-        alert("An error occurred while creating the job post.");
-      }
-    },
-  });
+  const mutation = useCreateJobPost(ROLE.INDIVIDUAL_EMPLOYER, onSuccessCallback);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -166,9 +138,9 @@ const JobPostForm = () => {
           <button
             type="submit"
             className="bg-blue-900 text-white rounded-xl px-10 shadow-md py-2 text-2xl cursor-pointer"
-            disabled={mutation.isLoading}
+            disabled={mutation.isPending}
           >
-            {mutation.isLoading ? "Submitting..." : "Confirm"}
+            {mutation.isPending ? "Submitting..." : "Confirm"}
           </button>
         </form>
       </div>

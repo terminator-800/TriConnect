@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { useIndividualEmployerProfile } from "../../../../../hooks/useUserProfiles";
+import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import Form from '../Verification Form/Form';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import PersonalInfo from '../Profile/PersonalInfo';
 import Security from '../Profile/Security';
 import VerificationStatus from '../Verification Form/VerificationStatus';
+import { ROLE } from '../../../../../utils/role';
 
 const IndividualEmployerProfile = () => {
   const personal = 'personal'
@@ -27,8 +28,8 @@ const IndividualEmployerProfile = () => {
     isError,
     error,
     refetch,
-  } = useIndividualEmployerProfile();
-
+  } = useUserProfile(ROLE.INDIVIDUAL_EMPLOYER);
+  
   useEffect(() => {
     if (profileData) {
       setFormData({

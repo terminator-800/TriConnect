@@ -24,7 +24,6 @@ export const useRestrictUser = () => {
   const mutation = useMutation({
     mutationFn: restrictUser,
     onSuccess: () => {
-      // Invalidate cached queries so the UI reflects changes
       queryClient.invalidateQueries(['reported-users']);
       queryClient.invalidateQueries(['users']);
     },

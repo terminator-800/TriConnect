@@ -35,7 +35,7 @@ const ConfirmReport = (onDone) => {
         onSuccess: () => {
           alert(`User "${userData.name}" has been restricted.`);
           hideModal();
-          if (onDone) onDone(); // Closes parent modal (ViewReportedUser)
+          if (onDone) onDone(); 
         },
         onError: () => {
           alert('Something went wrong while restricting the user.');

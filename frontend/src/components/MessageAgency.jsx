@@ -5,15 +5,13 @@ import icons from '../assets/svg/Icons';
 import socket from '../../utils/socket';
 import { useQueryClient } from '@tanstack/react-query';
 
-
-const MessageAgency = ({ sender, receiver, role, onClose }) => {
+const MessageAgency = ({ receiver, role, onClose }) => {
   const queryClient = useQueryClient();
 
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
   const [success, setSuccess] = useState(false);
 
-  const sender_id = Number(sender?.user_id);
   const receiver_id = Number(receiver?.user_id);
 
   useEffect(() => {
@@ -24,18 +22,15 @@ const MessageAgency = ({ sender, receiver, role, onClose }) => {
   }, []);
 
   const mutation = useMutation({
-    mutationFn: async ({ sender_id, receiver_id, message, file }) => {
-      const user_small_id = Math.min(sender_id, receiver_id);
-      const user_large_id = Math.max(sender_id, receiver_id);
+    mutationFn: async ({ receiver_id, message, files }) => {
+
 
       const formData = new FormData();
       formData.append('agency_profile_id', receiver.user_id);
-      formData.append('sender_id', sender_id);
       formData.append('receiver_id', receiver_id);
-      formData.append('user_small_id', user_small_id);
-      formData.append('user_large_id', user_large_id);
       formData.append('message', message);
-      if (file) formData.append('file', file);
+
+      if (files) formData.append('files', file);
 
       const url = `${import.meta.env.VITE_API_URL}/${role}/message-agency`;
       const { data } = await axios.post(url, formData, {
@@ -52,7 +47,6 @@ const MessageAgency = ({ sender, receiver, role, onClose }) => {
       setFile(null);
 
       socket.emit('sendMessage', {
-        sender_id,
         receiver_id,
         message_text: vars.message,
         file_url: data.file_url,
@@ -75,10 +69,9 @@ const MessageAgency = ({ sender, receiver, role, onClose }) => {
   });
 
   const handleSubmit = () => {
-    if (!sender_id || !message.trim()) return;
+    if (!message.trim()) return;
 
     mutation.mutate({
-      sender_id,
       receiver_id,
       message,
       file,

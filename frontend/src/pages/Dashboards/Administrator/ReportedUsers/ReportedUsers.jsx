@@ -1,9 +1,8 @@
+import { useAllReportedUsers } from '../../../../../hooks/REPORT';
 import { useState } from 'react';
-import Sidebar from '../Sidebar';
-import Pagination from '../../../../components/Pagination';
-import { useAllReportedUsers } from '../../../../../hooks/useReportUser';
-import { format } from 'date-fns';
 import ViewReportedUser from './ViewReportedUser';
+import Pagination from '../../../../components/Pagination';
+import Sidebar from '../Sidebar';
 
 const USERS_PER_PAGE = 4;
 
@@ -18,15 +17,19 @@ const ReportedUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedReport, setSelectedReport] = useState(null);
   const { data: allReportedUsers = [], isLoading, isError } = useAllReportedUsers();
+  console.log(allReportedUsers, 'reported users');
 
   const totalPages = Math.ceil(allReportedUsers.length / USERS_PER_PAGE);
   const startIndex = (currentPage - 1) * USERS_PER_PAGE;
   const paginatedUsers = allReportedUsers.slice(startIndex, startIndex + USERS_PER_PAGE);
 
-  const getInitials = (name = '') => {
-    const parts = name.trim().split(/\s+/);
-    return parts.map(p => p[0]).slice(0, 2).join('').toUpperCase();
+  const getInitials = (entity = '') => {
+    const parts = entity.trim().split(/\s+/);
+    if (parts.length === 0) return '';
+    if (parts.length === 1) return parts[0][0].toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
+
 
   return (
     <>
@@ -39,6 +42,7 @@ const ReportedUser = () => {
           <div className="flex-1 mt-10">
             <div className="overflow-hidden rounded-xl shadow bg-white">
               <table className="w-full text-left">
+
                 <thead>
                   <tr className="bg-gray-400 text-gray-700 text-sm rounded-t-xl">
                     <th className="px-6 py-4">User Details</th>
@@ -48,7 +52,9 @@ const ReportedUser = () => {
                     <th className="px-6 py-4">Actions</th>
                   </tr>
                 </thead>
+
                 <tbody>
+
                   {isLoading && (
                     <tr>
                       <td colSpan="5" className="px-4 py-4 text-center text-gray-600">
@@ -56,6 +62,7 @@ const ReportedUser = () => {
                       </td>
                     </tr>
                   )}
+
                   {isError && (
                     <tr>
                       <td colSpan="5" className="px-4 py-4 text-center text-red-600">
@@ -63,6 +70,7 @@ const ReportedUser = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isLoading && !isError && paginatedUsers.length === 0 && (
                     <tr>
                       <td colSpan="5" className="px-4 py-4 text-center text-gray-600">
@@ -70,15 +78,16 @@ const ReportedUser = () => {
                       </td>
                     </tr>
                   )}
+
                   {!isLoading && !isError && paginatedUsers.map((report) => (
                     <tr key={report.report_id} className="border-t border-gray-200">
                       {/* User Info */}
                       <td className="px-6 py-5 flex items-center gap-3 italic">
                         <div className="w-10 h-10 bg-gray-200 text-sm font-medium text-gray-600 rounded-full flex items-center justify-center">
-                          {getInitials(report.reported_user?.name)}
+                          {getInitials(report.reported_user?.entity) || 'N/A'}
                         </div>
                         <div>
-                          <div className="font-semibold">{report.reported_user?.name}</div>
+                          <div className="font-semibold">{report.reported_user?.entity || 'N/A'}</div>
                         </div>
                       </td>
 
@@ -91,7 +100,7 @@ const ReportedUser = () => {
                       <td className="px-6 py-5">
                         <div className="font-semibold">{report.reason}</div>
                         <div className="text-xs text-gray-500">
-                          Reported by: {report.reporter?.name || report.reporter?.user_id}
+                          Reported by: {report.reporter?.name || report.reporter?.user_id || 'N/A'}
                         </div>
                         {report.proofs?.length > 0 && (
                           <div className="mt-1 text-xs text-gray-600 italic">
@@ -102,18 +111,16 @@ const ReportedUser = () => {
 
                       {/* Date */}
                       <td className="px-6 py-5 text-sm text-gray-700">
-                        <div>{format(new Date(report.created_at), 'MMM d, yyyy')}</div>
-                        <div className="text-xs text-gray-500">
-                          at {format(new Date(report.created_at), 'h:mm a')}
-                        </div>
+                        <span>{report.created_at || 'just now'}</span>
+
                       </td>
 
                       {/* Action */}
                       <td className="px-6 py-5">
                         <button
-                          disabled={!report.canView}
+                          disabled={!report.can_view}
                           onClick={() => setSelectedReport(report)}
-                          className={`px-5 py-1.5 rounded text-white text-sm font-medium ${report.canView ? 'bg-blue-900 hover:bg-blue-800' : 'bg-gray-300 cursor-not-allowed'} cursor-pointer`}
+                          className={`px-5 py-1.5 rounded text-white text-sm font-medium ${report.can_view ? 'bg-blue-900 hover:bg-blue-800' : 'bg-gray-300 cursor-not-allowed'} cursor-pointer`}
                         >
                           View
                         </button>

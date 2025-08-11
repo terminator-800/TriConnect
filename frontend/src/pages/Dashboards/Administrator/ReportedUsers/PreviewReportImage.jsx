@@ -1,3 +1,5 @@
+import icons from "../../../../assets/svg/Icons";
+
 const PreviewReportImage = ({ imageUrl, onClose }) => {
   if (!imageUrl) return null;
 
@@ -9,14 +11,14 @@ const PreviewReportImage = ({ imageUrl, onClose }) => {
           className="absolute top-4 right-4 cursor-pointer text-3xl font-bold"
           onClick={onClose}
         >
-          &times;
+          <img src={icons.close} alt="" />
         </button>
 
         {/* Full Image */}
         <img
           src={imageUrl}
           alt="Preview"
-          className="w-full max-h-[80vh] object-contain rounded-lg shadow-lg"
+          className="w-full max-h-[80vh] p-5 bg-white rounded-lg shadow-lg"
           onError={(e) => (e.target.src = '/placeholder.png')}
         />
       </div>

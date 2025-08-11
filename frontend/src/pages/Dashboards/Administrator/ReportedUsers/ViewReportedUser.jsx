@@ -1,10 +1,10 @@
-import { useState } from 'react';
-import { format } from 'date-fns';
-import { ROLE, ROLE_LABELS } from '../../../../../utils/role';
 import { getImageReportPath } from '../../../../../utils/getImageReportPath';
+import { ROLE, ROLE_LABELS } from '../../../../../utils/role';
+import { useState } from 'react';
 import PreviewReportImage from './PreviewReportImage';
 import ConfirmReport from './ConfirmReport';
 import DismissReport from './DismissReport';
+import icons from '../../../../assets/svg/Icons';
 
 const roleColors = {
     [ROLE.MANPOWER_PROVIDER]: 'text-orange-500',
@@ -34,7 +34,7 @@ const ViewReportedUser = ({ report, onClose }) => {
                             className="text-white text-2xl font-bold hover:text-gray-300 cursor-pointer"
                             onClick={onClose}
                         >
-                            &times;
+                            <img src={icons.close} alt="" />
                         </button>
                     </div>
 
@@ -42,8 +42,12 @@ const ViewReportedUser = ({ report, onClose }) => {
                         {/* Reported User */}
                         <div>
                             <p className="text-gray-700 font-semibold">Reported User:</p>
-                            <p className="text-gray-900">{report.reported_user?.name}</p>
-                            <p className={`text-sm italic font-semibold ${roleColors[report.reported_user?.role]}`}>
+                            <p className="text-gray-900 font-semibold italic">{report.reported_user?.entity || 'N/A'}</p>
+                            <p className="text-gray-900">
+                                <span className='text-gray-500 text-sm'>Authorized person: </span>
+                                <span className='font-semibold italic'>{report.reported_user?.name || 'N/A'}</span>
+                            </p>
+                            <p className={`text-sm italic font-semibold ${roleColors[report.reported_user?.role || 'N/A']}`}>
                                 {getRoleLabel(report.reported_user?.role)}
                             </p>
                         </div>
@@ -51,22 +55,26 @@ const ViewReportedUser = ({ report, onClose }) => {
                         {/* Reporter */}
                         <div>
                             <p className="text-gray-700 font-semibold">Reported By:</p>
-                            <p className="text-gray-900">{report.reporter?.name}</p>
+                            <p className="text-gray-900 font-semibold italic">{report.reporter?.entity || 'N/A'}</p>
+                            <p className="text-gray-900">
+                                <span className='text-sm text-gray-500'>Authorized person: </span>
+                                <span className='font-semibold italic'>{report.reporter?.name || 'N/A'}</span>
+                            </p>
                             <p className={`text-sm font-semibold italic ${roleColors[report.reporter?.role]}`}>
-                                {getRoleLabel(report.reporter?.role)}
+                                {getRoleLabel(report.reporter?.role || 'N/A')}
                             </p>
                         </div>
 
                         {/* Reason */}
                         <div>
                             <p className="text-gray-700 font-semibold">Report Reason:</p>
-                            <p className="italic text-gray-600">{report.reason}</p>
+                            <p className="italic font-semibold">{report.reason || 'N/A'}</p>
                             <p className="text-sm text-gray-500 mt-1">
-                                Date Reported: {format(new Date(report.created_at), 'MMM d, yyyy')}
+                                Date Reported: {report.created_at || 'N/A'}
                             </p>
                             {report.message && (
-                                <p className="mt-2 text-gray-800 text-sm">
-                                    "{report.message}"
+                                <p className="mt-2 font-semibold text-sm italic">
+                                    "{report.message || "N/A"}"
                                 </p>
                             )}
                         </div>

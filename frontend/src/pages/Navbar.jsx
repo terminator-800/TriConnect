@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import icons from "../assets/svg/Icons";
 import { ROLE } from "../../utils/role";
+import NotificationBell from "../components/NotificationBell";
 
 const Navbar = ({ userType }) => {
 
@@ -90,10 +91,10 @@ const Navbar = ({ userType }) => {
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <button className="flex items-center text-2xl font-bold cursor-pointer">
-                <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+              <div className="flex items-center text-2xl font-bold cursor-pointer">
+                <NotificationBell role={ROLE.JOBSEEKER} />
                 Notifications
-              </button>
+              </div>
             </div>
 
             <div className="relative flex">
@@ -134,10 +135,10 @@ const Navbar = ({ userType }) => {
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <button className="flex items-center text-2xl font-bold cursor-pointer">
-                <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+              <div className="flex items-center text-2xl font-bold cursor-pointer">
+                <NotificationBell role={ROLE.BUSINESS_EMPLOYER} />
                 Notifications
-              </button>
+              </div>
             </div>
 
             <div className="relative flex">
@@ -178,10 +179,10 @@ const Navbar = ({ userType }) => {
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <button className="flex items-center text-2xl font-bold cursor-pointer">
-                <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+              <div className="flex items-center text-2xl font-bold cursor-pointer">
+                <NotificationBell role={ROLE.INDIVIDUAL_EMPLOYER} />
                 Notifications
-              </button>
+              </div>
             </div>
 
             <div className="relative flex">
@@ -222,10 +223,10 @@ const Navbar = ({ userType }) => {
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <button className="flex items-center text-2xl font-bold cursor-pointer">
-                <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+              <div className="flex items-center text-2xl font-bold cursor-pointer">
+                <NotificationBell role={ROLE.MANPOWER_PROVIDER} />
                 Notifications
-              </button>
+              </div>
             </div>
 
             <div className="relative flex">
@@ -264,10 +265,10 @@ const Navbar = ({ userType }) => {
             TriConnect
           </Link>
           <div className="relative flex">
-            <button className="flex items-center text-2xl font-bold cursor-pointer">
-              <img src={icons.notification_bell} alt="Notification Icon" className="w-6 h-6 mr-2" />
+            <div className="flex items-center text-2xl font-bold cursor-pointer">
+              <NotificationBell role={ROLE.ADMINISTRATOR} />
               Notifications
-            </button>
+            </div>
           </div>
         </div>
       )}
