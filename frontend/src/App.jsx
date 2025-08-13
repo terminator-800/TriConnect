@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, createContext, useContext } from "react";
 import axios from "axios";
 import { useSocket } from "../hooks/useSocket";
 import { useGlobalNotifications } from "../hooks/useGlobalNotifications";
@@ -55,8 +55,12 @@ import ReportedUsers from './pages/Dashboards/Administrator/ReportedUsers/Report
 import UserFeedback from './pages/Dashboards/Administrator/UserFeedback/UserFeedback'
 import ManpowerProviderJobPostDetails from "./pages/Dashboards/ManpowerProvider/JobPostDetails";
 
-// Socket Provider Component
-const SocketProvider = ({ children }) => {
+// Auth Context
+const AuthContext = createContext();
+
+export const useAuth = () => useContext(AuthContext);
+
+const AuthProvider = ({ children }) => {
   const [authData, setAuthData] = useState({ authenticated: null, role: null, userId: null });
   const hasFetched = useRef(false);
 
@@ -64,164 +68,152 @@ const SocketProvider = ({ children }) => {
     const checkAuth = async () => {
       if (hasFetched.current) return;
       hasFetched.current = true;
-
       try {
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
           withCredentials: true,
         });
-
-        setAuthData({ 
-          authenticated: data.authenticated, 
+        setAuthData({
+          authenticated: data.authenticated,
           role: data.role,
-          userId: data.user_id 
+          userId: data.user,
         });
       } catch {
         setAuthData({ authenticated: false, role: null, userId: null });
       }
     };
-
-    checkAuth();
-  }, []);
-
-  // Initialize socket connection for authenticated users
-  useSocket(authData.userId, authData.role);
-  
-  // Initialize global notifications
-  useGlobalNotifications(authData.userId, authData.role);
-
-  return children;
-};
-
-function App() {
-  const [currentRole, setCurrentRole] = useState(null);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
-          withCredentials: true,
-        });
-        setCurrentRole(data.authenticated ? data.role : null);
-      } catch {
-        setCurrentRole(null);
-      }
-    };
-
     checkAuth();
   }, []);
 
   return (
-    <SocketProvider>
-      <Router>
-        <Routes>
+    <AuthContext.Provider value={authData}>
+      {children}
+    </AuthContext.Provider>
+  );
+};
 
-          {/* Public Routes */}
-          <Route
-            path="/"
-            element={
-              <PublicRoute>
-                <Home />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/login"
-            element={
-              <PublicRoute>
-                <Login />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/forgot-password"
-            element={
-              <PublicRoute>
-                <ForgotPassword />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/forgot-password/reset-password"
-            element={
-              <PublicRoute>
-                <ResetPassword />
-              </PublicRoute>
-            }
-          />
-          <Route
-            path="/register/*"
-            element={
-              <PublicRoute>
-                <RegisterRoutes />
-              </PublicRoute>
-            }
-          />
+// Remove SocketProvider's auth check and just use context
+const SocketProvider = ({ children }) => {
+  const { userId, role } = useAuth();
+  useSocket(userId, role);
+  useGlobalNotifications(userId, role);
+  return children;
+};
+
+function App() {
+  return (
+    <AuthProvider>
+      <SocketProvider>
+        <Router>
+          <Routes>
+
+            {/* Public Routes */}
+            <Route
+              path="/"
+              element={
+                <PublicRoute>
+                  <Home />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/login"
+              element={
+                <PublicRoute>
+                  <Login />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/forgot-password"
+              element={
+                <PublicRoute>
+                  <ForgotPassword />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/forgot-password/reset-password"
+              element={
+                <PublicRoute>
+                  <ResetPassword />
+                </PublicRoute>
+              }
+            />
+            <Route
+              path="/register/*"
+              element={
+                <PublicRoute>
+                  <RegisterRoutes />
+                </PublicRoute>
+              }
+            />
 
 
-          {/* Private Routes for Dashboards */}
+            {/* Private Routes for Dashboards */}
 
-          {/* Jobseeker */}
-          <Route path="/jobseeker/*" element={<PrivateRoute />}>
-            {/* <Route element={<JobseekerDashboard />} /> */}
-            <Route path="profile/*" index element={<JobseekerProfile />} />
-            <Route path="jobs" element={<JobseekerFindJob />} />
-            <Route path="agencies" element={<JobseekerFindAgency />} />
-            <Route path="message" element={<JobseekerMessage />} />
-          </Route>
+            {/* Jobseeker */}
+            <Route path="/jobseeker/*" element={<PrivateRoute />}>
+              {/* <Route element={<JobseekerDashboard />} /> */}
+              <Route path="profile/*" index element={<JobseekerProfile />} />
+              <Route path="jobs" element={<JobseekerFindJob />} />
+              <Route path="agencies" element={<JobseekerFindAgency />} />
+              <Route path="message" element={<JobseekerMessage />} />
+            </Route>
 
-          {/* Business Employer */}
-          <Route path="/business-employer/*" element={<PrivateRoute />}>
-            {/* <Route  element={<BusinessEmployerDashboard />} /> */}
-            <Route path="profile/*" index element={<BusinessProfile />} />
-            <Route path="dashboard"  element={<JobPostDetails />} />
-            <Route path="manage" element={<BusinessEmployerManageJobPost />} />
-            <Route path="create" element={<BusinessEmployerCreateJobPost />} />
-            <Route path="view" element={<ViewApplicant />} />
-            <Route path="find" element={<BusinessEmployerFindAgency />} />
-            <Route path="message" element={<BusinessEmployerMessage />} />
-          </Route>
+            {/* Business Employer */}
+            <Route path="/business-employer/*" element={<PrivateRoute />}>
+              {/* <Route  element={<BusinessEmployerDashboard />} /> */}
+              <Route path="profile/*" index element={<BusinessProfile />} />
+              <Route path="dashboard"  element={<JobPostDetails />} />
+              <Route path="manage" element={<BusinessEmployerManageJobPost />} />
+              <Route path="create" element={<BusinessEmployerCreateJobPost />} />
+              <Route path="view" element={<ViewApplicant />} />
+              <Route path="find" element={<BusinessEmployerFindAgency />} />
+              <Route path="message" element={<BusinessEmployerMessage />} />
+            </Route>
 
-          {/* Individual Employer */}
-          <Route path="/individual-employer/*" element={<PrivateRoute />}>
-            {/* <Route  element={<IndividualEmployerDashboard />} /> */}
-            <Route path="profile/*" index element={<IndividualEmployerProfile />} />
-            <Route path="dashboard" element={<IndividualEmployerJobPostDetails />} />
-            <Route path="manage" element={<IndividualEmployerManageJobPost />} />
-            <Route path="create" element={<IndividualEmployerCreateJobPost />} />
-            <Route path="view" element={<IndividualEmployerViewApplicant />} />
-            <Route path="find" element={<IndividualEmployerFindAgency />} />
-            <Route path="message" element={<IndividualEmployerMessage />} />
-          </Route>
+            {/* Individual Employer */}
+            <Route path="/individual-employer/*" element={<PrivateRoute />}>
+              {/* <Route  element={<IndividualEmployerDashboard />} /> */}
+              <Route path="profile/*" index element={<IndividualEmployerProfile />} />
+              <Route path="dashboard" element={<IndividualEmployerJobPostDetails />} />
+              <Route path="manage" element={<IndividualEmployerManageJobPost />} />
+              <Route path="create" element={<IndividualEmployerCreateJobPost />} />
+              <Route path="view" element={<IndividualEmployerViewApplicant />} />
+              <Route path="find" element={<IndividualEmployerFindAgency />} />
+              <Route path="message" element={<IndividualEmployerMessage />} />
+            </Route>
 
-          {/* Manpower Provider */}
-          <Route path="/manpower-provider/*" element={<PrivateRoute />}>
-            {/* <Route  element={<ManpowerProviderDashboard />} /> */}
-            <Route path="profile/*" index element={<ManpowerProviderProfile />} />
-            <Route path="dashboard" element={<ManpowerProviderJobPostDetails />} />
-            <Route path="jobs" element={<ManpowerProviderFindJob />} />
-            <Route path="create" element={<ManpowerProviderCreateJobPost />} />
-            <Route path="manage" element={<ManpowerProviderManageJobPost />} />
-            <Route path="message" element={<ManpowerProviderMessage />} />
-            <Route path="view" element={<ManpowerProviderViewApplicant />} />
-          </Route>
+            {/* Manpower Provider */}
+            <Route path="/manpower-provider/*" element={<PrivateRoute />}>
+              {/* <Route  element={<ManpowerProviderDashboard />} /> */}
+              <Route path="profile/*" index element={<ManpowerProviderProfile />} />
+              <Route path="dashboard" element={<ManpowerProviderJobPostDetails />} />
+              <Route path="jobs" element={<ManpowerProviderFindJob />} />
+              <Route path="create" element={<ManpowerProviderCreateJobPost />} />
+              <Route path="manage" element={<ManpowerProviderManageJobPost />} />
+              <Route path="message" element={<ManpowerProviderMessage />} />
+              <Route path="view" element={<ManpowerProviderViewApplicant />} />
+            </Route>
 
-          {/* Administrator */}
-          <Route path="/administrator/*" element={<PrivateRoute />}>
-            {/* <Route  element={<AdministratorDashboard />} /> */}
-            <Route path="verification" index element={<UserVerification />} />
-            <Route path="verified" element={<VerifiedUser />} />
-            <Route path="job-post-verification" element={<JobPostVerification />} />
-            <Route path="verified-job-post" element={<VerifiedJobPost />} />
-            <Route path="reported" element={<ReportedUsers />} />
-            <Route path="feedback" element={<UserFeedback />} />
-          </Route>
+            {/* Administrator */}
+            <Route path="/administrator/*" element={<PrivateRoute />}>
+              {/* <Route  element={<AdministratorDashboard />} /> */}
+              <Route path="verification" index element={<UserVerification />} />
+              <Route path="verified" element={<VerifiedUser />} />
+              <Route path="job-post-verification" element={<JobPostVerification />} />
+              <Route path="verified-job-post" element={<VerifiedJobPost />} />
+              <Route path="reported" element={<ReportedUsers />} />
+              <Route path="feedback" element={<UserFeedback />} />
+            </Route>
 
-        </Routes>
-      </Router>
-      
-      {/* Global Components */}
-      <SocketStatus />
-    </SocketProvider>
+          </Routes>
+        </Router>
+        
+        {/* Global Components */}
+        <SocketStatus />
+      </SocketProvider>
+    </AuthProvider>
   );
 }
 

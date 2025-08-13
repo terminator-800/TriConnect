@@ -1,47 +1,26 @@
-import { useEffect, useState } from 'react';
+import { useAuth } from '../App';
 import { Navigate } from 'react-router-dom';
-import axios from 'axios';
 import { ROLE } from '../../utils/role';
 
 const ProtectedRoute = ({ children }) => {
-  const [authStatus, setAuthStatus] = useState(null);
+  const authData = useAuth();
 
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
-          withCredentials: true,
-        });
-
-        if (res.data.authenticated) {
-          setAuthStatus(res.data.role);
-        } else {
-          setAuthStatus(false);
-        }
-      } catch (error) {
-        setAuthStatus(false);
-      }
-    };
-
-    checkAuth();
-  }, []);
-
-  if (authStatus === null) {
+  if (authData.authenticated === null) {
     return <div>Loading...</div>;
   }
 
-  if (authStatus) {
-    switch (authStatus) {
+  if (authData.authenticated) {
+    switch (authData.role) {
       case ROLE.JOBSEEKER:
         return <Navigate to={`/${ROLE.JOBSEEKER}`} />;
       case ROLE.BUSINESS_EMPLOYER:
         return <Navigate to={`/${ROLE.BUSINESS_EMPLOYER}`} />;
       case ROLE.INDIVIDUAL_EMPLOYER:
-        return <Navigate to={`${ROLE.INDIVIDUAL_EMPLOYER}`} />;
+        return <Navigate to={`/${ROLE.INDIVIDUAL_EMPLOYER}`} />;
       case ROLE.MANPOWER_PROVIDER:
-        return <Navigate to={`${ROLE.MANPOWER_PROVIDER}`} />;
+        return <Navigate to={`/${ROLE.MANPOWER_PROVIDER}`} />;
       case ROLE.ADMININISTRATOR:
-        return <Navigate to={`${ROLE.ADMININISTRATOR}`} />;
+        return <Navigate to={`/${ROLE.ADMINISTRATOR}`} />;
       default:
         return <Navigate to="/" />;
     }

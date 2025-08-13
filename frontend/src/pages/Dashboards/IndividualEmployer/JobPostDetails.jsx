@@ -13,6 +13,7 @@ const JobPostDetails = () => {
   
       <h1 className="text-5xl font-bold text-blue-900">Welcome, Employer!</h1>
       <p className="text-2xl mt-2">Your hiring platform statistics at a glance</p>
+      
       {/* Recent Job Posts */}
       <div className="w-full rounded mt-15">
 
@@ -22,7 +23,9 @@ const JobPostDetails = () => {
         </div>
 
         <div className="rounded-2xl shadow border border-gray-300 overflow-hidden">
+
           <table className="w-full border-collapse">
+
             <thead>
               <tr className="bg-gray-300">
                 <th className="text-left py-3 px-4">Job Title</th>

@@ -3,11 +3,11 @@ import { modalReducer, initialState } from './reducer';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { useJobPostsByUser } from '../../../../../hooks/useJobposts';
 import { ROLE } from '../../../../../utils/role';
-import VerificationStatus from '../../../Dashboards/ManpowerProvider/VerificationForm/VerificationStatus';
+import VerificationStatus from '../VerificationForm/VerificationStatus';
 import ConfirmStatusChange from '../../../../components/ConfirmStatusChange';
 import ConfirmDeleteJobPost from '../../../../components/ConfirmDeleteJobPost';
 import Sidebar from '../Sidebar';
-import Form from '../../ManpowerProvider/VerificationForm/Form';
+import Form from '../VerificationForm/Form';
 import JobTable from './JobTable';
 
 const ManageJobPost = () => {
