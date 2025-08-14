@@ -4,20 +4,6 @@ const getUserConversations = async (connection, user_id) => {
     try {
         const [rows] = await connection.query(
             `
-            WITH latest_messages AS (
-                SELECT *
-                FROM (
-                    SELECT 
-                        *, 
-                        ROW_NUMBER() OVER (
-                            PARTITION BY conversation_id 
-                            ORDER BY created_at DESC, message_id DESC
-                        ) AS rn
-                    FROM messages
-                ) ranked
-                WHERE rn = 1
-            )
-
             SELECT 
                 c.conversation_id,
                 u.user_id AS sender_id,
@@ -38,14 +24,22 @@ const getUserConversations = async (connection, user_id) => {
                 m.created_at AS sent_at
 
             FROM conversations c
-            JOIN users u ON u.user_id = IF(c.user1_id = ?, c.user2_id, c.user1_id)
+            JOIN users u 
+                ON u.user_id = IF(c.user1_id = ?, c.user2_id, c.user1_id)
 
             LEFT JOIN jobseeker js ON js.jobseeker_id = u.user_id
             LEFT JOIN individual_employer ie ON ie.individual_employer_id = u.user_id
             LEFT JOIN business_employer be ON be.business_employer_id = u.user_id
             LEFT JOIN manpower_provider mp ON mp.manpower_provider_id = u.user_id
 
-            LEFT JOIN latest_messages m ON m.conversation_id = c.conversation_id
+            LEFT JOIN messages m 
+                ON m.message_id = (
+                    SELECT msg.message_id
+                    FROM messages msg
+                    WHERE msg.conversation_id = c.conversation_id
+                    ORDER BY msg.created_at DESC, msg.message_id DESC
+                    LIMIT 1
+                )
 
             WHERE c.user1_id = ? OR c.user2_id = ?
             ORDER BY m.created_at DESC
@@ -114,4 +108,4 @@ const getUserConversations = async (connection, user_id) => {
 
 module.exports = {
     getUserConversations
-}
+};
