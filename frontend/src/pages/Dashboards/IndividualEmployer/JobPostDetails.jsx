@@ -40,7 +40,7 @@ const JobPostDetails = () => {
                 <tr><td colSpan={5} className="py-6 text-center text-gray-500">Loading...</td></tr>
               )}
               {!isLoading && recentJobPosts.length === 0 && (
-                <tr><td colSpan={5} className="py-6 text-center text-gray-500 italic">No recent job posts.</td></tr>
+                <tr><td colSpan={5} className="py-6 bg-white text-center text-gray-500 italic">No recent job posts.</td></tr>
               )}
               {!isLoading && recentJobPosts.map((p) => (
                 <tr key={p.job_post_id} className="border-b border-gray-200 bg-white">

@@ -1,25 +1,18 @@
 import { ROLE } from "./role";
 
-export const getImagePath = (user, filename) => {
-    if (!filename || !user) return null;
+export const getImagePath = (user, dbPath) => {
+    if (!dbPath || !user) return null;
 
-    const role = user.role;
-    const user_id = user.user_id;
+    // Remove any leading "uploads/" from DB path, because express serves from /uploads
+    const relativePath = dbPath.replace(/^uploads[\\/]/, '');
 
-    const name =
-        role === ROLE.JOBSEEKER
-            ? user.full_name
-            : role === ROLE.INDIVIDUAL_EMPLOYER
-                ? user.full_name
-                : role === ROLE.BUSINESS_EMPLOYER
-                    ? user.business_name
-                    : role === ROLE.MANPOWER_PROVIDER
-                        ? user.agency_name
-                        : "unknown";
+    // Encode each segment of the path
+    const encodedPath = relativePath
+        .split('/')
+        .map(encodeURIComponent)
+        .join('/');
 
-    if (!name) return null;
-
-    return `${import.meta.env.VITE_API_URL}/uploads/${role}/${user_id}/${encodeURIComponent(name)}/${filename}`;
+    return `${import.meta.env.VITE_API_URL}/uploads/${encodedPath}`;
 };
 
 // Map of documents per role

@@ -47,7 +47,7 @@ const ManpowerProviderDashboard = () => {
               )}
 
               {!isLoading && recentJobPosts.length === 0 && (
-                <tr><td colSpan={5} className='py-6 text-center text-gray-500 italic'>No recent job posts.</td></tr>
+                <tr><td colSpan={5} className='py-6 bg-white text-center text-gray-500 italic'>No recent job posts.</td></tr>
               )}
 
               {!isLoading && recentJobPosts.map((p) => (

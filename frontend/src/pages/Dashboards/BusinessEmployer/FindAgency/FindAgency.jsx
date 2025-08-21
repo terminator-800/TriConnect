@@ -23,7 +23,7 @@ const FindAgency = () => {
     isLoading: isAgenciesLoading,
     error: agencyError,
   } = useUncontactedAgencies(ROLE.BUSINESS_EMPLOYER);
-
+  
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const agenciesPerPage = 4;
@@ -115,7 +115,7 @@ const FindAgency = () => {
                 <div className="grid grid-cols-2 gap-6 mt-15">
                   {currentAgencies.map((agency) => (
                     <div
-                      key={agency.user_id}
+                      key={agency.agency_id}
                       className="flex flex-col bg-white rounded-xl border border-gray-300 p-6 shadow-md"
                     >
                       <div className="flex items-center gap-4">

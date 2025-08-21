@@ -1,6 +1,5 @@
 import { useGlobalNotifications } from '../../hooks/useGlobalNotifications';
 import { useUserProfile } from '../../hooks/useUserProfiles';
-import { ROLE } from '../../utils/role';
 
 const UnreadMessageIndicator = ({ role }) => {
   const { data: profileData } = useUserProfile(role);

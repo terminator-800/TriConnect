@@ -29,7 +29,7 @@ const IndividualEmployerProfile = () => {
     error,
     refetch,
   } = useUserProfile(ROLE.INDIVIDUAL_EMPLOYER);
-  
+
   useEffect(() => {
     if (profileData) {
       setFormData({

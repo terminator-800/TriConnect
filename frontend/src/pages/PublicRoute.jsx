@@ -6,7 +6,7 @@ const ProtectedRoute = ({ children }) => {
   const authData = useAuth();
 
   if (authData.authenticated === null) {
-    return <div>Loading...</div>;
+    return <div>Protected Route Loading ...</div>;
   }
 
   if (authData.authenticated) {
@@ -19,7 +19,7 @@ const ProtectedRoute = ({ children }) => {
         return <Navigate to={`/${ROLE.INDIVIDUAL_EMPLOYER}`} />;
       case ROLE.MANPOWER_PROVIDER:
         return <Navigate to={`/${ROLE.MANPOWER_PROVIDER}`} />;
-      case ROLE.ADMININISTRATOR:
+      case ROLE.ADMINISTRATOR:
         return <Navigate to={`/${ROLE.ADMINISTRATOR}`} />;
       default:
         return <Navigate to="/" />;

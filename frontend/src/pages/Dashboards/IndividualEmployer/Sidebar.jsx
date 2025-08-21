@@ -21,6 +21,11 @@ const Sidebar = () => {
     setFeedbackModalVisible(false);
   };
 
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    await logout();
+  };
+
   return (
     <>
       <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
@@ -33,7 +38,7 @@ const Sidebar = () => {
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col mb-6 mt-30">
 
           <li className={`${location.pathname.includes(`/${ROLE.INDIVIDUAL_EMPLOYER}/dashboard`) ? 'bg-gray-500' : ''} flex`}>
-            <img src={icons.dashboard} alt="" className='w-[27px] ml-5'/>
+            <img src={icons.dashboard} alt="" className='w-[27px] ml-5' />
             <button
               onClick={() => navigate(`/${ROLE.INDIVIDUAL_EMPLOYER}/dashboard`)}
               className="text-black hover:text-gray-300 ml-3 bg-transparent border-none cursor-pointer p-2 font-medium"
@@ -103,7 +108,7 @@ const Sidebar = () => {
 
           <li className="mt-0 flex justify-center">
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 font-medium"
             >
               {isLoggingOut ? 'Signing out...' : 'Sign out'}
@@ -116,7 +121,7 @@ const Sidebar = () => {
       {feedbackModalVisible && (
         <Feedback
           onClose={handleFeedbackClose}
-          role={ROLE.INDIVIDUAL_EMPLOYER} 
+          role={ROLE.INDIVIDUAL_EMPLOYER}
         />
       )}
     </>

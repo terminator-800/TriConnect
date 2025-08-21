@@ -21,6 +21,11 @@ const Sidebar = () => {
     setFeedbackModalVisible(false);
   };
 
+  const handleLogout = async () => {
+    if (isLoggingOut) return;
+    await logout();
+  };
+
   return (
     <>
       {/* Navbar */}
@@ -32,7 +37,7 @@ const Sidebar = () => {
       <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col mb-6 mt-30">
-          
+
           <li className={`${location.pathname.includes(`/${ROLE.JOBSEEKER}/jobs`) ? 'bg-gray-500' : ''} flex`}>
             <img src={icons.find_job} alt="" className='ml-5 w-[27px]' />
             <button
@@ -74,7 +79,7 @@ const Sidebar = () => {
 
           <li className="mt-0 flex justify-center">
             <button
-              onClick={logout}
+              onClick={handleLogout}
               className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 font-medium"
             >
               {isLoggingOut ? 'Signing out...' : 'Sign out'}

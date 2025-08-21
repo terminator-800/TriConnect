@@ -16,7 +16,6 @@ export const useRejectJobPost = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['pendingJobPosts']);
-            alert('Job post rejected successfully.');
         },
         onError: (error) => {
             console.error('Error rejecting job post:', error?.response?.data || error.message);

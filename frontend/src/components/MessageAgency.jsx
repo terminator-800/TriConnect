@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import icons from '../assets/svg/Icons';
 import socket from '../../utils/socket';
-import { useQueryClient } from '@tanstack/react-query';
 
 const MessageAgency = ({ receiver, role, onClose }) => {
   const queryClient = useQueryClient();
@@ -11,9 +11,9 @@ const MessageAgency = ({ receiver, role, onClose }) => {
   const [message, setMessage] = useState('');
   const [file, setFile] = useState(null);
   const [success, setSuccess] = useState(false);
-
-  const receiver_id = Number(receiver?.user_id);
-
+  
+  const receiver_id = Number(receiver?.agency_id);
+  
   useEffect(() => {
     document.body.style.overflow = 'hidden';
     return () => {
@@ -22,15 +22,14 @@ const MessageAgency = ({ receiver, role, onClose }) => {
   }, []);
 
   const mutation = useMutation({
-    mutationFn: async ({ receiver_id, message, files }) => {
-
+    mutationFn: async ({ receiver_id, message, file }) => {
 
       const formData = new FormData();
       formData.append('agency_profile_id', receiver.user_id);
       formData.append('receiver_id', receiver_id);
       formData.append('message', message);
 
-      if (files) formData.append('files', file);
+      if (file) formData.append('files', file);
 
       const url = `${import.meta.env.VITE_API_URL}/${role}/message-agency`;
       const { data } = await axios.post(url, formData, {

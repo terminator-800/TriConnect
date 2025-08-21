@@ -1,6 +1,5 @@
-import { useState } from "react";
 import { useReportUser } from "../../hooks/REPORT";
-import { ROLE } from "../../utils/role";
+import { useState } from "react";
 import icons from "../assets/svg/Icons";
 
 const ReportUser = ({ reportedUser, conversationId, onClose, role }) => {

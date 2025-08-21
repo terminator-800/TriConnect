@@ -16,7 +16,6 @@ export const useApproveJobPost = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries(['pendingJobPosts']);
-            alert('Job post approved successfully!');
         },
         onError: (error) => {
             console.error('Approval failed:', error?.response?.data || error.message);

@@ -23,6 +23,11 @@ const Sidebar = () => {
         setFeedbackModalVisible(false);
     };
 
+     const handleLogout = async () => {
+        if (isLoggingOut) return; 
+        await logout();
+    };
+
     return (
         <>
             <div className="fixed top-0 left-0 w-full z-50 bg-white shadow">
@@ -104,7 +109,7 @@ const Sidebar = () => {
 
                     <li className="mt-0 flex justify-center">
                         <button
-                            onClick={logout}
+                            onClick={handleLogout}
                             className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 font-medium"
                         >
                             {isLoggingOut ? 'Signing out...' : 'Sign out'}
