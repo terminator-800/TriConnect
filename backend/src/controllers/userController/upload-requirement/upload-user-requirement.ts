@@ -1,0 +1,140 @@
+import type { Request, Response } from "express";
+import type { PoolConnection } from "mysql2/promise";
+import pool from "../../../config/database-connection.js";
+import { uploadUserRequirement } from "./insert-requirement.js";
+import { getUserInfo } from "./get-user-info.js";
+import { ROLE } from "../../../utils/roles.js";
+import jwt from "jsonwebtoken";
+
+// Simple JWT payload type
+interface JwtPayload {
+  user_id: number;
+  email: string;
+  role: keyof typeof ROLE;
+  is_registered: boolean | number;
+}
+
+interface MulterFiles {
+  [fieldname: string]: Express.Multer.File[];
+}
+
+export const uploadRequirement = async (req: Request, res: Response) => {
+  let connection: PoolConnection | undefined;
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+
+    const token = req.cookies?.token;
+
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    let decoded: JwtPayload;
+
+    try {
+      decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    } catch (err: any) {
+      return res.status(403).json({ message: "Invalid or expired token" });
+    }
+
+    const { user_id, email, role, is_registered } = decoded;
+
+    if (!user_id || !email || !role || !is_registered)
+      return res.status(400).json({ message: "Invalid token payload" });
+
+    const allowedRoles = [
+      ROLE.JOBSEEKER,
+      ROLE.INDIVIDUAL_EMPLOYER,
+      ROLE.BUSINESS_EMPLOYER,
+      ROLE.MANPOWER_PROVIDER,
+    ];
+
+    if (!allowedRoles.includes(role))
+      return res.status(403).json({ message: "Unauthorized role" });
+
+    const matchedUser = await getUserInfo(connection, user_id);
+
+    if (!matchedUser || matchedUser.email !== email || matchedUser.role !== role)
+      return res.status(403).json({ message: "User validation failed" });
+
+    const files = req.files as MulterFiles;
+
+    let payload: any = { user_id, role };
+
+    switch (role) {
+      case ROLE.JOBSEEKER:
+        payload = {
+          ...payload,
+          full_name: req.body.full_name?.trim(),
+          date_of_birth: req.body.date_of_birth,
+          phone: req.body.contact_number?.trim(),
+          gender: req.body.gender?.trim(),
+          present_address: req.body.present_address?.trim(),
+          permanent_address: req.body.permanent_address?.trim(),
+          education: req.body.education?.trim(),
+          skills: req.body.skills?.trim(),
+          government_id: files?.government_id?.[0]?.path?.replace(/\\/g, '/') || null,
+          selfie_with_id: files?.selfie_with_id?.[0]?.path?.replace(/\\/g, '/') || null,
+          nbi_barangay_clearance: files?.nbi_barangay_clearance?.[0]?.path?.replace(/\\/g, '/') || null,
+        };
+        break;
+
+      case ROLE.INDIVIDUAL_EMPLOYER:
+        payload = {
+          ...payload,
+          full_name: req.body.full_name?.trim(),
+          date_of_birth: req.body.date_of_birth,
+          phone: req.body.phone?.trim(),
+          gender: req.body.gender?.trim(),
+          present_address: req.body.present_address?.trim(),
+          permanent_address: req.body.permanent_address?.trim(),
+          government_id: files?.government_id?.[0]?.path?.replace(/\\/g, '/') || null,
+          selfie_with_id: files?.selfie_with_id?.[0]?.path?.replace(/\\/g, '/') || null,
+          nbi_barangay_clearance: files?.nbi_barangay_clearance?.[0]?.path?.replace(/\\/g, '/') || null,
+        };
+        break;
+
+      case ROLE.BUSINESS_EMPLOYER:
+        payload = {
+          ...payload,
+          business_name: req.body.business_name?.trim(),
+          business_address: req.body.business_address?.trim(),
+          industry: req.body.industry?.trim(),
+          business_size: req.body.business_size?.trim(),
+          authorized_person: req.body.authorized_person?.trim(),
+          authorized_person_id: files?.authorized_person_id?.[0]?.path?.replace(/\\/g, '/') || null,
+          business_permit_BIR: files?.business_permit_BIR?.[0]?.path?.replace(/\\/g, '/') || null,
+          DTI: files?.DTI?.[0]?.path?.replace(/\\/g, '/') || null,
+          business_establishment: files?.business_establishment?.[0]?.path?.replace(/\\/g, '/') || null,
+        };
+        break;
+
+      case ROLE.MANPOWER_PROVIDER:
+        payload = {
+          ...payload,
+          agency_name: req.body.agency_name?.trim(),
+          agency_address: req.body.agency_address?.trim(),
+          agency_authorized_person: req.body.agency_authorized_person?.trim(),
+          agency_services: req.body.agency_services?.trim(),
+          dole_registration_number: files?.dole_registration_number?.[0]?.path?.replace(/\\/g, '/') || null,
+          mayors_permit: files?.mayors_permit?.[0]?.path?.replace(/\\/g, '/') || null,
+          authorized_person_id: files?.authorized_person_id?.[0]?.path?.replace(/\\/g, '/') || null,
+          agency_certificate: files?.agency_certificate?.[0]?.path?.replace(/\\/g, '/') || null
+        };
+        break;
+
+      default:
+        return res.status(400).json({ message: "Invalid role" });
+    }
+
+    await uploadUserRequirement(connection, payload);
+    await connection.commit();
+
+    return res.status(200).json({ message: `${role} requirements uploaded successfully` });
+  } catch (err: any) {
+    try { await connection?.rollback(); } catch { }
+    return res.status(500).json({ message: "Server error", error: err.message });
+  } finally {
+    if (connection) connection.release();
+  }
+};

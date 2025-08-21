@@ -1,0 +1,115 @@
+import dotenv from 'dotenv';
+dotenv.config();
+import type { Request, Response } from "express";
+import { findUsersEmail } from "../../../service/find-user-email-service.js";
+import { createUsers } from "./create-user.js";
+import type { User } from "../../../interface/interface.js";
+import { ROLE } from "../../../utils/roles.js";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
+import nodemailer from "nodemailer";
+import pool from "../../../config/database-connection.js";
+import type { PoolConnection } from "mysql2/promise";
+
+const { CLIENT_ORIGIN, JWT_SECRET, EMAIL_USER, EMAIL_PASS } = process.env;
+
+if (!CLIENT_ORIGIN || !JWT_SECRET || !EMAIL_USER || !EMAIL_PASS) {
+  console.error("❌ Missing required environment variables.");
+  process.exit(1);
+}
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: EMAIL_USER,
+    pass: EMAIL_PASS,
+  },
+});
+
+const allowedRoles: Partial <Record <keyof typeof ROLE, string> > = {
+  [ROLE.BUSINESS_EMPLOYER]: "business employer",
+  [ROLE.INDIVIDUAL_EMPLOYER]: "individual employer",
+  [ROLE.JOBSEEKER]: "jobseeker",
+  [ROLE.MANPOWER_PROVIDER]: "manpower provider",
+};
+
+interface RegisterUserBody {
+  email: string;
+  role: keyof typeof ROLE;
+  password: string;
+}
+
+interface JwtPayload {
+  email: string;
+  role: keyof typeof ROLE;
+}
+
+export const registerUser = async (request: Request <unknown, unknown, RegisterUserBody>, response: Response) => {
+  let connection: PoolConnection | undefined;
+  type AllowedRoleKey = keyof typeof ROLE;
+
+  const { email, role, password } = request.body as { email: string; role: AllowedRoleKey; password: string };
+  
+  if (!email || !role || !password) {
+    return response.status(400).json({ message: "Missing email, role, or password." });
+  }
+
+  if (!(role in allowedRoles)) {
+    return response.status(400).json({ message: "Invalid role type." });
+  }
+
+  try {
+    connection = await pool.getConnection();
+    await connection.beginTransaction();
+    const existingUser: User | null = await findUsersEmail(connection, email);
+    
+    if (existingUser) {
+      await connection.rollback();
+      return response.status(409).json({ message: "Email already exists." });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const result = await createUsers(connection, email, hashedPassword, role);
+    
+    if (!result.success || !result.user_id) {
+      await connection.rollback();
+      return response.status(500).json({ message: "Failed to create user." });
+    }
+
+    const token = jwt.sign({ email, role }, JWT_SECRET, { expiresIn: "1h" });
+    const verificationLink = `${process.env.API_BASE_URL}/${role}/verify?token=${token}`;
+    const emailSubject = `Verify your ${allowedRoles[role]} email`;
+
+    const htmlMessage = `
+      <p>Hello,</p>
+      <p>Please verify your email address to complete registration as a <strong>${allowedRoles[role]}</strong>.</p>
+      <p>Click the link below to verify:</p>
+      <a href="${verificationLink}">${verificationLink}</a>
+      <p>This link will expire in 1 hour.</p>
+    `;
+
+    await transporter.sendMail({
+      from: `"TriConnect" <${EMAIL_USER}>`,
+      to: email,
+      subject: emailSubject,
+      html: htmlMessage,
+    });
+
+    await connection.commit();
+
+    return response.status(201).json({
+      message: "Verification email sent. Please check your inbox.",
+    });
+
+  } catch (error: unknown) {
+    if (connection) connection.rollback();
+    console.error("❌ Error sending email:", (error as Error).stack || (error as Error).message);
+    return response.status(500).json({ message: "Server error." });
+
+  } finally {
+    if (connection) connection.release();
+  }
+};
+
+
