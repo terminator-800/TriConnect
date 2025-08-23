@@ -36,6 +36,7 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
         // Flatten files from req.files
         const filesRaw = req.files;
         let files: Express.Multer.File[] = [];
+        
         if (Array.isArray(filesRaw)) {
             files = filesRaw;
         } else if (filesRaw && typeof filesRaw === 'object') {

@@ -1,6 +1,5 @@
 import { getRoleConfig, type Role } from "./reject-user-helper.js";
 import { deleteUserFilesAndFolders } from "./delete-folder.js";
-
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import type { Request, Response } from "express";
 import pool from "../../../config/database-connection.js";
