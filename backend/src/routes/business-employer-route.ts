@@ -9,7 +9,7 @@ import { messageHistory } from "../controllers/userController/messageController/
 import { replyMessage } from "../controllers/userController/messageController/reply/reply-message.js"
 import { markAsSeen } from "../controllers/userController/messageController/seen/mark-as-seen.js";
 import { updateJobPostStatus } from "../controllers/userController/job-post-status/update-jobpost-status.js";
-import { contactAgency } from "../controllers/../controllers/userController/contact-agent/contact-agency.js";
+import { contactAgency } from "../controllers/userController/contact-agent/contact-agency.js";
 import { softDeleteJobPost } from "../controllers/userController/delete-job-post/delete-job-post.js";
 import { uncontactedAgencies } from "../controllers/userController/uncontacted-agent/uncontacted-agency.js";
 import { validateRegisterInput } from "../middleware/validate-register-input.js";
