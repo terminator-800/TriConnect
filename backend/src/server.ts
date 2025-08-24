@@ -65,7 +65,7 @@ app.use("/", verifyToken);
 app.use("/", administratorRoute);
 app.use("/", jobPostRoute)
 
-const clientBuildPath = path.resolve(__dirname, "../frontend/dist");
+const clientBuildPath = path.resolve(__dirname, "../../frontend/dist");
 app.use(express.static(clientBuildPath)); 
 
 app.get("/*splat", (req, res) => {
