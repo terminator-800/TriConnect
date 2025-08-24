@@ -22,7 +22,8 @@ const ChatWindow = ({ selectedUser }) => {
   // console.log(conversation_id, 'conversation id jobseeker');
 
   const { data: messages = [], isLoading, isError } = useMessageHistory(ROLE.JOBSEEKER, conversation_id);
-
+  console.log(messages, "messages");
+  
     // Initialize socket connection
     useSocket(currentUserId, ROLE.JOBSEEKER);
    
@@ -121,10 +122,10 @@ const ChatWindow = ({ selectedUser }) => {
                     <div className={`max-w-xs px-4 py-2 rounded-lg text-sm ${bubbleStyle}`}>
                       {msg.message_type === 'file' && msg.file_url && (
                         <img
-                          src={`${import.meta.env.VITE_API_URL}${msg.file_url}`}
+                          src={`${msg.file_url}`}
                           alt="Sent file"
                           className="w-48 h-auto rounded-lg border border-gray-300 cursor-pointer hover:opacity-80"
-                          onClick={() => setPreviewImage(`${import.meta.env.VITE_API_URL}${msg.file_url}`)}
+                          onClick={() => setPreviewImage(`${msg.file_url}`)}
                         />
                       )}
                       <div className="break-words whitespace-pre-wrap">

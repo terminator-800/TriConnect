@@ -12,15 +12,15 @@ const ProtectedRoute = ({ children }) => {
   if (authData.authenticated) {
     switch (authData.role) {
       case ROLE.JOBSEEKER:
-        return <Navigate to={`/${ROLE.JOBSEEKER}`} />;
+        return <Navigate to={`/${ROLE.JOBSEEKER}/jobs`} />;
       case ROLE.BUSINESS_EMPLOYER:
-        return <Navigate to={`/${ROLE.BUSINESS_EMPLOYER}`} />;
+        return <Navigate to={`/${ROLE.BUSINESS_EMPLOYER}/dashboard`} />;
       case ROLE.INDIVIDUAL_EMPLOYER:
-        return <Navigate to={`/${ROLE.INDIVIDUAL_EMPLOYER}`} />;
+        return <Navigate to={`/${ROLE.INDIVIDUAL_EMPLOYER}/dashboard`} />;
       case ROLE.MANPOWER_PROVIDER:
-        return <Navigate to={`/${ROLE.MANPOWER_PROVIDER}`} />;
+        return <Navigate to={`/${ROLE.MANPOWER_PROVIDER}/dashboard`} />;
       case ROLE.ADMINISTRATOR:
-        return <Navigate to={`/${ROLE.ADMINISTRATOR}`} />;
+        return <Navigate to={`/${ROLE.ADMINISTRATOR}/verification`} />;
       default:
         return <Navigate to="/" />;
     }

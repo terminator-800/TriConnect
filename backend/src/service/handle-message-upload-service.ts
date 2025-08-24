@@ -14,7 +14,7 @@ interface HandleMessageUploadParams {
   sender_id: number;
   receiver_id: number;
   message?: string;
-  files: FileUpload[] | undefined; 
+  files: FileUpload[] | undefined;
 }
 
 export const handleMessageUpload = async (
@@ -24,7 +24,7 @@ export const handleMessageUpload = async (
   try {
     const user_small_id = Math.min(sender_id, receiver_id);
     const user_large_id = Math.max(sender_id, receiver_id);
-    
+
     const [existingRows] = await connection.query<RowDataPacket[]>(
       `SELECT * FROM conversations WHERE user_small_id = ? AND user_large_id = ?`,
       [user_small_id, user_large_id]
@@ -53,13 +53,13 @@ export const handleMessageUpload = async (
     }
 
     // Ensure directory exists for file uploads
-    const destDir = path.join(__dirname, "..", "uploads", "chat", conversation_id.toString());
-    await fs.promises.mkdir(destDir, { recursive: true });
+    // const destDir = path.join(__dirname, "../../../", "uploads", "chat", conversation_id.toString());
+    // await fs.promises.mkdir(destDir, { recursive: true });
 
     if (files && files.length > 0) {
       for (const file of files) {
-        const normalizedPath = file.path.replace(/\\/g, "/"); // Windows compatibility
-        const file_url = `/${normalizedPath}`;
+        const normalizedPath = file.path.replace(/\\/g, "/"); 
+        const file_url = normalizedPath; 
 
         await connection.query(
           `INSERT INTO messages (conversation_id, sender_id, receiver_id, message_type, file_url)

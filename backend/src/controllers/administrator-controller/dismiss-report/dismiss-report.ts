@@ -1,7 +1,8 @@
-import { fetchProofFiles, deleteProofRecords, deleteReportRecord, deleteFiles, deleteReportFolder } from "./dismiss-report-helper.js";
+import { deleteProofRecords, deleteReportRecord } from "./dismiss-report-helper.js";
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import pool from "../../../config/database-connection.js";
+import { deleteReportInCloudinary } from "./delete-report-folder.js"
 
 interface DismissReportBody {
     report_id: number | string;
@@ -29,8 +30,6 @@ export const dismissReport = async (
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const proofs = await fetchProofFiles(connection, Number(report_id));
-
         await deleteProofRecords(connection, Number(report_id));
         const deleted = await deleteReportRecord(connection, Number(report_id));
 
@@ -44,8 +43,8 @@ export const dismissReport = async (
         await connection.commit();
         connection.release();
 
-        deleteFiles(proofs);
-        deleteReportFolder(Number(report_id));
+
+        await deleteReportInCloudinary(report_id);
 
         res.status(200).json({ message: "Report dismissed and files deleted", report_id });
     } catch (error: any) {

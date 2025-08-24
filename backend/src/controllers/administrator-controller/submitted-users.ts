@@ -2,12 +2,15 @@ import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import { format } from "date-fns";
 import pool from "../../config/database-connection.js";
+import dotenv from 'dotenv';
+dotenv.config();
 
-function normalizePath(path: string | null): string | null {
-    if (!path) return null;
-    const normalized = path.replace(/\\/g, "/");
-    return `${normalized}`;
+function generateCloudinaryUrl(fileUrl: string | null): string | null {
+    if (!fileUrl) return null;
+    // fileUrl is already a full Cloudinary URL
+    return fileUrl;
 }
+
 
 type Role =
     | "jobseeker"
@@ -101,60 +104,69 @@ export const submittedUsers = async (req: Request, res: Response) => {
 
 async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedUser[]> {
     const [rows]: any[] = await connection.query(`
-    SELECT 
-      u.user_id,
-      u.email,
-      u.role,
-      u.created_at,
-      u.verified_at,
-      js.full_name AS js_full_name,
-      js.date_of_birth AS js_dob,
-      js.phone AS js_phone,
-      js.gender AS js_gender,
-      js.present_address AS js_present_address,
-      js.permanent_address AS js_permanent_address,
-      js.education AS js_education,
-      js.skills AS js_skills,
-      js.government_id AS js_government_id,
-      js.selfie_with_id AS js_selfie_with_id,
-      js.nbi_barangay_clearance AS js_clearance,
-      ie.full_name AS ie_full_name,
-      ie.date_of_birth AS ie_dob,
-      ie.phone AS ie_phone,
-      ie.gender AS ie_gender,
-      ie.present_address AS ie_present_address,
-      ie.permanent_address AS ie_permanent_address,
-      ie.government_id AS ie_government_id,
-      ie.selfie_with_id AS ie_selfie_with_id,
-      ie.nbi_barangay_clearance AS ie_clearance,
-      be.business_name,
-      be.business_address,
-      be.industry,
-      be.business_size,
-      be.authorized_person,
-      be.authorized_person_id,
-      be.business_permit_BIR,
-      be.DTI,
-      be.business_establishment,
-      mp.agency_name,
-      mp.agency_address,
-      mp.agency_services,
-      mp.agency_authorized_person,
-      mp.authorized_person_id AS mp_authorized_person_id,
-      mp.dole_registration_number,
-      mp.mayors_permit,
-      mp.agency_certificate
-    FROM users u
-      LEFT JOIN jobseeker js ON u.user_id = js.jobseeker_id AND u.role = 'jobseeker'
-      LEFT JOIN individual_employer ie ON u.user_id = ie.individual_employer_id AND u.role = 'individual-employer'
-      LEFT JOIN business_employer be ON u.user_id = be.business_employer_id AND u.role = 'business-employer'
-      LEFT JOIN manpower_provider mp ON u.user_id = mp.manpower_provider_id AND u.role = 'manpower-provider'
-    WHERE u.is_submitted = TRUE
-      AND u.is_verified = FALSE
-      AND u.is_rejected = FALSE
-      AND u.verified_at IS NULL
-      AND u.email != ''
-    ORDER BY u.created_at DESC;
+        SELECT 
+            u.user_id,
+            u.email,
+            u.role,
+            u.created_at,
+            u.verified_at,
+            
+            -- Jobseeker
+            js.full_name AS js_full_name,
+            js.date_of_birth AS js_dob,
+            js.phone AS js_phone,
+            js.gender AS js_gender,
+            js.present_address AS js_present_address,
+            js.permanent_address AS js_permanent_address,
+            js.education AS js_education,
+            js.skills AS js_skills,
+            js.government_id AS js_government_id,
+            js.selfie_with_id AS js_selfie_with_id,
+            js.nbi_barangay_clearance AS js_nbi_barangay_clearance,
+
+            -- Individual Employer
+            ie.full_name AS ie_full_name,
+            ie.date_of_birth AS ie_dob,
+            ie.phone AS ie_phone,
+            ie.gender AS ie_gender,
+            ie.present_address AS ie_present_address,
+            ie.permanent_address AS ie_permanent_address,
+            ie.government_id AS ie_government_id,
+            ie.selfie_with_id AS ie_selfie_with_id,
+            ie.nbi_barangay_clearance AS ie_nbi_barangay_clearance,
+
+            -- Business Employer
+            be.business_name,
+            be.business_address,
+            be.industry,
+            be.business_size,
+            be.authorized_person,
+            be.authorized_person_id AS business_authorized_person_id,
+            be.business_permit_BIR AS business_permit_BIR,
+            be.DTI AS DTI,
+            be.business_establishment AS business_establishment,
+
+            -- Manpower Provider
+            mp.agency_name,
+            mp.agency_address,
+            mp.agency_services,
+            mp.agency_authorized_person,
+            mp.authorized_person_id AS mp_authorized_person_id,
+            mp.dole_registration_number AS dole_registration_number,
+            mp.mayors_permit AS mayors_permit,
+            mp.agency_certificate AS agency_certificate
+
+        FROM users u
+            LEFT JOIN jobseeker js ON u.user_id = js.jobseeker_id AND u.role = 'jobseeker'
+            LEFT JOIN individual_employer ie ON u.user_id = ie.individual_employer_id AND u.role = 'individual-employer'
+            LEFT JOIN business_employer be ON u.user_id = be.business_employer_id AND u.role = 'business-employer'
+            LEFT JOIN manpower_provider mp ON u.user_id = mp.manpower_provider_id AND u.role = 'manpower-provider'
+        WHERE u.is_submitted = TRUE
+            AND u.is_verified = FALSE
+            AND u.is_rejected = FALSE
+            AND u.verified_at IS NULL
+            AND u.email != ''
+        ORDER BY u.created_at DESC;
   `);
 
     return rows.map((user: any) => {
@@ -182,9 +194,9 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
                     permanent_address: user.js_permanent_address,
                     education: user.js_education,
                     skills: user.js_skills,
-                    government_id: normalizePath(user.js_government_id),
-                    selfie_with_id: normalizePath(user.js_selfie_with_id),
-                    nbi_barangay_clearance: normalizePath(user.js_clearance),
+                    government_id: generateCloudinaryUrl(user.js_government_id),
+                    selfie_with_id: generateCloudinaryUrl(user.js_selfie_with_id),
+                    nbi_barangay_clearance: generateCloudinaryUrl(user.js_nbi_barangay_clearance),
                 } as JobseekerUser;
 
             case "individual-employer":
@@ -196,9 +208,9 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
                     gender: user.ie_gender,
                     present_address: user.ie_present_address,
                     permanent_address: user.ie_permanent_address,
-                    government_id: normalizePath(user.ie_government_id),
-                    selfie_with_id: normalizePath(user.ie_selfie_with_id),
-                    nbi_barangay_clearance: normalizePath(user.ie_clearance),
+                    government_id: generateCloudinaryUrl(user.ie_government_id),
+                    selfie_with_id: generateCloudinaryUrl(user.ie_selfie_with_id),
+                    nbi_barangay_clearance: generateCloudinaryUrl(user.ie_nbi_barangay_clearance),
                 } as IndividualEmployerUser;
 
             case "business-employer":
@@ -209,10 +221,11 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
                     industry: user.industry,
                     business_size: user.business_size,
                     authorized_person: user.authorized_person,
-                    authorized_person_id: normalizePath(user.authorized_person_id),
-                    business_permit_BIR: normalizePath(user.business_permit_BIR),
-                    DTI: normalizePath(user.DTI),
-                    business_establishment: normalizePath(user.business_establishment),
+                    authorized_person_id: generateCloudinaryUrl(user.business_authorized_person_id),
+                    business_permit_BIR: generateCloudinaryUrl(user.business_permit_BIR),
+                    DTI: generateCloudinaryUrl(user.DTI),
+                    business_establishment: generateCloudinaryUrl(user.business_establishment),
+
                 } as BusinessEmployerUser;
 
             case "manpower-provider":
@@ -222,10 +235,10 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
                     agency_address: user.agency_address,
                     agency_services: user.agency_services,
                     agency_authorized_person: user.agency_authorized_person,
-                    dole_registration_number: normalizePath(user.dole_registration_number),
-                    authorized_person_id: normalizePath(user.mp_authorized_person_id),
-                    mayors_permit: normalizePath(user.mayors_permit),
-                    agency_certificate: normalizePath(user.agency_certificate),
+                    authorized_person_id: generateCloudinaryUrl(user.mp_authorized_person_id),
+                    dole_registration_number: generateCloudinaryUrl(user.dole_registration_number),
+                    mayors_permit: generateCloudinaryUrl(user.mayors_permit),
+                    agency_certificate: generateCloudinaryUrl(user.agency_certificate),
                 } as ManpowerProviderUser;
 
             default:
@@ -233,3 +246,4 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
         }
     });
 }
+

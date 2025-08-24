@@ -1,19 +1,12 @@
 import { ROLE } from "./role";
 
-export const getImagePath = (user, dbPath) => {
-    if (!dbPath || !user) return null;
+export const getImagePath = (user, fileField) => {
+    if (!fileField) return null;
 
-    // Remove any leading "uploads/" from DB path, because express serves from /uploads
-    const relativePath = dbPath.replace(/^uploads[\\/]/, '');
-
-    // Encode each segment of the path
-    const encodedPath = relativePath
-        .split('/')
-        .map(encodeURIComponent)
-        .join('/');
-
-    return `${import.meta.env.VITE_API_URL}/uploads/${encodedPath}`;
+    // Backend already returns full Cloudinary URL
+    return fileField;
 };
+
 
 // Map of documents per role
 export const documentMap = {

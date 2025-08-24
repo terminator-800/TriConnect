@@ -5,6 +5,8 @@ import { uploadUserRequirement } from "./insert-requirement.js";
 import { getUserInfo } from "./get-user-info.js";
 import { ROLE } from "../../../utils/roles.js";
 import jwt from "jsonwebtoken";
+import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
+import fs from 'fs';
 
 // Simple JWT payload type
 interface JwtPayload {
@@ -63,19 +65,30 @@ export const uploadRequirement = async (req: Request, res: Response) => {
 
     switch (role) {
       case ROLE.JOBSEEKER:
+
         payload = {
           ...payload,
           full_name: req.body.full_name?.trim(),
           date_of_birth: req.body.date_of_birth,
           phone: req.body.contact_number?.trim(),
-          gender: req.body.gender?.trim(),
+          gender: req.body.gender
+            ? req.body.gender.trim().toLowerCase().replace(/^./, (c: string) => c.toUpperCase())
+            : null,
           present_address: req.body.present_address?.trim(),
           permanent_address: req.body.permanent_address?.trim(),
           education: req.body.education?.trim(),
           skills: req.body.skills?.trim(),
-          government_id: files?.government_id?.[0]?.path?.replace(/\\/g, '/') || null,
-          selfie_with_id: files?.selfie_with_id?.[0]?.path?.replace(/\\/g, '/') || null,
-          nbi_barangay_clearance: files?.nbi_barangay_clearance?.[0]?.path?.replace(/\\/g, '/') || null,
+          government_id: files?.government_id?.[0]
+            ? await uploadToCloudinary(files.government_id[0]?.path)
+            : null,
+
+          selfie_with_id: files?.selfie_with_id?.[0]
+            ? await uploadToCloudinary(files.selfie_with_id[0]?.path)
+            : null,
+
+          nbi_barangay_clearance: files?.nbi_barangay_clearance?.[0]
+            ? await uploadToCloudinary(files.nbi_barangay_clearance[0]?.path)
+            : null
         };
         break;
 
@@ -85,12 +98,22 @@ export const uploadRequirement = async (req: Request, res: Response) => {
           full_name: req.body.full_name?.trim(),
           date_of_birth: req.body.date_of_birth,
           phone: req.body.phone?.trim(),
-          gender: req.body.gender?.trim(),
+          gender: req.body.gender
+            ? req.body.gender.trim().toLowerCase().replace(/^./, (c: string) => c.toUpperCase())
+            : null,
           present_address: req.body.present_address?.trim(),
           permanent_address: req.body.permanent_address?.trim(),
-          government_id: files?.government_id?.[0]?.path?.replace(/\\/g, '/') || null,
-          selfie_with_id: files?.selfie_with_id?.[0]?.path?.replace(/\\/g, '/') || null,
-          nbi_barangay_clearance: files?.nbi_barangay_clearance?.[0]?.path?.replace(/\\/g, '/') || null,
+          government_id: files?.government_id?.[0]
+            ? await uploadToCloudinary(files.government_id[0]?.path)
+            : null,
+
+          selfie_with_id: files?.selfie_with_id?.[0]
+            ? await uploadToCloudinary(files.selfie_with_id[0]?.path)
+            : null,
+
+          nbi_barangay_clearance: files?.nbi_barangay_clearance?.[0]
+            ? await uploadToCloudinary(files.nbi_barangay_clearance[0]?.path)
+            : null,
         };
         break;
 
@@ -102,10 +125,21 @@ export const uploadRequirement = async (req: Request, res: Response) => {
           industry: req.body.industry?.trim(),
           business_size: req.body.business_size?.trim(),
           authorized_person: req.body.authorized_person?.trim(),
-          authorized_person_id: files?.authorized_person_id?.[0]?.path?.replace(/\\/g, '/') || null,
-          business_permit_BIR: files?.business_permit_BIR?.[0]?.path?.replace(/\\/g, '/') || null,
-          DTI: files?.DTI?.[0]?.path?.replace(/\\/g, '/') || null,
-          business_establishment: files?.business_establishment?.[0]?.path?.replace(/\\/g, '/') || null,
+          authorized_person_id: files?.authorized_person_id?.[0]
+            ? await uploadToCloudinary(files.authorized_person_id[0]?.path)
+            : null,
+
+          business_permit_BIR: files?.business_permit_BIR?.[0]
+            ? await uploadToCloudinary(files.business_permit_BIR[0]?.path)
+            : null,
+
+          DTI: files?.DTI?.[0]
+            ? await uploadToCloudinary(files.DTI[0]?.path)
+            : null,
+
+          business_establishment: files?.business_establishment?.[0]
+            ? await uploadToCloudinary(files.business_establishment[0]?.path)
+            : null,
         };
         break;
 
@@ -116,10 +150,21 @@ export const uploadRequirement = async (req: Request, res: Response) => {
           agency_address: req.body.agency_address?.trim(),
           agency_authorized_person: req.body.agency_authorized_person?.trim(),
           agency_services: req.body.agency_services?.trim(),
-          dole_registration_number: files?.dole_registration_number?.[0]?.path?.replace(/\\/g, '/') || null,
-          mayors_permit: files?.mayors_permit?.[0]?.path?.replace(/\\/g, '/') || null,
-          authorized_person_id: files?.authorized_person_id?.[0]?.path?.replace(/\\/g, '/') || null,
-          agency_certificate: files?.agency_certificate?.[0]?.path?.replace(/\\/g, '/') || null
+          dole_registration_number: files?.dole_registration_number?.[0]
+            ? await uploadToCloudinary(files.dole_registration_number[0]?.path)
+            : null,
+
+          mayors_permit: files?.mayors_permit?.[0]
+            ? await uploadToCloudinary(files.mayors_permit[0]?.path)
+            : null,
+
+          authorized_person_id: files?.authorized_person_id?.[0]
+            ? await uploadToCloudinary(files.authorized_person_id[0]?.path)
+            : null,
+
+          agency_certificate: files?.agency_certificate?.[0]
+            ? await uploadToCloudinary(files.agency_certificate[0]?.path)
+            : null
         };
         break;
 

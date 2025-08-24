@@ -61,4 +61,21 @@ export function getRoleConfig(role: Role): RoleConfig {
   return roleConfig[role];
 }
 
+export function extractPublicIdFromUrl(url: string | null): string | null {
+  if (!url) return null;
+
+  try {
+    // Cloudinary URL format: https://res.cloudinary.com/<cloud_name>/image/upload/v<version>/<public_id>.<ext>
+    const regex = /\/upload\/(?:v\d+\/)?(.+)\.[a-zA-Z0-9]+$/;
+    const match = url.match(regex);
+    if (!match || !match[1]) return null;
+    return match[1]; 
+  } catch (err) {
+    console.error("Error extracting public ID:", err);
+    return null;
+  }
+}
+
+
+
 

@@ -106,6 +106,7 @@ const UserVerification = () => {
                                                         >
                                                             {label}
                                                         </button>
+
                                                     ))}
 
                                                 </div>
@@ -153,8 +154,6 @@ const UserVerification = () => {
                                     ))}
                                 </tbody>
                             </table>
-
-
                         </div>
                     )}
                 </div>

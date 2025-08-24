@@ -2,7 +2,9 @@ import type { Request, Response, RequestHandler } from "express";
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 import { handleMessageUpload } from "../../../service/handle-message-upload-service.js";
+import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 import pool from "../../../config/database-connection.js";
+import fs from "fs";
 
 interface FileUpload {
     path: string;
@@ -36,17 +38,30 @@ export const contactAgency: RequestHandler = async (request: Request, res: Respo
         connection = await pool.getConnection();
         await connection.beginTransaction();
 
-        const files: FileUpload[] | undefined = r.files
-            ? r.files.map(f => ({ path: f.path }))
-            : r.file
-                ? [{ path: r.file.path }]
-                : undefined;
+        // Upload files to Cloudinary
+        let uploadedFiles: FileUpload[] | undefined = undefined;
+        if (r.files && r.files.length > 0) {
+            uploadedFiles = [];
+            for (const f of r.files) {
+                const url = await uploadToCloudinary(f.path, "message_agency");
+                uploadedFiles.push({ path: url });
+            }
+        } else if (r.file) {
+            const url = await uploadToCloudinary(r.file.path, "message_agency");
+            uploadedFiles = [{ path: url }];
+        }
+
+        if (r.files) {
+            r.files.forEach(f => fs.unlinkSync(f.path));
+        } else if (r.file) {
+            fs.unlinkSync(r.file.path);
+        }
 
         const params: HandleMessageUploadParams = {
             sender_id,
             receiver_id,
             message,
-            files: files,
+            files: uploadedFiles,
         };
 
         const newMessage = (await handleMessageUpload(connection, params)) as RowDataPacket;

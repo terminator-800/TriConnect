@@ -1,13 +1,13 @@
-import { getTempPath, getFinalPath, deleteFolderIfExists } from "../report-user/helper.js";
-import { moveFilesAndInsertToDB } from "./insert-db.js";
+// import { getTempPath, deleteFolderIfExists } from "../report-user/helper.js";
+// import { moveFilesAndInsertToDB } from "./insert-db.js";
 import { findExistingReport } from "./find-existing-report.js";
 import { insertNewReport } from "./insert-new-report.js";
 import type { AuthenticatedUser } from "../../../types/express/auth.js";
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import pool from "../../../config/database-connection.js";
+import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 
-// Extend Express Request to include authenticated user info and optional Multer files
 interface ReportUserRequest extends Request {
     user?: AuthenticatedUser;
     files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] } | undefined;
@@ -22,7 +22,7 @@ interface ReportUserBody {
 }
 
 export const reportUser = async (req: ReportUserRequest, res: Response) => {
-    let connection: PoolConnection | undefined;
+    let connection: PoolConnection | null = null;
 
     try {
         connection = await pool.getConnection();
@@ -36,24 +36,19 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
         // Flatten files from req.files
         const filesRaw = req.files;
         let files: Express.Multer.File[] = [];
-        
+
+
+
         if (Array.isArray(filesRaw)) {
             files = filesRaw;
         } else if (filesRaw && typeof filesRaw === 'object') {
             files = Object.values(filesRaw).flat();
         }
 
-        const tempFolderId = req.tempFolderId;
-
-        if (!tempFolderId) {
-            return res.status(400).json({ error: "Missing temporary folder ID." });
-        }
-
         if (!reportedBy || !reportedUserId || !reason) {
             return res.status(400).json({ error: "Missing required fields." });
         }
 
-        const tempPath = getTempPath(tempFolderId);
 
         const existing = await findExistingReport(
             connection,
@@ -62,7 +57,6 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
         );
 
         if (existing.length > 0) {
-            deleteFolderIfExists(tempPath);
             return res
                 .status(409)
                 .json({ error: "You have already reported this user." });
@@ -78,10 +72,22 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
             conversationId
         );
 
-        const finalPath = getFinalPath(reportId);
 
-        await moveFilesAndInsertToDB(files, tempPath, finalPath, reportId, connection);
-        deleteFolderIfExists(tempPath);
+        // Upload files to Cloudinary and insert into DB
+        if (files.length > 0) {
+            await Promise.all(
+                files.map(async (file) => {
+                    const secureUrl = await uploadToCloudinary(file.path, `reports/${reportId}`);
+                    const fileType = file.mimetype.startsWith('image/') ? 'image' : 'file';
+                    await connection?.query(
+                        `INSERT INTO report_proofs (report_id, file_url, file_type) VALUES (?, ?, ?)`,
+                        [reportId, secureUrl, fileType]
+                    );
+                })
+            );
+        }
+
+
         await connection.commit();
 
         res.status(200).json({ message: "Report submitted successfully." });

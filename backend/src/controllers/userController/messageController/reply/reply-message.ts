@@ -3,7 +3,8 @@ import type { PoolConnection } from 'mysql2/promise';
 import type { RowDataPacket } from 'mysql2';
 import pool from '../../../../config/database-connection.js';
 import { handleMessageUpload } from '../../../../service/handle-message-upload-service.js';
-import type { AuthenticatedUser } from '../../../../types/express/auth.js'; // adjust path
+import type { AuthenticatedUser } from '../../../../types/express/auth.js';
+import { uploadToCloudinary } from '../../../../utils/upload-to-cloudinary.js';
 
 // Extend Express Request to include your user and optional files
 interface AuthenticatedRequest extends Request {
@@ -16,7 +17,7 @@ interface MessagePayload {
   sender_id: number;
   receiver_id: number;
   message: string;
-  files: Express.Multer.File[]; // REQUIRED
+  files: { path: string }[];
 }
 
 // Resulting uploaded message structure
@@ -49,24 +50,38 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
     connection = await pool.getConnection();
     if (!connection) return res.status(500).json({ error: 'Database connection not available' });
 
+    // Normalize req.files (handles single & multiple fields)
+    let filesArray: Express.Multer.File[] = [];
+    if (Array.isArray(req.files)) {
+      filesArray = req.files;
+    } else if (req.files && typeof req.files === 'object') {
+      filesArray = Object.values(req.files).flat();
+    }
 
-
-    console.log('Uploaded files:', req.files);
+    let uploadedFiles: { path: string }[] = [];
+    if (filesArray.length > 0) {
+      uploadedFiles = await Promise.all(
+        filesArray.map(async (file) => {
+          const secureUrl = await uploadToCloudinary(file.path, 'chat_messages');
+          return { path: secureUrl };
+        })
+      );
+    }
 
     // Upload the message
     const rawMessage = await handleMessageUpload(connection, {
       sender_id,
       receiver_id,
       message: message_text,
-      files: req.files,
-    } as MessagePayload);
+      files: uploadedFiles,
+    });
 
     // Transform raw message to strongly typed UploadedMessage
     const newMessage: UploadedMessage = {
       conversation_id: rawMessage.conversation_id,
       file_url: rawMessage.file_url,
       message: rawMessage.message,
-      created_at: new Date().toISOString(),
+      created_at: rawMessage.created_at,
       is_read: false,
     };
 

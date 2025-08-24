@@ -85,7 +85,7 @@ const ViewReportedUser = ({ report, onClose }) => {
                                 <p className="text-gray-700 font-semibold">Proof:</p>
                                 <div className="flex flex-wrap gap-3 mt-2">
                                     {report.proofs.map((proof) => {
-                                        const url = getImageReportPath(proof.file_url);
+                                        const url = proof.file_url; // Use the API-provided Cloudinary URL directly
                                         return (
                                             <button
                                                 key={proof.proof_id}

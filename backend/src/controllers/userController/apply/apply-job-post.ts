@@ -1,9 +1,10 @@
-import { insertJobApplication, transferTempFilesIfConversationExists } from './apply-job-post-helper.js';
+import { insertJobApplication } from './apply-job-post-helper.js';
 import { handleMessageUpload } from '../../../service/handle-message-upload-service.js';
 import type { PoolConnection } from 'mysql2/promise';
 import type { CustomRequest } from '../../../types/express/auth.js';
 import type { Response } from 'express';
 import pool from '../../../config/database-connection.js';
+import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 
 interface Message {
   conversation_id?: number;
@@ -19,9 +20,6 @@ export const apply = async (req: CustomRequest, res: Response) => {
   const { receiver_id, message, job_post_id } = req.body;
   const sender_id = req.user?.user_id;
   const role = req.user?.role;
-  console.log(req.body, "REQUEST BODY line 22");
-  console.log(req.files, "FILES");
-
 
   if (!sender_id || !role) {
     return res.status(401).json({ error: 'Unauthorized: missing user info' });
@@ -33,16 +31,22 @@ export const apply = async (req: CustomRequest, res: Response) => {
 
     await insertJobApplication(connection, job_post_id, sender_id, role);
 
+    const uploadedFiles = Array.isArray(req.files)
+      ? await Promise.all(
+        req.files.map(async (f: any) => {
+          const secureUrl = await uploadToCloudinary(f.path, 'job_applications');
+          return { path: secureUrl }; 
+        })
+      )
+      : undefined;
+      
     const newMessage: Message = await handleMessageUpload(connection, {
       sender_id,
       receiver_id,
       message,
-      files: Array.isArray(req.files)
-        ? req.files.map(f => ({ path: f.path }))
-        : undefined,
+       files: uploadedFiles,
     });
 
-    await transferTempFilesIfConversationExists(connection, sender_id, receiver_id);
 
     if (!newMessage.conversation_id) {
       await connection.rollback();
