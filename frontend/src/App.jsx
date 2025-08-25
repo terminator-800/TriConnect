@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { useEffect, useState, useRef, createContext, useContext } from "react";
 import axios from "axios";
 import { useSocket } from "../hooks/useSocket";
@@ -103,7 +103,6 @@ function App() {
   return (
     <AuthProvider>
       <SocketProvider>
-        <Router>
           <Routes>
 
             {/* Public Routes */}
@@ -208,7 +207,6 @@ function App() {
             </Route>
 
           </Routes>
-        </Router>
         
         {/* Global Components */}
         <SocketStatus />
