@@ -1,32 +1,48 @@
-import { useAuth } from '../App';
-import { Navigate } from 'react-router-dom';
-import { ROLE } from '../../utils/role';
+import { useEffect, useState, useRef } from "react";
+import { Navigate, Outlet } from "react-router-dom";
+import axios from "axios";
+import { ROLE } from "../../utils/role"; // adjust path
 
-const ProtectedRoute = ({ children }) => {
-  const authData = useAuth();
+const PublicRoute = ({ children }) => {
+  const [authData, setAuthData] = useState({ authenticated: null, role: null });
+  const hasFetched = useRef(false);
 
-  if (authData.authenticated === null) {
-    return <div>Protected Route Loading ...</div>;
-  }
+  useEffect(() => {
+    const verifyToken = async () => {
+      if (hasFetched.current) return;
+      hasFetched.current = true;
 
+      try {
+        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
+          withCredentials: true,
+        });
+        setAuthData({ authenticated: data.authenticated, role: data.role });
+      } catch {
+        setAuthData({ authenticated: false, role: null });
+      }
+    };
+
+    verifyToken();
+  }, []);
+
+  const roleToPath = {
+    [ROLE.JOBSEEKER]: `/${ROLE.JOBSEEKER}/jobs`,
+    [ROLE.BUSINESS_EMPLOYER]: `/${ROLE.BUSINESS_EMPLOYER}/dashboard`,
+    [ROLE.INDIVIDUAL_EMPLOYER]: `/${ROLE.INDIVIDUAL_EMPLOYER}/dashboard`,
+    [ROLE.MANPOWER_PROVIDER]: `/${ROLE.MANPOWER_PROVIDER}/dashboard`,
+    [ROLE.ADMINISTRATOR]: `/${ROLE.ADMINISTRATOR}/verification`,
+  };
+
+  if (authData.authenticated === null) return <div>Public Route Loading...</div>;
+
+  // If user is logged in, redirect to their dashboard
   if (authData.authenticated) {
-    switch (authData.role) {
-      case ROLE.JOBSEEKER:
-        return <Navigate to={`/${ROLE.JOBSEEKER}/jobs`} />;
-      case ROLE.BUSINESS_EMPLOYER:
-        return <Navigate to={`/${ROLE.BUSINESS_EMPLOYER}/dashboard`} />;
-      case ROLE.INDIVIDUAL_EMPLOYER:
-        return <Navigate to={`/${ROLE.INDIVIDUAL_EMPLOYER}/dashboard`} />;
-      case ROLE.MANPOWER_PROVIDER:
-        return <Navigate to={`/${ROLE.MANPOWER_PROVIDER}/dashboard`} />;
-      case ROLE.ADMINISTRATOR:
-        return <Navigate to={`/${ROLE.ADMINISTRATOR}/verification`} />;
-      default:
-        return <Navigate to="/" />;
-    }
+    const redirectPath = roleToPath[authData.role] || "/";
+    return <Navigate to={redirectPath} replace />;
   }
 
-  return children;
+  // If not logged in, show public page
+  return children || <Outlet />;
 };
 
-export default ProtectedRoute;
+export default PublicRoute;
