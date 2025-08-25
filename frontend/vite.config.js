@@ -8,5 +8,4 @@ export default defineConfig({
     tailwindcss(),
   ],
    base: '/',
-  // base: process.env.VITE_BASE_PATH || "/TriConnect",
 })
