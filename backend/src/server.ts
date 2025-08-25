@@ -65,15 +65,6 @@ app.use("/", verifyToken);
 app.use("/", administratorRoute);
 app.use("/", jobPostRoute)
 
-const clientBuildPath = path.resolve(__dirname, "../../frontend/dist");
-console.log(clientBuildPath);
-
-app.use(express.static(clientBuildPath)); 
-
-app.get("/", (req, res) => {
-  res.sendFile(path.join(clientBuildPath, "index.html"));
-});
-
 async function startServer() {
   const connection = await pool.getConnection();
   try {
