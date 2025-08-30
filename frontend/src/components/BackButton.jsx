@@ -10,7 +10,7 @@ const BackButton = ({ to = "/", className = ""}) => {
         <button className={`${className}`}
         onClick={() => {
             navigate(to)
-        }}>back</button>
+        }}>Back</button>
     
   )
 }
