@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
-import { ROLE } from "../../utils/role"; // adjust path
+import { ROLE } from "../../utils/role"; 
 
 const PublicRoute = ({ children }) => {
   const [authData, setAuthData] = useState({ authenticated: null, role: null });
@@ -13,12 +13,25 @@ const PublicRoute = ({ children }) => {
       hasFetched.current = true;
 
       try {
+        // First try with cookies
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
           withCredentials: true,
         });
         setAuthData({ authenticated: data.authenticated, role: data.role });
       } catch {
-        setAuthData({ authenticated: false, role: null });
+        const token = localStorage.getItem("token"); 
+        if (token) {
+          try {
+            const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            setAuthData({ authenticated: data.authenticated, role: data.role });
+          } catch {
+            setAuthData({ authenticated: false, role: null });
+          }
+        } else {
+          setAuthData({ authenticated: false, role: null });
+        }
       }
     };
 

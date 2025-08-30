@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from 'react';
 import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useMarkMessagesAsSeen } from './helper'
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
-import { getInitials } from './helper';
-import { ROLE } from '../../../../../utils/role';
-import icons from '../../../../assets/svg/Icons';
-import { useSocket } from '../../../../../hooks/useSocket';
-import { useChatRoom } from '../../../../../hooks/useChatRoom'
 import { useQueryClient } from '@tanstack/react-query';
+import { getInitials } from './helper';
+import { useChatRoom } from '../../../../../hooks/useChatRoom'
+import { useSocket } from '../../../../../hooks/useSocket';
+import { ROLE } from '../../../../../utils/role';
 import socket from '../../../../../utils/socket';
+import icons from '../../../../assets/svg/Icons';
 
 const ChatWindow = ({ selectedUser }) => {
   const endRef = useRef(null);

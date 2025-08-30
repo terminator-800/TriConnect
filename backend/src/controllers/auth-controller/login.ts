@@ -50,11 +50,13 @@ export const login = async (request: CustomRequest, response: Response) => {
             { expiresIn: "1d" }
         );
 
+        const isProduction = process.env.NODE_ENV === "production";
+
         // Set cookie
         response.cookie("token", token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production", // only true in prod
-            sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+            secure: isProduction, // only true in prod
+            sameSite: isProduction ? "none" : "lax",
             maxAge: 24 * 60 * 60 * 1000,
         });
 
@@ -62,6 +64,7 @@ export const login = async (request: CustomRequest, response: Response) => {
             message: "Login successful",
             role: user.role,
             user_id: user.user_id,
+            token
         });
     } catch (error) {
         console.error("Error during login:", error);

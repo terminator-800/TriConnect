@@ -1,26 +1,3 @@
-// const express = require("express");
-// const { registerUser } = require("../controllers/userController/register-user-account.js")
-// const { verifyEmail } = require("../controllers/userController/email-verification.js")
-// const { uploadRequirement } = require("../controllers/userController/upload-user-requirement.js")
-// const { getUserProfile } = require("../controllers/userController/user-profile.js")
-// const { createJobPost } = require("../controllers/userController/create-job-post.js")
-// const { conversations } = require("../controllers/userController/messageController/conversations.js")
-// const { messageHistory } = require("../controllers/userController/messageController/message-history.js")
-// const { replyMessage } = require("../controllers/userController/messageController/reply-message.js")
-// const { markAsSeen } = require("../controllers/userController/messageController/mark-as-seen.js")
-// const { apply } = require("../controllers/userController/apply-job-post.js");
-// const { updateJobPostStatus } = require("../controllers/userController/update-jobpost-status.js")
-// const validateRegisterInput = require("../middleware/validateRegisterInput.js");
-// const { uploadManpowerProviderFiles, chatImageUpload, reportUpload } = require("../middleware/uploadFiles2.js")
-// const { softDeleteJobPost } = require("../controllers/userController/delete-job-post.js")
-// const { appliedJobPost } = require("../controllers/userController/applied-job-post.js")
-// const { authenticate } = require("../middleware/authenticate2.js")
-// const { viewApplicants } = require("../controllers/userController/view-applicants.js");
-// const { employerDashboard } = require("../controllers/userController/employer-dashboard.js");
-// const { rejectApplication } = require("../controllers/userController/reject-application.js");
-// const { reportUser, reportedUsers } = require("../controllers/reportController.js")
-// const { submitFeedback } = require("../controllers/userController/submit-feedback.js");
-
 import express from "express";
 import { registerUser } from "../controllers/userController/register/register-user-account.js";
 import { verifyEmail } from "../controllers/userController/email-verification/email-verification.js";

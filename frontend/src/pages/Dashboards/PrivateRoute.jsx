@@ -14,13 +14,26 @@ const PrivateRoute = () => {
             hasFetched.current = true;
 
             try {
+                // Try cookie-based authentication
                 const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
                     withCredentials: true,
                 });
-
                 setAuthData({ authenticated: data.authenticated, role: data.role });
             } catch {
-                setAuthData({ authenticated: false, role: null });
+                // Fallback to localStorage token
+                const token = localStorage.getItem('token');
+                if (token) {
+                    try {
+                        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        setAuthData({ authenticated: data.authenticated, role: data.role });
+                    } catch {
+                        setAuthData({ authenticated: false, role: null });
+                    }
+                } else {
+                    setAuthData({ authenticated: false, role: null });
+                }
             }
         };
 

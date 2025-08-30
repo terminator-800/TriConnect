@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
-import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { ROLE } from '../utils/role';
+import api from '../api/axios';
 
 export const useLogin = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -20,16 +20,19 @@ export const useLogin = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/login`, 
-        { email, password },
-         { withCredentials: true });
+      const res = await api.post(`/login`, { email, password })
 
       if (res.status === 200) {
+        // Fallback: store token in localStorage if cookies are blocked
+        if (!navigator.cookieEnabled && res.data.token) {
+          localStorage.setItem('token', res.data.token);
+        }
+
         const target = roleToPath[res.data.role] ?? '/';
         navigate(target);
       }
       return res.data;
-      
+
     } catch (err) {
       setError(err);
       throw err;

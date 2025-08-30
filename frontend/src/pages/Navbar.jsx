@@ -17,17 +17,17 @@ const Navbar = ({ userType }) => {
 
       {/* Guest */}
       {userType === "guest" && (
-        <div className="flex justify-between items-center py-5 px-10 border border-b-2 border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+        <div className="flex justify-between items-center py-5 px-10 border border-b border-gray-300">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
 
-          <div className="flex gap-30">
-            <Link className="text-2xl font-bold" to="#">Features</Link>
-            <a href="#how_it_works" className="text-2xl font-bold">How it Works</a>
-            <Link className="text-2xl font-bold" to="#">Why Us</Link>
-            <Link className="text-2xl font-bold" to="#">Feedbacks</Link>
+          <div className="flex gap-10">
+            <Link className="font-bold" to="#">Features</Link>
+            <a href="#how_it_works" className="font-bold">How it Works</a>
+            <Link className="font-bold" to="#">Why Us</Link>
+            <Link className="font-bold" to="#">Feedbacks</Link>
           </div>
 
 
@@ -40,17 +40,17 @@ const Navbar = ({ userType }) => {
 
       {/* Guest */}
       {userType === "register" && (
-        <div className="flex justify-between items-center py-5 px-10 border border-b-2 border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+        <div className="flex justify-between items-center py-5 px-10 border border-b border-gray-300">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
 
-          <div className="flex gap-30">
-            <Link className="text-2xl font-bold">Features</Link>
-            <Link className="text-2xl font-bold">How it Works</Link>
-            <Link className="text-2xl font-bold">Why Us</Link>
-            <Link className="text-2xl font-bold">Feedbacks</Link>
+          <div className="flex gap-10">
+            <Link className="font-bold">Features</Link>
+            <Link className="font-bold">How it Works</Link>
+            <Link className="font-bold">Why Us</Link>
+            <Link className="font-bold">Feedbacks</Link>
           </div>
 
           <div className="flex">
@@ -62,16 +62,16 @@ const Navbar = ({ userType }) => {
 
       {/* Login */}
       {userType === "login" && (
-        <div className="flex justify-between items-center py-5 px-10 border border-b-2 border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+        <div className="flex justify-between items-center py-5 px-10 border border-b border-gray-300">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
-          <div className="flex gap-30">
-            <Link className="text-2xl font-bold">Features</Link>
-            <Link className="text-2xl font-bold">How it Works</Link>
-            <Link className="text-2xl font-bold">Why Us</Link>
-            <Link className="text-2xl font-bold">Feedbacks</Link>
+          <div className="flex gap-10">
+            <Link className="font-bold">Features</Link>
+            <Link className="font-bold">How it Works</Link>
+            <Link className="font-bold">Why Us</Link>
+            <Link className="font-bold">Feedbacks</Link>
           </div>
 
           <div className="flex">
@@ -84,14 +84,14 @@ const Navbar = ({ userType }) => {
       {/* Jobseeker */}
       {userType === ROLE.JOBSEEKER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
-          <Link to={`/${ROLE.JOBSEEKER}`} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+          <Link to={`/${ROLE.JOBSEEKER}`} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <div className="flex items-center text-2xl font-bold cursor-pointer">
+              <div className="flex items-center font-bold cursor-pointer">
                 <NotificationBell role={ROLE.JOBSEEKER} />
                 Notifications
               </div>
@@ -101,7 +101,7 @@ const Navbar = ({ userType }) => {
               <img src={icons.profile} alt="" className="mr-3" />
               <button
                 onClick={toggleDropdown}
-                className="text-2xl font-bold focus:outline-none cursor-pointer"
+                className="font-bold focus:outline-none cursor-pointer"
               >
                 Profile
               </button>
@@ -128,14 +128,14 @@ const Navbar = ({ userType }) => {
       {/* Business Employer */}
       {userType === ROLE.BUSINESS_EMPLOYER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <div className="flex items-center text-2xl font-bold cursor-pointer">
+              <div className="flex items-center font-bold cursor-pointer">
                 <NotificationBell role={ROLE.BUSINESS_EMPLOYER} />
                 Notifications
               </div>
@@ -145,7 +145,7 @@ const Navbar = ({ userType }) => {
               <img src={icons.profile} alt="" className="mr-3" />
               <button
                 onClick={toggleDropdown}
-                className="text-2xl font-bold focus:outline-none cursor-pointer"
+                className="font-bold focus:outline-none cursor-pointer"
               >
                 Profile
               </button>
@@ -172,14 +172,14 @@ const Navbar = ({ userType }) => {
       {/* Individual Employer */}
       {userType === ROLE.INDIVIDUAL_EMPLOYER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <div className="flex items-center text-2xl font-bold cursor-pointer">
+              <div className="flex items-center font-bold cursor-pointer">
                 <NotificationBell role={ROLE.INDIVIDUAL_EMPLOYER} />
                 Notifications
               </div>
@@ -189,7 +189,7 @@ const Navbar = ({ userType }) => {
               <img src={icons.profile} alt="" className="mr-3" />
               <button
                 onClick={toggleDropdown}
-                className="text-2xl font-bold focus:outline-none cursor-pointer"
+                className="font-bold focus:outline-none cursor-pointer"
               >
                 Profile
               </button>
@@ -216,14 +216,14 @@ const Navbar = ({ userType }) => {
       {/* Manpower Provider */}
       {userType === ROLE.MANPOWER_PROVIDER && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
           <div className="flex justify-end items-center gap-15">
 
             <div className="relative flex">
-              <div className="flex items-center text-2xl font-bold cursor-pointer">
+              <div className="flex items-center font-bold cursor-pointer">
                 <NotificationBell role={ROLE.MANPOWER_PROVIDER} />
                 Notifications
               </div>
@@ -233,7 +233,7 @@ const Navbar = ({ userType }) => {
               <img src={icons.profile} alt="" className="mr-3" />
               <button
                 onClick={toggleDropdown}
-                className="text-2xl font-bold focus:outline-none cursor-pointer"
+                className="font-bold focus:outline-none cursor-pointer"
               >
                 Profile
               </button>
@@ -260,12 +260,12 @@ const Navbar = ({ userType }) => {
       {/* Admininistrator */}
       {userType === ROLE.ADMINISTRATOR && (
         <div className="flex justify-between items-center py-5 px-10 border border-gray-300">
-          <Link to={"/"} className="font-bold text-2xl text-blue-900 flex items-center gap-3">
+          <Link to={"/"} className="font-bold text-blue-900 flex items-center gap-3">
             <img src={icons.logo_triconnect} alt="" className="h-10" />
             TriConnect
           </Link>
           <div className="relative flex">
-            <div className="flex items-center text-2xl font-bold cursor-pointer">
+            <div className="flex items-center font-bold cursor-pointer">
               <NotificationBell role={ROLE.ADMINISTRATOR} />
               Notifications
             </div>

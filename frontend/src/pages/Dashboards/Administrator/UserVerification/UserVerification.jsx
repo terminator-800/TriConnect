@@ -46,8 +46,8 @@ const UserVerification = () => {
         <>
             <Sidebar />
             <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50">
-                <h1 className="text-5xl font-bold text-blue-900">User Verification</h1>
-                <p className="text-2xl mt-2">
+                <h1 className="text-2xl font-bold text-blue-900">User Verification</h1>
+                <p className="mt-2">
                     Review and verify users to allow platform access
                 </p>
 

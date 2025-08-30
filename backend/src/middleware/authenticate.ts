@@ -29,7 +29,15 @@ export const authenticate = (
     res: Response,
     next: NextFunction
 ) => {
-    const token = req.cookies?.token;
+    let token = req.cookies?.token;
+
+    // Fallback: Check Authorization header (from localStorage in frontend)
+    if (!token && req.headers.authorization) {
+        const authHeader = req.headers.authorization;
+        if (authHeader.startsWith('Bearer ')) {
+            token = authHeader.split(' ')[1];
+        }
+    }
 
     if (!token) {
         console.log(`[AUTH FAILED] No token provided for ${req.method} ${req.originalUrl}`);
@@ -39,7 +47,6 @@ export const authenticate = (
     try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET || '') as JwtPayload;
 
-        // Type-safe assignment
         req.user = {
             user_id: decoded.user_id,
             email: decoded.email,

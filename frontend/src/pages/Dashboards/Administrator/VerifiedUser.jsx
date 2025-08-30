@@ -24,8 +24,8 @@ const VerifiedUser = () => {
             <Sidebar />
             <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50">
 
-                <h1 className="text-5xl font-bold text-blue-900">Verified Users</h1>
-                <p className="text-2xl mt-2">
+                <h1 className="text-2xl font-bold text-blue-900">Verified Users</h1>
+                <p className="mt-2">
                     Browse and manage users who have been verified on the platform
                 </p>
 

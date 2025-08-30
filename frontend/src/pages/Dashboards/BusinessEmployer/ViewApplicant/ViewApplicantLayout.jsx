@@ -9,16 +9,23 @@ import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import VerificationStatus from '../VerificationForm/VerificationStatus';
 import Form from '../VerificationForm/Form';
+import ViewProfile from '../../../../components/ViewProfile';
 
 const ViewApplicant = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(7);
   const { data, isLoading, error } = useApplicants({ page: currentPage, pageSize, role: ROLE.BUSINESS_EMPLOYER });
+  console.log(data, "DATA useApplicants");
+
   const [openMenuId, setOpenMenuId] = useState(null);
   const [showForm, setShowForm] = useState(false);
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
 
+
+  // View Applicant
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
   const {
     data: profileData,
     isLoading: loadingProfile,
@@ -100,12 +107,22 @@ const ViewApplicant = () => {
 
                             {openMenuId === applicant.application_id && (
                               <ApplicantMenu
+
+                                // Reject Applicant
                                 onRejectClick={() => {
                                   setSelectedApplication(applicant);
                                   setShowRejectModal(true);
                                   setOpenMenuId(null);
                                 }}
+
+                                // View Profile
+                                onViewProfileClick={() => {
+                                  setSelectedApplicant(applicant);
+                                  setShowProfileModal(true);
+                                  setOpenMenuId(null);
+                                }}
                               />
+
                             )}
                           </td>
                         </tr>
@@ -128,6 +145,7 @@ const ViewApplicant = () => {
 
         </div>
 
+          {/* Pagination */}
         <div className="mt-10 mb-10">
           <Pagination
             currentPage={currentPage}
@@ -135,9 +153,10 @@ const ViewApplicant = () => {
             setCurrentPage={setCurrentPage}
           />
         </div>
-        
+
       </div>
 
+          {/* Verification Form */}
       {showForm && (
         <Form
           onClose={closeForm}
@@ -148,12 +167,24 @@ const ViewApplicant = () => {
         />
       )}
 
+      {/* Reject Applicant Modal */}
       {showRejectModal && selectedApplication && (
         <RejectApplicant
           application={selectedApplication}
           onClose={() => {
             setShowRejectModal(false);
             setSelectedApplication(null);
+          }}
+        />
+      )}
+
+      {/* View Applicant Modal */}
+      {showProfileModal && selectedApplicant && (
+        <ViewProfile
+          applicant={selectedApplicant}
+          onClose={() => {
+            setShowProfileModal(false);
+            setSelectedApplicant(null);
           }}
         />
       )}

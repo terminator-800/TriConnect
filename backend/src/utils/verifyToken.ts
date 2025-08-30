@@ -13,7 +13,12 @@ interface AuthTokenPayload extends JwtPayload {
 
 router.get("/auth/verify-token", async (request: Request, response: Response) => {
   try {
-    const token = request.cookies?.token as string | undefined;
+    let token = request.cookies?.token;
+
+    // Fallback to Authorization header (from localStorage)
+    if (!token && request.headers.authorization?.startsWith("Bearer ")) {
+      token = request.headers.authorization.split(" ")[1];
+    }
 
     if (!token) {
       return response.status(200).json({
@@ -31,7 +36,7 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
       user: decoded.user_id,
       message: `Authenticated as ${decoded.role}`,
     });
-    
+
   } catch (error: any) {
     return response.status(401).json({
       authenticated: false,

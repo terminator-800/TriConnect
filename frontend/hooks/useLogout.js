@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import axios from 'axios';
+import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
 
 export const useLogout = () => {
@@ -11,18 +11,20 @@ export const useLogout = () => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/logout`, {}, {
-        withCredentials: true,
-      });
-      
+      const response = await api.post(`/logout`, {}, { withCredentials: true, });
+
       if (response.status === 200) {
+        // Always clear fallback token in case cookies were blocked
+        localStorage.removeItem('token');
         navigate('/login');
       }
     } catch (err) {
-      setError(err);
+      setError(err.response?.data?.message || 'Logout failed. Please try again.');
       // Optional: surface a toast/alert here if needed
+      localStorage.removeItem('token');
       console.error('Logout failed:', err);
     } finally {
+      localStorage.removeItem('token');
       setIsLoading(false);
     }
   }, [navigate]);
