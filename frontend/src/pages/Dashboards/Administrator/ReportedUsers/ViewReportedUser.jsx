@@ -1,4 +1,3 @@
-import { getImageReportPath } from '../../../../../utils/getImageReportPath';
 import { ROLE, ROLE_LABELS } from '../../../../../utils/role';
 import { useState } from 'react';
 import PreviewReportImage from './PreviewReportImage';

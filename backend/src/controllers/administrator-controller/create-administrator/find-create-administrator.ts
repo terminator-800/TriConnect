@@ -34,7 +34,6 @@ export async function findOrCreateAdmin(connection:  PoolConnection, data: Admin
             },
         };
     } catch (error) {
-        console.error("Error in findOrCreateAdmin:", error);
         throw error;
     }
 };

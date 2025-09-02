@@ -83,7 +83,6 @@ type Payload =
 export async function uploadUserRequirement(
     connection: PoolConnection,
     payload: Payload) {
-    console.log(payload, "inserted payload");
 
     try {
         switch (payload.role) {

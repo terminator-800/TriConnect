@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import icons from '../../../../assets/svg/Icons';
 import socket from '../../../../../utils/socket';
@@ -9,11 +9,6 @@ const Apply = ({ employer, onClose }) => {
   const [message, setMessage] = useState('');
   const [files, setFiles] = useState(null);
   const [success, setSuccess] = useState(false);
-
-  console.log(employer, 'employer data');
-  console.log(employer.job_post_id, 'job post id');
-  console.log(employer.user_id, 'employer user id');
-  
 
   useEffect(() => {
     document.body.style.overflow = 'hidden';
@@ -58,7 +53,6 @@ const Apply = ({ employer, onClose }) => {
         file_url: data.file_url,
       });
 
-      // queryClient.invalidateQueries(['jobApplications', profileData.user_id]);
       queryClient.invalidateQueries(['jobPostsByUser']);
 
       setTimeout(() => {
@@ -66,8 +60,7 @@ const Apply = ({ employer, onClose }) => {
         onClose();
       }, 1500);
     },
-    onError: (error) => {
-      console.error('Application failed:', error.response?.data || error.message);
+    onError: () => {
       alert('Something went wrong. Please try again.');
     },
   });
@@ -78,7 +71,6 @@ const Apply = ({ employer, onClose }) => {
       alert('Please enter a message or attach a file.');
       return;
     }
-
 
     mutation.mutate({
       job_post_id: employer.job_post_id,

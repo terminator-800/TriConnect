@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { ROLE } from '../utils/role';
+import axios from 'axios';
 
 export function useVerifyUser() {
     const queryClient = useQueryClient();
@@ -18,8 +18,7 @@ export function useVerifyUser() {
             alert('User verified successfully!');
             queryClient.invalidateQueries({ queryKey: ['submittedUsers'] });
         },
-        onError: (error) => {
-            console.error('Verification failed:', error);
+        onError: () => {
             alert('Something went wrong while verifying the user.');
         },
     });

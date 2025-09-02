@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useEffect } from 'react';
-import { useConversations } from '../../../../../hooks/CHAT';
 import { ROLE } from '../../../../../utils/role';
 import axios from 'axios';
 import icons from '../../../../assets/svg/Icons';
@@ -18,9 +17,6 @@ const Apply = ({ employer, onClose }) => {
             document.body.style.overflow = 'auto';
         };
     }, []);
-
-    const { data: conversations } = useConversations(ROLE.JOBSEEKER);
-    console.log(conversations, 'conversations');
     
     const mutation = useMutation({
         mutationFn: async ({ job_post_id, receiver_id, message, files }) => {
@@ -58,7 +54,6 @@ const Apply = ({ employer, onClose }) => {
                 file_url: data.file_url,
             });
 
-            // queryClient.invalidateQueries(['jobApplications', profileData.user_id]);
             queryClient.invalidateQueries(['jobPostsByUser']);
 
             setTimeout(() => {
@@ -66,8 +61,7 @@ const Apply = ({ employer, onClose }) => {
                 onClose();
             }, 1500);
         },
-        onError: (error) => {
-            console.error('Application failed:', error.response?.data || error.message);
+        onError: () => {
             alert('Something went wrong. Please try again.');
         },
     });

@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useUserProfile } from "../../../../../hooks/useUserProfiles";
-import Sidebar from "../Sidebar";
-import VerificationStatus from "../VerificationForm/VerificationStatus";
-import Form from '../VerificationForm/Form';
-import JobPostForm from "./JobPostForm";
 import { ROLE } from "../../../../../utils/role";
+import VerificationStatus from "../VerificationForm/VerificationStatus";
+import JobPostForm from "./JobPostForm";
+import Sidebar from "../Sidebar";
+import Form from '../VerificationForm/Form';
 
 const CreateJobPost = () => {
   const [showForm, setShowForm] = useState(false);
@@ -16,6 +16,7 @@ const CreateJobPost = () => {
   } = useUserProfile(ROLE.MANPOWER_PROVIDER);
 
   if (loadingProfile) return <div>Loading profile...</div>;
+  if (!profileData) return <div className="text-red-600">Failed to load profile.</div>;
 
   const openForm = () => {
     document.body.style.overflow = 'hidden';
@@ -51,7 +52,7 @@ const CreateJobPost = () => {
           }}
           onSubmitSuccess={() => {
             setShowForm(false);
-            refetch(); 
+            refetch();
           }}
         />
       )}

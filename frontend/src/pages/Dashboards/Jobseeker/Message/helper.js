@@ -1,6 +1,6 @@
-import { ROLE } from "../../../../../utils/role";
 import { useEffect, useMemo, useRef } from 'react';
 import { useMarkAsSeen } from '../../../../../hooks/CHAT'; 
+import { ROLE } from "../../../../../utils/role";
 
 export const getTabFromLocalStorage = () => {
     return localStorage.getItem('chat-active-tab') || ROLE.BUSINESS_EMPLOYER;

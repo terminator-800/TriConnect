@@ -1,6 +1,6 @@
+import { useCreateJobPost } from "../../../../../hooks/useCreateJobPost";
 import { useState } from "react";
 import { ROLE } from "../../../../../utils/role";
-import { useCreateJobPost } from "../../../../../hooks/useCreateJobPost";
 
 const JobPostForm = () => {
     const [job_title, setJobTitle] = useState("");
@@ -24,6 +24,11 @@ const JobPostForm = () => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (!agreeToReview) {
+            alert("You must agree to the review terms before submitting.");
+            return;
+        }
+        
         const data = {
             job_title,
             job_type,
@@ -140,6 +145,13 @@ const JobPostForm = () => {
                     >
                         {mutation.isLoading ? "Submitting..." : "Confirm"}
                     </button>
+
+                    {mutation.isError && (
+                        <p className="text-red-600 mt-2">
+                            Failed to create job post! Please try again.
+                        </p>
+                    )}
+
                 </form>
             </div>
         </>

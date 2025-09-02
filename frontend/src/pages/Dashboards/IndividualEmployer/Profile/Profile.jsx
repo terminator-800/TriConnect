@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useUserProfile } from "../../../../../hooks/useUserProfiles";
-import Form from '../Verification Form/Form';
-import Sidebar from '../Sidebar';
-import icons from '../../../../assets/svg/Icons';
+import { ROLE } from '../../../../../utils/role';
+import VerificationStatus from '../Verification Form/VerificationStatus';
 import PersonalInfo from '../Profile/PersonalInfo';
 import Security from '../Profile/Security';
-import VerificationStatus from '../Verification Form/VerificationStatus';
-import { ROLE } from '../../../../../utils/role';
+import Sidebar from '../Sidebar';
+import icons from '../../../../assets/svg/Icons';
+import Form from '../Verification Form/Form';
 
 const IndividualEmployerProfile = () => {
   const personal = 'personal'

@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
-import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import api from '../api/axios';
 
 export const useLogout = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -22,7 +22,6 @@ export const useLogout = () => {
       setError(err.response?.data?.message || 'Logout failed. Please try again.');
       // Optional: surface a toast/alert here if needed
       localStorage.removeItem('token');
-      console.error('Logout failed:', err);
     } finally {
       localStorage.removeItem('token');
       setIsLoading(false);

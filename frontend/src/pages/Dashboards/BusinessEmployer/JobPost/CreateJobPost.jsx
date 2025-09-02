@@ -1,10 +1,10 @@
-import { useState } from "react";
 import { useUserProfile } from '../../../../../hooks/useUserProfiles'
+import { useState } from "react";
+import { ROLE } from "../../../../../utils/role";
 import Sidebar from "../Sidebar";
 import VerificationStatus from "../VerificationForm/VerificationStatus";
 import Form from '../VerificationForm/Form';
 import JobPostForm from "./JobPostForm";
-import { ROLE } from "../../../../../utils/role";
 
 const CreateJobPost = () => {
   const [showForm, setShowForm] = useState(false);
@@ -18,7 +18,7 @@ const CreateJobPost = () => {
   } = useUserProfile(ROLE.BUSINESS_EMPLOYER);
 
   if (isLoading) return <div>Loading profile...</div>;
-  if (isError) return <div>Error loading profile: {error.message}</div>;
+  if (isError) return <div>Error loading profile...</div>;
 
   const openForm = () => {
     document.body.style.overflow = 'hidden';

@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { ROLE } from '../utils/role';
+import axios from 'axios';
 
 export const useRejectJobPost = () => {
     const queryClient = useQueryClient();
@@ -17,8 +17,7 @@ export const useRejectJobPost = () => {
         onSuccess: () => {
             queryClient.invalidateQueries(['pendingJobPosts']);
         },
-        onError: (error) => {
-            console.error('Error rejecting job post:', error?.response?.data || error.message);
+        onError: () => {
             alert('Something went wrong while rejecting the job post.');
         },
     });

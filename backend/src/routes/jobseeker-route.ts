@@ -30,7 +30,6 @@ router.get("/jobseeker/conversations", authenticate, conversations)
 router.get("/jobseeker/message-history/:conversation_id", authenticate, messageHistory)
 router.post("/jobseeker/messages/send", authenticate, chatImageUpload, replyMessage);
 router.patch("/jobseeker/mark-as-seen", authenticate, markAsSeen);
-// router.get("/jobseeker/job-applications/:user_id", appliedJobPost);
 router.post("/jobseeker/message-agency", authenticate, chatImageUpload, contactAgency)
 router.get('/jobseeker/uncontacted-agencies', authenticate, uncontactedAgencies);
 router.post("/jobseeker/report-user", authenticate, reportUpload, reportUser);

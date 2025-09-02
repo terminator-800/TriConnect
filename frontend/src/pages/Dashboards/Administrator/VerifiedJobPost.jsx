@@ -1,14 +1,13 @@
-import Sidebar from './Sidebar'
-import Pagination from '../../../components/Pagination'
-import { useState } from 'react'
-import icons from '../../../assets/svg/Icons'
 import { useVerifiedJobPosts } from '../../../../hooks/useJobposts'
 import { ROLE, ROLE_LABELS } from '../../../../utils/role'
+import { useState } from 'react'
 import JobpostDetails from './JobpostDetails'
+import Pagination from '../../../components/Pagination'
+import Sidebar from './Sidebar'
+import icons from '../../../assets/svg/Icons'
 
 const VerifiedJobPost = () => {
   const { data: verifiedJobPosts = [], isLoading, isError } = useVerifiedJobPosts();
-  console.log(verifiedJobPosts, 'verified job posts data');
   
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedJobPost, setSelectedJobPost] = useState(null)

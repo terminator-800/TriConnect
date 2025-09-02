@@ -35,8 +35,7 @@ export const useSendMessage = (role) => {
       queryClient.invalidateQueries(['messages', variables.conversation_id]);
     },
 
-    onError: (error) => {
-      console.error('Message send failed:', error?.response?.data || error.message);
+    onError: () => {
       alert('Failed to send message. Try again.');
     },
   });

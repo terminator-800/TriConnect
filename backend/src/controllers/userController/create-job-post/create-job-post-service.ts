@@ -1,7 +1,7 @@
 
 import { countActiveJobPosts, insertJobPost, validateJobPostInput } from "./create-job-post-helper.js";
-import type { PoolConnection } from "mysql2/promise";
 import type { ValidationResult } from "./create-job-post-helper.js";
+import type { PoolConnection } from "mysql2/promise";
 
 export interface JobPostData {
     user_id: number;

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { useRejectJobPost } from '../../../../../hooks/useRejectJobPost';
+import { useEffect } from 'react';
 
 const RejectJobPost = ({ jobPost, onClose }) => {
   
@@ -18,9 +18,8 @@ const RejectJobPost = ({ jobPost, onClose }) => {
       onSuccess: () => {
         onClose(); 
       },
-      onError: (error) => {
-        console.error('Reject failed:', error);
-      },
+      onError: () => {
+        alert('Something went wrong while rejecting the job post.');},
     });
   };
 

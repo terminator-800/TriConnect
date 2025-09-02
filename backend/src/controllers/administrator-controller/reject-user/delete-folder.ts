@@ -21,7 +21,6 @@ export async function deleteUserFilesAndFolders(
     files: (string | undefined)[]
 ): Promise<void> {
 
-    console.log("Deleting physical folder: ", role, userId, name, files);
 
     // Delete each file using its full relative path
     for (const file of files) {
@@ -30,9 +29,8 @@ export async function deleteUserFilesAndFolders(
         const fullPath = path.join(UPLOADS_BASE, file.replace(/^uploads[\\/]/, ""));
         try {
             await fs.unlink(fullPath);
-            console.log(`Deleted file: ${fullPath}`);
         } catch (err: any) {
-            if (err.code !== "ENOENT") console.warn(`Could not delete file: ${fullPath}`, err.message);
+
         }
     }
 
@@ -43,9 +41,8 @@ export async function deleteUserFilesAndFolders(
 
         try {
             await fs.rm(folderPath, { recursive: true, force: true });
-            console.log(`Deleted displayName folder: ${folderPath}`);
         } catch (err: any) {
-            if (err.code !== "ENOENT") console.warn(`Could not delete folder: ${folderPath}`, err.message);
+
         }
     }
 
@@ -55,9 +52,8 @@ export async function deleteUserFilesAndFolders(
         const remaining = await fs.readdir(userFolderPath);
         if (remaining.length === 0) {
             await fs.rm(userFolderPath, { recursive: true, force: true });
-            console.log(`Deleted user folder: ${userFolderPath}`);
         }
     } catch (err: any) {
-        if (err.code !== "ENOENT") console.warn(`Could not clean up user folder: ${userFolderPath}`, err.message);
+
     }
 }

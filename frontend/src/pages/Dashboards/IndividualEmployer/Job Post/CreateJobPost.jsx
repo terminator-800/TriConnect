@@ -1,10 +1,10 @@
 import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import { useState } from "react";
+import { ROLE } from "../../../../../utils/role";
 import VerificationStatus from "../Verification Form/VerificationStatus";
-import Form from '../Verification Form/Form'
 import JobPostForm from "../Job Post/JobPostForm";
 import Sidebar from "../Sidebar";
-import { ROLE } from "../../../../../utils/role";
+import Form from '../Verification Form/Form'
 
 const CreateJobPost = () => {
   const [showForm, setShowForm] = useState(false);

@@ -13,7 +13,6 @@ export const updateUserPassword = async (
 
         return result;
     } catch (error: any) {
-        console.error("Error updating password:", error.message);
         throw error;
     }
 };

@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
+import type { AuthenticatedUser } from "../../../types/express/auth.js";
+import { getReportedUsersById } from "./get-reported-ids.js";
 import type { PoolConnection } from "mysql2/promise";
 import pool from "../../../config/database-connection.js";
-import { getReportedUsersById } from "./get-reported-ids.js";
-import type { AuthenticatedUser } from "../../../types/express/auth.js";
 
 interface ReportedUsersRequest extends Request {
     user?: AuthenticatedUser;
@@ -29,12 +29,10 @@ export const reportedUsers = async (req: ReportedUsersRequest, res: Response) =>
     try {
         connection = await pool.getConnection();
 
-        // Get reported users
         const reportedUsersList: ReportedUser[] = await getReportedUsersById(connection, reportedBy);
 
         return res.status(200).json(reportedUsersList);
     } catch (error) {
-        console.error("❌ Error fetching reported users:", error);
         return res.status(500).json({ error: "Failed to fetch reported users." });
     } finally {
         if (connection) connection.release();

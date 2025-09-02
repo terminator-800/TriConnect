@@ -1,7 +1,7 @@
-import type { Request, Response } from "express";
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
-import pool from "../../../config/database-connection.js";
+import type { Request, Response } from "express";
 import type { AuthenticatedUser } from "../../../types/express/auth.js";
+import pool from "../../../config/database-connection.js";
 
 // Make params optional
 interface RejectApplicationParams {
@@ -58,7 +58,6 @@ export const rejectApplication = async (
 
     return res.status(200).json({ message: "Application rejected successfully" });
   } catch (error) {
-    console.error("❌ Error rejecting application:", error);
     return res.status(500).json({ message: "Failed to reject application" });
   } finally {
     if (connection) connection.release();

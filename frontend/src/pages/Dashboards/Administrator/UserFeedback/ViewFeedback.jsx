@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { ROLE_LABELS, getInitials } from '../../../../../utils/role';
+import { useEffect } from 'react';
 
 const ViewFeedback = ({ feedback, onClose }) => {
 

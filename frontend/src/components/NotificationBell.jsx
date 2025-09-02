@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
 import { useGlobalNotifications } from '../../hooks/useGlobalNotifications';
+import { useState, useEffect } from 'react';
 import { useUserProfile } from '../../hooks/useUserProfiles';
 import icons from '../assets/svg/Icons';
 

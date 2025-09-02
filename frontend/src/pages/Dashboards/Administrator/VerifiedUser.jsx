@@ -1,16 +1,15 @@
-import { useState } from 'react';
 import { useVerifiedUsers } from '../../../../hooks/useUserProfiles';
 import { ROLE, ROLE_LABELS } from '../../../../utils/role';
+import { useState } from 'react';
 import ViewDocument from './ViewDocument';
-import Sidebar from './Sidebar';
 import Pagination from '../../../components/Pagination';
+import Sidebar from './Sidebar';
 
 const VerifiedUser = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const usersPerPage = 4;
 
     const { data: verifiedUsers = [], isLoading, isError, error } = useVerifiedUsers();
-    console.log(verifiedUsers, 'verified users');
     
     const [selectedUser, setSelectedUser] = useState(null);
 

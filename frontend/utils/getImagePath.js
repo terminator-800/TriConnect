@@ -3,12 +3,10 @@ import { ROLE } from "./role";
 export const getImagePath = (user, fileField) => {
     if (!fileField) return null;
 
-    // Backend already returns full Cloudinary URL
     return fileField;
 };
 
 
-// Map of documents per role
 export const documentMap = {
     [ROLE.JOBSEEKER]: [
         { key: 'government_id', label: 'Government ID' },
@@ -34,7 +32,6 @@ export const documentMap = {
     ],
 };
 
-// Map of info fields per role
 export const infoMap = {
     [ROLE.JOBSEEKER]: [
         { key: 'full_name', label: 'Full Name' },

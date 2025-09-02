@@ -1,6 +1,6 @@
+import { insertUser, insertJobseeker, insertBusinessEmployer, insertIndividualEmployer, insertManpowerProvider } from "./create-user-helper.js";
 import type { PoolConnection } from "mysql2/promise";
 import { ROLE } from "../../../utils/roles.js";
-import { insertUser, insertJobseeker, insertBusinessEmployer, insertIndividualEmployer, insertManpowerProvider } from "./create-user-helper.js";
 
 type RoleType = keyof typeof ROLE;
 

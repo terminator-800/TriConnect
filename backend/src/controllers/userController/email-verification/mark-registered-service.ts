@@ -7,7 +7,6 @@ export async function markRegistered(connection: PoolConnection, email: string):
             [1, email]
         );
     } catch (error: unknown) {
-        console.error("Error marking user as registered:", (error as Error).message);
         throw error;
     }
 }

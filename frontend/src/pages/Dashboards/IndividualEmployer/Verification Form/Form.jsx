@@ -1,10 +1,10 @@
-import axios from 'axios';
 import { useState, useRef, useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { ROLE } from '../../../../../utils/role';
-import Agreement from '../../Agreement';
-import FileUpload from '../Verification Form/FileUpload';
 import PreviewImage from '../Verification Form/PreviewImage';
+import FileUpload from '../Verification Form/FileUpload';
+import Agreement from '../../Agreement';
+import axios from 'axios';
 
 const VerificationForm = ({ onClose, onSubmitSuccess }) => {
   const governmentIdRef = useRef();
@@ -58,13 +58,13 @@ const VerificationForm = ({ onClose, onSubmitSuccess }) => {
 
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       alert('Requirements submitted successfully!');
-      console.log("✅ Upload success:", data);
       onSubmitSuccess?.();
     },
-    onError: (error) => {
-      console.error("❌ Upload error:", error.response?.data || error.message);
+    onError: () => {
+      alert('Requirements submitted failed!');
+
     }
   });
 

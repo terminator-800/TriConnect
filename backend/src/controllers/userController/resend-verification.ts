@@ -83,7 +83,6 @@ export const resendVerification: RequestHandler = async (req: Request, res: Resp
 
     return res.status(200).json({ message: "Verification email resent." });
   } catch (error: any) {
-    console.error("Error resending verification:", error.message);
     return res.status(500).json({ message: "Server error." });
   } finally {
     if (connection) connection.release();

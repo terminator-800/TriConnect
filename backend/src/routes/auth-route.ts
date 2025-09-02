@@ -1,9 +1,9 @@
-import { Router } from "express";
-import { login } from "../controllers/auth-controller/login.js";
-import { logout } from "../controllers/auth-controller/logout.js";
 import { resendVerification } from "../controllers/userController/resend-verification.js";
 import { forgotPassword } from "../controllers/auth-controller/forgot-password.js";
 import { resetPassword } from "../controllers/auth-controller/reset-password.js";
+import { Router } from "express";
+import { logout } from "../controllers/auth-controller/logout.js";
+import { login } from "../controllers/auth-controller/login.js";
 
 
 const router: Router = Router();

@@ -2,6 +2,8 @@ import { validateUserId, validateAdminRole, restrictUserInDB } from "./restrict-
 import type { CustomRequest } from "../../../types/express/auth.js";
 import type { PoolConnection } from "mysql2/promise";
 import type { Response } from "express";
+import { ROLE } from "../../../utils/roles.js";
+
 import pool from "../../../config/database-connection.js";
 
 interface RestrictUserBody {
@@ -11,6 +13,11 @@ interface RestrictUserBody {
 
 export const restrictUser = async (req: CustomRequest, res: Response): Promise<void> => {
     let connection: PoolConnection | undefined;
+
+    if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        res.status(403).json({ error: "Forbidden: Admins only." });
+        return;
+    }
 
     try {
         const { user_id, reason } = req.body as RestrictUserBody;
@@ -31,14 +38,13 @@ export const restrictUser = async (req: CustomRequest, res: Response): Promise<v
             new_status: 'restricted'
         });
     } catch (error: any) {
-        console.error('Error restricting user:', error);
 
         if (connection) {
             await connection.rollback();
         }
 
-        res.status(error.status || 500).json({
-            error: error.message || 'Failed to restrict user'
+        res.status(500).json({
+            message: 'Failed to restrict user'
         });
     } finally {
         if (connection) {

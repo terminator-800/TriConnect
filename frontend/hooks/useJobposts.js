@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { ROLE } from '../utils/role';
+import axios from 'axios';
 
 export const usePendingJobPosts = () =>
   useQuery({
@@ -27,7 +27,7 @@ export const useUnappliedJobPosts = () =>
         );
         return response.data;
       } catch (error) {
-        console.error('❌ Error fetching unapplied job posts:', error);
+        alert('Failed to fetch job posts. Please try again later.');
         throw error;
       }
     },

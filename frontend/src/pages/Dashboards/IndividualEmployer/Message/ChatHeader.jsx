@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { getInitials } from './helper'
 import { useReportedUsers } from '../../../../../hooks/REPORT';
+import { getInitials } from './helper'
+import { useState } from 'react';
 import { ROLE } from '../../../../../utils/role';
 import ReportUser from '../../../../components/ReportUser';
 import icons from '../../../../assets/svg/Icons';
@@ -14,14 +14,6 @@ const ChatHeader = ({ selectedUser }) => {
   const isUserReported = reportedUsers.includes(selectedUser?.sender_id);
 
   const authorizedPerson = selectedUser?.authorized_person || null;
-
-  if (!selectedUser) {
-    return (
-      <div className="flex items-center justify-center p-4 border-b border-gray-300 bg-white text-gray-400">
-        Select a user to start chatting
-      </div>
-    );
-  }
 
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-300 bg-white">

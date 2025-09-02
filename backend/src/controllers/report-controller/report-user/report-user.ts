@@ -1,12 +1,10 @@
-// import { getTempPath, deleteFolderIfExists } from "../report-user/helper.js";
-// import { moveFilesAndInsertToDB } from "./insert-db.js";
-import { findExistingReport } from "./find-existing-report.js";
-import { insertNewReport } from "./insert-new-report.js";
 import type { AuthenticatedUser } from "../../../types/express/auth.js";
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
-import pool from "../../../config/database-connection.js";
+import { findExistingReport } from "./find-existing-report.js";
 import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
+import { insertNewReport } from "./insert-new-report.js";
+import pool from "../../../config/database-connection.js";
 
 interface ReportUserRequest extends Request {
     user?: AuthenticatedUser;
@@ -87,13 +85,10 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
             );
         }
 
-
         await connection.commit();
-
         res.status(200).json({ message: "Report submitted successfully." });
     } catch (error) {
         if (connection) await connection.rollback();
-        console.error("❌ Report submission failed:", error);
         res.status(500).json({ error: "Failed to submit report." });
     } finally {
         if (connection) connection.release();

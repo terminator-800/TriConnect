@@ -22,7 +22,7 @@ export const useDeleteJobPost = (role) => {
 
   return {
     deleteJobPost: mutation.mutateAsync,
-    isLoading: mutation.isPending,
+    isLoading: mutation.isLoading,
     error: mutation.error,
     status: mutation.status,
   };

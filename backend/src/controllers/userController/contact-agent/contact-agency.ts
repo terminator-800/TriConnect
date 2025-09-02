@@ -93,9 +93,9 @@ export const contactAgency: RequestHandler = async (request: Request, res: Respo
             conversation_id: newMessage.conversation_id,
             file_url: newMessage.file_url,
         });
+        
     } catch (error) {
         if (connection) await connection.rollback();
-        console.error("❌ Error during agency contact:", error);
         return res.status(500).json({ error: "Internal server error" });
     } finally {
         if (connection) connection.release();

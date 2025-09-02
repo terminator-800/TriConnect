@@ -1,8 +1,8 @@
+import type { CustomRequest } from "../../types/express/auth.js";
 import type { Response } from "express";
-import pool from "../../config/database-connection.js";
-import { ROLE } from "../../utils/roles.js";
 import { format } from "date-fns";
-import type { CustomRequest } from "../../types/express/auth.js"; 
+import { ROLE } from "../../utils/roles.js";
+import pool from "../../config/database-connection.js";
 
 type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -79,6 +79,10 @@ type VerifiedJobPost =
 
 export const verifiedJobPosts = async (req: CustomRequest, res: Response) => {
     let connection: Awaited<ReturnType<typeof pool.getConnection>> | undefined;
+    
+    if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        return res.status(403).json({ message: "Forbidden: Administrator only" });
+    }
 
     try {
         connection = await pool.getConnection();
@@ -234,7 +238,6 @@ export const verifiedJobPosts = async (req: CustomRequest, res: Response) => {
         res.json(formatted);
 
     } catch (error) {
-        console.error('Error getting verified job posts:', error);
         res.status(500).json({ message: 'Failed to get verified job posts.' });
     } finally {
         if (connection) connection.release();

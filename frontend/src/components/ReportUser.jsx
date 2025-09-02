@@ -6,7 +6,6 @@ const ReportUser = ({ reportedUser, conversationId, onClose, role }) => {
     const [reason, setReason] = useState("");
     const [message, setMessage] = useState("");
     const [files, setFiles] = useState([]);
-    console.log(reportedUser, 'reported user in report user');
 
     const handleFileChange = (e) => {
         setFiles([...e.target.files]);
@@ -33,7 +32,6 @@ const ReportUser = ({ reportedUser, conversationId, onClose, role }) => {
         formData.append("reportedUserId", reportedUser?.sender_id);
         formData.append("conversationId", conversationId);
         files.forEach((file) => formData.append("proof_files", file));
-
 
         submitReport({
             formData,

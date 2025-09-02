@@ -18,11 +18,8 @@ export const useGlobalNotifications = (userId, role) => {
   useEffect(() => {
     if (!userId || !role || isInitialized.current) return;
 
-    console.log(`🔔 Setting up global notifications for user ${userId}`);
-
     // Listen for new messages globally
     socket.on('receiveMessage', (newMessage) => {
-      console.log('📨 Global notification received:', newMessage);
       
       // Check if this message is for the current user
       if (Number(newMessage.receiver_id) === Number(userId)) {
@@ -32,20 +29,17 @@ export const useGlobalNotifications = (userId, role) => {
 
     // Listen for messages seen updates
     socket.on('messagesSeen', (data) => {
-      console.log('👁️ Global seen update:', data);
       updateUnreadCounts(data);
     });
 
     // Listen for conversation updates
     socket.on('conversationUpdate', (data) => {
-      console.log('💬 Conversation update:', data);
       invalidateConversations();
     });
 
     isInitialized.current = true;
 
     return () => {
-      console.log('🧹 Cleaning up global notifications');
       socket.off('receiveMessage');
       socket.off('messagesSeen');
       socket.off('conversationUpdate');

@@ -34,7 +34,6 @@ router.post("/manpower-provider/messages/send", authenticate, chatImageUpload, r
 router.get("/manpower-provider/conversations", authenticate, conversations)
 router.get("/manpower-provider/message-history/:conversation_id", messageHistory)
 router.patch("/manpower-provider/mark-as-seen", authenticate, markAsSeen);
-// router.get("/manpower-provider/job-applications/:user_id", appliedJobPost)
 router.patch("/manpower-provider/:jobPostId/:status", updateJobPostStatus)
 router.delete("/manpower-provider/delete/jobpost/:jobPostId", softDeleteJobPost)
 router.post("/manpower-provider/report-user", authenticate, reportUpload, reportUser);

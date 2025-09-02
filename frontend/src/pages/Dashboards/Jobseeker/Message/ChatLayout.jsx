@@ -14,7 +14,6 @@ const ChatLayout = () => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const { data: conversations = [], isLoading, isError } = useConversations(ROLE.JOBSEEKER);
-  // console.log(conversations, 'conversation chatlayout jobseeker');
   
   const displayedUsers = filterAndMapConversations(conversations, activeTab);
 

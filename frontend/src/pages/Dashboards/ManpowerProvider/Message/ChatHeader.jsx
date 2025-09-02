@@ -16,14 +16,6 @@ const ChatHeader = ({ selectedUser }) => {
   const fullName = selectedUser?.authorized_person || selectedUser?.name || 'Unknown';
   const initials = getInitials(fullName);
 
-  if (!selectedUser) {
-    return (
-      <div className="flex items-center justify-center p-4 border-b border-gray-300 bg-white text-gray-400">
-        Select a user to start chatting
-      </div>
-    );
-  }
-
   return (
     <div className="flex items-center justify-between p-4 border-b border-gray-300 bg-white">
       {selectedUser ? (

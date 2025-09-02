@@ -1,13 +1,12 @@
 import { useState, useRef } from 'react';
 import { useMutation } from '@tanstack/react-query';
 import { ROLE } from '../../../../../utils/role';
-import axios from 'axios';
-import Agreement from '../../Agreement';
-import FileUpload from './FileUpload';
 import PreviewImage from './PreviewImage';
+import FileUpload from './FileUpload';
+import Agreement from '../../Agreement';
+import axios from 'axios';
 
 const Form = ({ onClose, onSubmitSuccess }) => {
-
 
   // Refs for file uploads
   const authorizedRef = useRef();
@@ -54,7 +53,7 @@ const Form = ({ onClose, onSubmitSuccess }) => {
       formData.append('business_permit_BIR', business_permit_BIR);
       formData.append('DTI', DTI);
       formData.append('business_establishment', business_establishment);
-      
+
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/${ROLE.BUSINESS_EMPLOYER}/upload-requirements`,
         formData,
@@ -65,12 +64,12 @@ const Form = ({ onClose, onSubmitSuccess }) => {
       );
       return response.data;
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       alert('Requirements submitted successfully!');
       onSubmitSuccess?.();
     },
-    onError: (error) => {
-      console.error("❌ Upload error:", error.response?.data || error.message);
+    onError: () => {
+      alert('Requirements submitted failed!');
     }
   });
 

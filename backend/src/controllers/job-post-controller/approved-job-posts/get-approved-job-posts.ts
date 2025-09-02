@@ -42,7 +42,6 @@ export async function getApprovedJobPosts(
 
         return rows;
     } catch (error) {
-        console.error("❌ Error fetching approved job posts:", error);
         throw error;
     }
 }

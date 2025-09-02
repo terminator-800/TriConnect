@@ -10,7 +10,6 @@ export const saveTabToLocalStorage = (tab) => {
     localStorage.setItem('chat-active-tab', tab);
 };
 
-
 export const getInitials = (fullName) => {
     if (!fullName || typeof fullName !== 'string') return '?';
 
@@ -25,7 +24,6 @@ export const getInitials = (fullName) => {
 
     return (firstInitial + lastInitial).toUpperCase();
 };
-
 
 export const filterAndMapConversations = (conversations, activeTab) => {
     const filtered = conversations.filter(convo => convo.role === activeTab);

@@ -14,7 +14,7 @@ export const useRestrictUser = () => {
         reason: reason || 'Violation of terms',
       },
       {
-        withCredentials: true, 
+        withCredentials: true,
       }
     );
 
@@ -27,10 +27,10 @@ export const useRestrictUser = () => {
       queryClient.invalidateQueries(['reported-users']);
       queryClient.invalidateQueries(['users']);
     },
-    onError: (error) => {
-      console.error('Failed to restrict user:', error);
+    onError: () => {
+      alert('Failed to restrict user. Please try again.');
     },
   });
 
-  return mutation; 
+  return mutation;
 };

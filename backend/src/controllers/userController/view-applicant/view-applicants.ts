@@ -1,8 +1,8 @@
+import { getApplicantsByEmployer } from "../../../service/get-applicants-by-employer-service.js";
 import type { Request, Response } from "express";
+import type { AuthenticatedUser } from "../../../types/express/auth.js";
 import type { PoolConnection } from "mysql2/promise";
 import pool from "../../../config/database-connection.js";
-import { getApplicantsByEmployer } from "../../../service/get-applicants-by-employer-service.js";
-import type { AuthenticatedUser } from "../../../types/express/auth.js";
 
 type ApplicantsRequest = Request<{}, any, {}, { page?: string; pageSize?: string }> & {
   user?: AuthenticatedUser;
@@ -27,7 +27,6 @@ export const viewApplicants = async (req: ApplicantsRequest, res: Response): Pro
 
     return res.status(200).json(result);
   } catch (error) {
-    console.error("❌ Error fetching applicants:", error);
     return res.status(500).json({ message: "Failed to fetch applicants" });
   } finally {
     if (connection) connection.release();

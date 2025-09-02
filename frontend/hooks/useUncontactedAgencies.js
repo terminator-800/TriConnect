@@ -3,7 +3,7 @@ import axios from 'axios';
 
 export const useUncontactedAgencies = (role) => {
   const query = useQuery({
-    queryKey: ['uncontacted-agencies', role],  // include role for uniqueness
+    queryKey: ['uncontacted-agencies', role],  
     queryFn: async () => {
       const response = await axios.get(
         `${import.meta.env.VITE_API_URL}/${role}/uncontacted-agencies`,
@@ -15,7 +15,7 @@ export const useUncontactedAgencies = (role) => {
 
   return {
     agencies: query.data || [],
-    isLoading: query.isPending,
+    isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,
   };

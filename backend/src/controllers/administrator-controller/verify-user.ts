@@ -22,7 +22,6 @@ export const verifyUser = async (req: CustomRequest, res: Response) => {
         await verifyUsers(connection, user_id);
         res.json({ success: true, message: "User verified successfully." });
     } catch (error: any) {
-        console.error("Error verifying user:", error);
         res.status(500).json({ message: "Internal server error." });
     } finally {
         if (connection) connection.release();

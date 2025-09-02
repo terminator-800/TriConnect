@@ -7,8 +7,8 @@ import VerificationStatus from '../VerificationForm/VerificationStatus';
 import ConfirmStatusChange from '../../../../components/ConfirmStatusChange';
 import ConfirmDeleteJobPost from '../../../../components/ConfirmDeleteJobPost';
 import Sidebar from '../Sidebar';
-import Form from '../VerificationForm/Form';
 import JobTable from './JobTable';
+import Form from '../VerificationForm/Form';
 
 const ManageJobPost = () => {
     const [showForm, setShowForm] = useState(false);
@@ -38,7 +38,7 @@ const ManageJobPost = () => {
     const closeStatusModal = () => dispatch({ type: 'CLOSE_STATUS_MODAL' });
 
     if (isProviderLoading || isJobsLoading) return <div className="p-10">Loading...</div>;
-    if (isError || !provider) return <div className="p-10 text-red-600">Error: {error?.message}</div>;
+    if (isError || !provider) return <div className="p-10 text-red-600">Error!</div>;
 
     return (
         <>

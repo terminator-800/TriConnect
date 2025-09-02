@@ -12,7 +12,6 @@ export async function findUsersEmail(
         );
         return rows.length > 0 && rows[0] ? rows[0] : null;
     } catch (error) {
-        console.error("Error finding user by email:", error);
         throw error; 
     }
 }

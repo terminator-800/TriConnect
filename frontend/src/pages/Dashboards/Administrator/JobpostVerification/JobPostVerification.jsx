@@ -1,11 +1,11 @@
-import { useState } from 'react';
 import { usePendingJobPosts } from '../../../../../hooks/useJobposts';
+import { useState } from 'react';
 import { ROLE } from '../../../../../utils/role';
 import ApprovedJobPost from './ApprovedJobPost';
-import RejectJobPost from './RejectJobPost';
 import JobpostDetails from '../JobpostDetails';
-import Sidebar from '../Sidebar';
+import RejectJobPost from './RejectJobPost';
 import Pagination from '../../../../components/Pagination';
+import Sidebar from '../Sidebar';
 
 const JobPostVerification = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -17,7 +17,6 @@ const JobPostVerification = () => {
   const [jobPostDetails, setJobPostDetails] = useState(null);
 
   const { data: pendingJobPosts = [] } = usePendingJobPosts(ROLE.ADMINISTRATOR);
-  console.log('pending jobposts: ', pendingJobPosts);
 
   const postsPerPage = 3;
   const totalPages = Math.ceil(pendingJobPosts.length / postsPerPage);

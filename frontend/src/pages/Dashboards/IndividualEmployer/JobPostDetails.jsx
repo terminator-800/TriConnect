@@ -1,6 +1,6 @@
-import Sidebar from './Sidebar'
 import { useEmployerDashboard } from '../../../../hooks/useEmployerDashboard'
 import { ROLE } from '../../../../utils/role'
+import Sidebar from './Sidebar'
 
 const JobPostDetails = () => {
   const { data, isLoading, error } = useEmployerDashboard(ROLE.INDIVIDUAL_EMPLOYER);

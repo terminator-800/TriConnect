@@ -2,9 +2,9 @@ import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { deleteUserFilesAndFolders } from "./delete-folder.js";
 import { getRoleConfig, type Role } from "./reject-user-helper.js";
 import type { Request, Response } from "express";
+import { extractPublicIdFromUrl } from "./reject-user-helper.js"
 import { deleteFromCloudinary } from "../../../utils/delete-from-cloudinary.js";
 import pool from "../../../config/database-connection.js";
-import { extractPublicIdFromUrl } from "./reject-user-helper.js"
 
 interface RejectUserParams {
     user_id?: number;
@@ -31,7 +31,6 @@ export const rejectUser = async (req: Request<RejectUserParams>, res: Response):
 
         res.json({ success: true, message: `User rejected successfully (${user_id}).` });
     } catch (error: any) {
-        console.error("Error rejecting user:", error);
         res.status(500).json({ message: "Internal server error." });
     } finally {
         if (connection) connection.release();
@@ -101,7 +100,6 @@ async function rejectUsers(connection: PoolConnection, user_id: number): Promise
             message: `${role} requirements rejected, files and folders removed, and rejection recorded.`,
         };
     } catch (error) {
-        console.error("Error rejecting user:", error);
         throw error;
     }
 }

@@ -40,16 +40,12 @@ const ChatWindow = ({ selectedUser }) => {
     if (!conversation_id) return;
 
     const handleNewMessage = (newMessage) => {
-      console.log('📨 New message received in ChatWindow:', newMessage);
-      
-      // Only update if the message belongs to the current conversation
+    
       if (Number(newMessage.conversation_id) === Number(conversation_id)) {
-        // Invalidate the messages query to refetch with the new message
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.BUSINESS_EMPLOYER, conversation_id]
         });
         
-        // Also invalidate conversations to update the last message
         queryClient.invalidateQueries({
           queryKey: ['conversations', ROLE.BUSINESS_EMPLOYER]
         });
@@ -57,10 +53,8 @@ const ChatWindow = ({ selectedUser }) => {
     };
 
     const handleMessagesSeen = (data) => {
-      console.log('👁️ Messages seen update in ChatWindow:', data);
       
       if (Number(data.conversation_id) === Number(conversation_id)) {
-        // Invalidate to update the seen status
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.BUSINESS_EMPLOYER, conversation_id]
         });

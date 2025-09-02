@@ -15,6 +15,10 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
   try {
     let token = request.cookies?.token;
 
+    if (!process.env.JWT_SECRET) {
+      return response.status(500).json({ authenticated: false, message: "Server misconfiguration" });
+    }
+
     // Fallback to Authorization header (from localStorage)
     if (!token && request.headers.authorization?.startsWith("Bearer ")) {
       token = request.headers.authorization.split(" ")[1];
@@ -28,7 +32,11 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
       });
     }
 
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as AuthTokenPayload;
+    const decoded = jwt.verify(token, process.env.JWT_SECRET) as AuthTokenPayload;
+
+    if (typeof decoded !== "object" || !("user_id" in decoded) || !("role" in decoded)) {
+      return response.status(401).json({ authenticated: false, role: null, user: null, message: "Invalid token structure" });
+    }
 
     return response.status(200).json({
       authenticated: true,

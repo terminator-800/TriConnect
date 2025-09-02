@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import type { Request, Response } from "express";
-import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import type { PoolConnection } from "mysql2/promise";
 import pool from "../../../config/database-connection.js";
 import { updateStatus } from "./update-status.js";
 
@@ -21,7 +21,7 @@ export const updateJobPostStatus = async (
   if (!jobPostId || !status) {
     return res.status(400).json({ error: "Missing jobPostId or status" });
   }
-  
+
   const allowedStatuses = ["paused", "active", "completed"];
   const normalizedStatus = status.toLowerCase();
 
@@ -38,11 +38,16 @@ export const updateJobPostStatus = async (
     connection = await pool.getConnection();
     await connection.beginTransaction();
 
-    const result: ResultSetHeader = await updateStatus(
+    const result = await updateStatus(
       connection,
       normalizedStatus,
       jobPostIdNum
     );
+
+    if (!result) {
+      await connection.rollback();
+      return res.status(500).json({ error: "Failed to update job post status" });
+    }
 
     if (result.affectedRows === 0) {
       await connection.rollback();

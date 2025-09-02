@@ -10,9 +10,9 @@ const ResetPassword = () => {
   const params = new URLSearchParams(window.location.search);
   const token = params.get('token');
   const navigate = useNavigate();
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(message);
 
     if (password !== confirmPassword) {
       setMessage("Passwords do not match.");

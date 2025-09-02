@@ -1,8 +1,5 @@
-import { ROLE } from '../../../../../utils/role';
-import { useState } from 'react';
 import { useUnappliedJobPosts } from '../../../../../hooks/useJobposts';
-import { useUserProfile } from '../../../../../hooks/useUserProfiles';
-import { formatDistanceToNow } from 'date-fns';
+import { useState } from 'react';
 import Pagination from '../../../../components/Pagination';
 import icons from '../../../../assets/svg/Icons';
 import Apply from './Apply';
@@ -19,9 +16,6 @@ const BrowseJob = () => {
     isLoading: loadingJobPosts,
     isError: errorJobPosts
   } = useUnappliedJobPosts();
-
-  console.log(filteredJobPosts, 'jobseeker browse job');
-
 
   const startIndex = (currentPage - 1) * postsPerPage;
   const paginatedPosts = filteredJobPosts.slice(

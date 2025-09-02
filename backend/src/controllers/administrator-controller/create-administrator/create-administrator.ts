@@ -1,15 +1,15 @@
 import type { PoolConnection } from 'mysql2/promise';
-import pool from "../../../config/database-connection.js";
-import bcrypt from 'bcrypt';
 import { findOrCreateAdmin } from './find-create-administrator.js'
+import bcrypt from 'bcrypt';
+import pool from "../../../config/database-connection.js";
 
-export const createAdministrator = async (): Promise <void> => {
+export const createAdministrator = async (): Promise<{ success: boolean; message: string }> => {
     let connection: PoolConnection | undefined;
 
     const adminEmail = process.env.ADMIN_EMAIL;
     const adminPassword = process.env.ADMIN_PASSWORD;
 
-    if (!adminEmail || !adminPassword){
+    if (!adminEmail || !adminPassword) {
         throw new Error('ADMIN_EMAIL and ADMIN_PASSWORD must be set in environment variables');
     }
 
@@ -19,13 +19,21 @@ export const createAdministrator = async (): Promise <void> => {
         const result = await findOrCreateAdmin(connection, { email: adminEmail, hashedPassword });
 
         if (result.alreadyExists) {
-            console.log("✅ Admin account already exists.");
+            return { 
+                success: true, 
+                message: "Administrator account already exists" 
+            };
         } else {
-            console.log("✅ Admin account created.");
+            return { 
+                success: true, 
+                message: "Administrator account created successfully"
+            };
         }
-
     } catch (error) {
-        console.error("❌ Error creating admin:", error);
+        return { 
+            success: false, 
+            message: "Failed to create administrator"
+        };
     } finally {
         if (connection) connection.release();
     }

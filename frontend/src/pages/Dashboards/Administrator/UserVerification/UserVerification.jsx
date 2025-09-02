@@ -1,12 +1,12 @@
+import { documentMap, getImagePath } from '../../../../../utils/getImagePath';
 import { useEffect, useState } from 'react';
 import { useSubmittedUsers } from '../../../../../hooks/useUserProfiles';
 import { ROLE, ROLE_LABELS } from '../../../../../utils/role';
 import ViewDocument from '../ViewDocument';
+import Pagination from '../../../../components/Pagination';
+import Sidebar from '../Sidebar';
 import Verify from '../UserVerification/Verify';
 import Reject from '../UserVerification/Reject';
-import Sidebar from '../Sidebar';
-import { documentMap, getImagePath } from '../../../../../utils/getImagePath';
-import Pagination from '../../../../components/Pagination';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -24,9 +24,6 @@ const UserVerification = () => {
         isError,
         error,
     } = useSubmittedUsers(ROLE.ADMINISTRATOR);
-
-    console.log('submitted users: ', users);
-
 
     useEffect(() => {
         document.body.style.overflow = previewImage ? 'hidden' : 'auto';

@@ -1,6 +1,6 @@
+import { useCreateJobPost } from '../../../../../hooks/useCreateJobPost'; 
 import { useState } from 'react';
 import { ROLE } from '../../../../../utils/role';
-import { useCreateJobPost } from '../../../../../hooks/useCreateJobPost'; 
 
 const JobPostForm = () => {
     const [job_title, setJobTitle] = useState("");

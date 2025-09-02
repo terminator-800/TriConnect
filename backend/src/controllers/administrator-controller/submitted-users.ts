@@ -7,10 +7,8 @@ dotenv.config();
 
 function generateCloudinaryUrl(fileUrl: string | null): string | null {
     if (!fileUrl) return null;
-    // fileUrl is already a full Cloudinary URL
     return fileUrl;
 }
-
 
 type Role =
     | "jobseeker"
@@ -95,7 +93,6 @@ export const submittedUsers = async (req: Request, res: Response) => {
         const users: SubmittedUser[] = await getSubmittedUsers(connection);
         res.json(users);
     } catch (err) {
-        console.error("Error in submittedUsers route:", err);
         res.status(500).json({ error: "Failed to fetch submitted users" });
     } finally {
         if (connection) connection.release();

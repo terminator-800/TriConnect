@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { useApproveJobPost } from '../../../../../hooks/useApproveJobPost';
+import { useEffect } from 'react';
 
 const ApprovedJobPost = ({ jobPost, onClose }) => {
 
@@ -23,7 +23,6 @@ const ApprovedJobPost = ({ jobPost, onClose }) => {
       },
     });
   };
-
 
   return (
     <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">

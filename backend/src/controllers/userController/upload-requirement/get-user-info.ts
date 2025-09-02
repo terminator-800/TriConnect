@@ -9,7 +9,6 @@ export async function getUserInfo(connection: PoolConnection, user_id: number) {
 
         return rows.length > 0 ? rows[0] : null;
     } catch (error) {
-        console.error("Error fetching user info by ID:", error);
         return null;
     }
 }

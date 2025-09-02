@@ -1,7 +1,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import axios from "axios";
 import { ROLE } from "../../utils/role"; 
+import axios from "axios";
 
 const PublicRoute = ({ children }) => {
   const [authData, setAuthData] = useState({ authenticated: null, role: null });
@@ -13,7 +13,6 @@ const PublicRoute = ({ children }) => {
       hasFetched.current = true;
 
       try {
-        // First try with cookies
         const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
           withCredentials: true,
         });
@@ -48,13 +47,11 @@ const PublicRoute = ({ children }) => {
 
   if (authData.authenticated === null) return <div>Public Route Loading...</div>;
 
-  // If user is logged in, redirect to their dashboard
   if (authData.authenticated) {
     const redirectPath = roleToPath[authData.role] || "/";
     return <Navigate to={redirectPath} replace />;
   }
 
-  // If not logged in, show public page
   return children || <Outlet />;
 };
 

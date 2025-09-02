@@ -1,8 +1,8 @@
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useLogout } from '../../../../hooks/useLogout';
 import { ROLE } from '../../../../utils/role';
 import icons from '../../../assets/svg/Icons';
 import Navbar from '../../Navbar';
-import { useLogout } from '../../../../hooks/useLogout';
 
 const AdminSidebar = () => {
 

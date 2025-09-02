@@ -16,7 +16,7 @@ export const useUserFeedbacks = () => {
 
   return {
     feedbacks: query.data || [],
-    isLoading: query.isPending,
+    isLoading: query.isLoading,
     error: query.error,
     refetch: query.refetch,
   };

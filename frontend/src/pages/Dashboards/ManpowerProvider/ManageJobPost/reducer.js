@@ -1,4 +1,3 @@
-// reducers/jobPostModalReducer.js
 export const initialState = {
   showDeleteModal: false,
   deleteTargetJob: null,

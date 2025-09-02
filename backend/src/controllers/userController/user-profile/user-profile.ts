@@ -144,7 +144,6 @@ export const getUserProfile = async (
 
     return response.status(200).json(userProfile);
   } catch (error: any) {
-    console.error('Error in getUserProfile:', error.message);
     return response.status(500).json({ error: 'Internal server error' });
   } finally {
     connection?.release();

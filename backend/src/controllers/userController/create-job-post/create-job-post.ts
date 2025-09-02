@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
-import pool from "../../../config/database-connection.js";
 import { createJobPosts } from "../../userController/create-job-post/create-job-post-service.js";
 import { ROLE } from "../../../utils/roles.js";
+import pool from "../../../config/database-connection.js";
 
 // Request body type
 interface CreateJobPostBody {
@@ -46,7 +46,7 @@ const allowedRoles: typeof ROLE[keyof typeof ROLE][] = [
 
 // Controller
 export const createJobPost = async (request: Request<unknown, unknown, CreateJobPostBody>, response: Response) => {
-    
+
     const { user } = request as Request & { user: AuthenticatedUser };
 
     let connection: PoolConnection | undefined;
@@ -76,7 +76,7 @@ export const createJobPost = async (request: Request<unknown, unknown, CreateJob
         });
 
         if ('error' in result) {
-            return response.status(403).json({ error: result.error });
+            return response.status(400).json({ error: result.error });
         }
 
         return response.status(201).json({
@@ -85,7 +85,6 @@ export const createJobPost = async (request: Request<unknown, unknown, CreateJob
         });
 
     } catch (err) {
-        console.error("❌ Error creating job post:", err);
         return response.status(500).json({ error: "Internal server error." });
     } finally {
         if (connection) connection.release();

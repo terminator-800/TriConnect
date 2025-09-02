@@ -23,7 +23,6 @@ export const getJobPostById = async (
 
     return rows[0] || null;
   } catch (error) {
-    console.error('❌ Error in getJobPostById:', error);
     throw error;
   }
 };

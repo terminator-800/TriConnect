@@ -1,7 +1,7 @@
-import type { Request, Response } from 'express';
-import pool from '../../../../config/database-connection.js';
 import { getMessageHistoryByConversationId } from '../../messageController/history/get-message-history.js';
+import type { Request, Response } from 'express';
 import type { PoolConnection } from 'mysql2/promise';
+import pool from '../../../../config/database-connection.js';
 
 export const messageHistory = async (req: Request, res: Response): Promise<void> => {
   let connection: PoolConnection | undefined;
@@ -20,7 +20,6 @@ export const messageHistory = async (req: Request, res: Response): Promise<void>
 
     res.json(messages);
   } catch (err) {
-    console.error('Error fetching messages:', err);
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
     connection?.release();

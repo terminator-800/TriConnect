@@ -19,7 +19,6 @@ export const jobPostsByUser = async (req: CustomRequest, res: Response): Promise
         const posts: JobPostsByUser = await getJobPostsByUserGrouped(connection, user_id);
         res.status(200).json(posts);
     } catch (err) {
-        console.error("❌ Error fetching job posts:", err);
         res.status(500).json({ message: "Failed to fetch job posts" });
     } finally {
         if (connection) connection.release();

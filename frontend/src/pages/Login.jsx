@@ -1,8 +1,8 @@
-import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useState } from 'react';
+import { useLogin } from '../../hooks/useLogin';
 import Navbar from './Navbar';
 import icons from '../assets/svg/Icons';
-import { useLogin } from '../../hooks/useLogin';
 
 const Login = () => {
     const [email, setEmail] = useState('');

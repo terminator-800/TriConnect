@@ -36,7 +36,6 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
 
     } catch (error: any) {
         if (connection) await connection.rollback();
-        console.error("Reset password error:", error);
 
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({ message: "Your reset link has expired. Please request a new one." });

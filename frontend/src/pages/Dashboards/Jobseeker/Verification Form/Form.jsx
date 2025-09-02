@@ -9,11 +9,11 @@ import PreviewImage from './PreviewImage'
 const Form = ({ onClose, onSubmitSuccess }) => {
 
   useEffect(() => {
+    const original = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    return () => {
-      document.body.style.overflow = 'auto';
-    };
+    return () => { document.body.style.overflow = original; };
   }, []);
+
 
   // useRef
   const govIDRef = useRef();

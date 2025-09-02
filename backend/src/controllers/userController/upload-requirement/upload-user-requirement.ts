@@ -1,12 +1,11 @@
 import type { Request, Response } from "express";
-import type { PoolConnection } from "mysql2/promise";
-import pool from "../../../config/database-connection.js";
 import { uploadUserRequirement } from "./insert-requirement.js";
+import type { PoolConnection } from "mysql2/promise";
+import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 import { getUserInfo } from "./get-user-info.js";
 import { ROLE } from "../../../utils/roles.js";
+import pool from "../../../config/database-connection.js";
 import jwt from "jsonwebtoken";
-import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
-import fs from 'fs';
 
 // Simple JWT payload type
 interface JwtPayload {
@@ -178,7 +177,7 @@ export const uploadRequirement = async (req: Request, res: Response) => {
     return res.status(200).json({ message: `${role} requirements uploaded successfully` });
   } catch (err: any) {
     try { await connection?.rollback(); } catch { }
-    return res.status(500).json({ message: "Server error", error: err.message });
+    return res.status(500).json({ message: "Server error" });
   } finally {
     if (connection) connection.release();
   }

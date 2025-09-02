@@ -1,10 +1,10 @@
 import type { Request, Response } from 'express';
-import type { PoolConnection } from 'mysql2/promise';
-import type { RowDataPacket } from 'mysql2';
-import pool from '../../../../config/database-connection.js';
-import { handleMessageUpload } from '../../../../service/handle-message-upload-service.js';
 import type { AuthenticatedUser } from '../../../../types/express/auth.js';
+import type { PoolConnection } from 'mysql2/promise';
+import { handleMessageUpload } from '../../../../service/handle-message-upload-service.js';
+import type { RowDataPacket } from 'mysql2';
 import { uploadToCloudinary } from '../../../../utils/upload-to-cloudinary.js';
+import pool from '../../../../config/database-connection.js';
 
 // Extend Express Request to include your user and optional files
 interface AuthenticatedRequest extends Request {
@@ -95,8 +95,6 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
     let senderName = 'Unknown User';
     try {
 
-
-
       const [userResult] = await connection.query<UserRoleRow[]>(
         'SELECT role FROM users WHERE user_id = ?',
         [sender_id]
@@ -134,7 +132,7 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
         if (nameResult.length > 0) senderName = nameResult[0]!.full_name;
       }
     } catch (error: any) {
-      console.log('Could not get sender name:', error.message);
+      
     }
 
     newMessage.sender_name = senderName;
@@ -142,7 +140,6 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
     // Emit to global or fallback room
     if (io?.emitGlobalMessage) {
       io.emitGlobalMessage(newMessage);
-      console.log(`📨 Global message emitted for conversation ${roomId}`);
     } else {
       io?.to(roomId.toString()).emit('receiveMessage', newMessage);
 
@@ -159,7 +156,6 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
       file_url: newMessage.file_url || null,
     });
   } catch (error) {
-    console.error('❌ Error sending message:', error);
     res.status(500).json({ error: 'Internal server error' });
   } finally {
     if (connection) connection.release();

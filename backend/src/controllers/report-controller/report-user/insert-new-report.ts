@@ -8,11 +8,16 @@ export async function insertNewReport(
     message?: string,
     conversationId?: number
 ): Promise<number> {
-    const [result] = await connection.query<ResultSetHeader>(
-        `INSERT INTO reports (reported_by, reported_user_id, reason, message, conversation_id)
-     VALUES (?, ?, ?, ?, ?)`,
-        [reportedBy, reportedUserId, reason, message ?? null, conversationId ?? null]
-    );
-
-    return result.insertId;
+    try {
+        const [result] = await connection.query<ResultSetHeader>(
+            `INSERT INTO reports (reported_by, reported_user_id, reason, message, conversation_id)
+         VALUES (?, ?, ?, ?, ?)`,
+            [reportedBy, reportedUserId, reason, message ?? null, conversationId ?? null]
+        );
+    
+        return result.insertId;
+        
+    } catch (error) {
+        throw error;
+    }
 }

@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import { format } from "date-fns";
-import pool from "../../config/database-connection.js";
 import { ROLE } from "../../utils/roles.js";
+import pool from "../../config/database-connection.js";
 
 type Role =
     | "jobseeker"
@@ -59,6 +59,11 @@ type PendingJobPost =
 
 export const pendingJobPosts = async (req: Request, res: Response) => {
     let connection: PoolConnection | undefined;
+    
+    if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        res.status(403).json({ error: "Forbidden: Admins only." });
+        return;
+    }
 
     try {
         connection = await pool.getConnection();
@@ -66,7 +71,6 @@ export const pendingJobPosts = async (req: Request, res: Response) => {
 
         res.status(200).json(jobposts);
     } catch (error) {
-        console.error("Failed to fetch job posts:", error);
         res.status(500).json({ message: "Failed to fetch job posts" });
     } finally {
         if (connection) connection.release();

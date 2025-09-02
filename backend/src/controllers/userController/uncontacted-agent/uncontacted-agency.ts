@@ -1,9 +1,9 @@
+import { getUncontactedAgencies, type UncontactedAgency } from "./get-uncontacted-agency.js";
+import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
-import { getUncontactedAgencies, type UncontactedAgency } from "./get-uncontacted-agency.js";
 import { ROLE } from "../../../utils/roles.js";
 import pool from "../../../config/database-connection.js";
-import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 
 // Extend Express Request to include authenticated user info
 interface CustomRequest extends Request {

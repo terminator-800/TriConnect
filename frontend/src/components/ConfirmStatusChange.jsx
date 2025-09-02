@@ -1,6 +1,6 @@
+import { useStatusChange } from '../../hooks/useStatusChange';
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useStatusChange } from '../../hooks/useStatusChange';
 
 const ConfirmStatusChange = ({ onClose, data, role }) => {
   if (!data) return null;
@@ -23,7 +23,7 @@ const ConfirmStatusChange = ({ onClose, data, role }) => {
       });
       onClose();
     } catch (err) {
-      console.error('Error changing status:', err);
+      alert('Failed to change status. Please try again.');
     }
   };
 

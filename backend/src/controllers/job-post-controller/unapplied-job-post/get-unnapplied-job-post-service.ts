@@ -205,7 +205,6 @@ export async function getUnappliedJobPosts(
 
     return flattened;
   } catch (error) {
-    console.error("❌ Error fetching unapplied job posts:", error);
     throw error;
   }
 }

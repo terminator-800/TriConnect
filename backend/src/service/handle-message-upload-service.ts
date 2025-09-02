@@ -1,7 +1,6 @@
 import type { PoolConnection, RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { fileURLToPath } from 'url';
 import path from "path";
-import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,10 +51,6 @@ export const handleMessageUpload = async (
       );
     }
 
-    // Ensure directory exists for file uploads
-    // const destDir = path.join(__dirname, "../../../", "uploads", "chat", conversation_id.toString());
-    // await fs.promises.mkdir(destDir, { recursive: true });
-
     if (files && files.length > 0) {
       for (const file of files) {
         const normalizedPath = file.path.replace(/\\/g, "/"); 
@@ -84,7 +79,6 @@ export const handleMessageUpload = async (
 
     return latestMessage;
   } catch (error) {
-    console.error("❌ handleMessageUpload failed:", error);
     throw error;
   }
 };

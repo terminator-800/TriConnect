@@ -1,14 +1,14 @@
 import { useState, useReducer } from 'react';
 import { modalReducer, initialState } from './reducer';
-import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { useJobPostsByUser } from '../../../../../hooks/useJobposts';
+import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { ROLE } from '../../../../../utils/role';
 import VerificationStatus from '../../../Dashboards/IndividualEmployer/Verification Form/VerificationStatus';
 import ConfirmStatusChange from '../../../../components/ConfirmStatusChange';
 import ConfirmDeleteJobPost from '../../../../components/ConfirmDeleteJobPost';
+import JobTable from './JobTable';
 import Sidebar from '../Sidebar';
 import Form from '../../../Dashboards/IndividualEmployer/Verification Form/Form';
-import JobTable from './JobTable';
 
 const ManageJobPost = () => {
     const [showForm, setShowForm] = useState(false);

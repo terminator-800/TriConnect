@@ -23,7 +23,7 @@ export const verifyEmail = async (request: Request<{}, {}, {}, { token?: string 
   }
 
   if (!process.env.JWT_SECRET) {
-    throw new Error("JWT_SECRET not set in environment variables");
+    return response.status(500).json({ message: "Internal server error" });
   }
 
   const tokenString: string = token;
@@ -53,10 +53,7 @@ export const verifyEmail = async (request: Request<{}, {}, {}, { token?: string 
   } catch (error: unknown) {
 
     if (connection) await connection.rollback();
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("❌ Verification error:", message);
     return response.status(400).send("Invalid or expired verification link.");
-
   } finally {
     connection?.release();
   }

@@ -1,8 +1,6 @@
-import { ROLE } from '../../../../../utils/role';
-import { useState } from 'react';
 import { useUnappliedJobPosts } from '../../../../../hooks/useJobposts';
-import { useUserProfile } from '../../../../../hooks/useUserProfiles';
-import { formatDistanceToNow } from 'date-fns';
+import { useState } from 'react';
+import { ROLE } from '../../../../../utils/role';
 import Pagination from '../../../../components/Pagination';
 import icons from '../../../../assets/svg/Icons';
 import Apply from './Apply';

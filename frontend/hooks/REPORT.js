@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "axios";
 import { ROLE } from "../utils/role";
+import axios from "axios";
 
 export const useReportUser = () => {
     const queryClient = useQueryClient();
@@ -49,8 +49,8 @@ export const useReportUser = () => {
             } else {
                 alert("❌ Failed to submit report.");
             }
-            console.error("Report failed", error);
-        },
+        }
+        
     });
 };
 

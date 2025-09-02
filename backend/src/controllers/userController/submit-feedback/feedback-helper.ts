@@ -31,7 +31,7 @@ export async function saveFeedback(
   userId: number,
   role: string,
   message: string
-): Promise<FeedbackRow> {
+): Promise<FeedbackRow | null> {
   const [result] = await connection.execute<ResultSetHeader>(
     `INSERT INTO feedback (user_id, role, message) VALUES (?, ?, ?)`,
     [userId, role, message]
@@ -47,7 +47,7 @@ export async function saveFeedback(
 
   const feedback = rows[0];
   if (!feedback) {
-    throw new Error("Failed to retrieve saved feedback.");
+    return null; // and handle null in the caller
   }
 
   return feedback;

@@ -2,9 +2,9 @@ import dotenv from 'dotenv';
 dotenv.config();
 import type { Request, Response } from 'express';
 import type { PoolConnection } from 'mysql2/promise';
-import pool from '../../../config/database-connection.js';
-import { deleteJobPost } from './delete.js';
 import { getJobPostById } from '../../../service/job-post-by-id-service.js';
+import { deleteJobPost } from './delete.js';
+import pool from '../../../config/database-connection.js';
 
 export const softDeleteJobPost = async (req: Request, res: Response) => {
     const deletedStatus = 'deleted';
@@ -43,7 +43,6 @@ export const softDeleteJobPost = async (req: Request, res: Response) => {
         });
     } catch (err) {
         if (connection) await connection.rollback();
-        console.error('❌ Error soft-deleting job post:', err);
         return res.status(500).json({ error: 'Internal server error' });
     } finally {
         if (connection) connection.release();

@@ -1,7 +1,7 @@
 import { getUnappliedJobPosts, type FlattenedJobPost } from "./get-unnapplied-job-post-service.js";
-import type { Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import type { CustomRequest } from "../../../types/express/auth.js";
+import type { Response } from "express";
 import { ROLE } from "../../../utils/roles.js";
 import pool from "../../../config/database-connection.js";
 
@@ -25,13 +25,12 @@ export const unappliedJobPosts = async (req: CustomRequest, res: Response): Prom
         }
 
         if (process.env.NODE_ENV !== "production") {
-            console.log("applicant id:", applicant_id, "| role:", role);
+            
         }
 
         const jobPosts: FlattenedJobPost[] = await getUnappliedJobPosts(connection, applicant_id);
         res.status(200).json(jobPosts);
     } catch (err) {
-        console.error("❌ Failed to fetch unapplied job posts:", err);
         res.status(500).json({ error: "Failed to fetch unapplied job posts" });
     } finally {
         if (connection) connection.release();

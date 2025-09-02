@@ -1,14 +1,21 @@
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import { getJobPostById } from "../../service/job-post-by-id-service.js";
+import { ROLE } from "../../utils/roles.js";
 import pool from "../../config/database-connection.js";
 
 interface ApproveJobPostParams {
-    job_post_id?: string; 
+    job_post_id?: string;
 }
 
 export const approveJobPost = async (req: Request<ApproveJobPostParams>, res: Response): Promise<void> => {
-    const jobPostId = Number(req.params.job_post_id); 
+
+    if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        res.status(403).json({ error: "Forbidden: Admins only." });
+        return;
+    }
+    
+    const jobPostId = Number(req.params.job_post_id);
     if (isNaN(jobPostId)) {
         res.status(400).json({ message: "Invalid job_post_id" });
         return;
@@ -28,7 +35,6 @@ export const approveJobPost = async (req: Request<ApproveJobPostParams>, res: Re
 
         res.status(200).json({ message: result.message });
     } catch (error: any) {
-        console.error("Error approving jobpost:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
         if (connection) connection.release();
@@ -62,7 +68,6 @@ async function approveJobPostIfExists(connection: PoolConnection, jobPostId: num
 
         return { success: true, message: 'Jobpost approved successfully.' };
     } catch (error) {
-        console.error("Error in approveJobPostIfExists:", error);
         throw error;
     }
 }

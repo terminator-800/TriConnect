@@ -25,8 +25,8 @@ export const useDismissReport = () => {
             queryClient.invalidateQueries(['users']);
 
         },
-        onError: (error) => {
-            console.error('Failed to dismiss report:', error);
+        onError: () => {
+            alert('Failed to dismiss report. Please try again.');
         },
     });
 

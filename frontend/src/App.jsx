@@ -1,16 +1,16 @@
-import { Routes, Route } from "react-router-dom";
 import { useEffect, useState, useRef, createContext, useContext } from "react";
-import axios from "axios";
-import { useSocket } from "../hooks/useSocket";
 import { useGlobalNotifications } from "../hooks/useGlobalNotifications";
+import { Routes, Route } from "react-router-dom";
+import { useSocket } from "../hooks/useSocket";
 import SocketStatus from "./components/SocketStatus";
-import Home from "./pages/Home";
-import Login from "./pages/Login";
 import RegisterRoutes from "./pages/Register/RegisterRoutes";
 import ForgotPassword from "./pages/ForgotPassword/ForgotPassword";
 import ResetPassword from "./pages/ForgotPassword/ResetPassword";
 import PrivateRoute from "./pages/Dashboards/PrivateRoute";
 import PublicRoute from "./pages/PublicRoute";
+import Home from "./pages/Home";
+import Login from "./pages/Login";
+import axios from "axios";
 
 // Profiles
 import JobseekerProfile from "./pages/Dashboards/Jobseeker/Profile/Profile";

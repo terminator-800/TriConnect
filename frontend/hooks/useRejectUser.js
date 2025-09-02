@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import axios from 'axios';
 import { ROLE } from '../utils/role';
+import axios from 'axios';
 
 export function useRejectUser() {
   const queryClient = useQueryClient();
@@ -18,8 +18,7 @@ export function useRejectUser() {
       alert('User successfully rejected.');
       queryClient.invalidateQueries({ queryKey: ['submittedUsers'] });
     },
-    onError: (error) => {
-      console.error('Rejection failed:', error);
+    onError: () => {
       alert('Something went wrong while rejecting the user.');
     },
   });

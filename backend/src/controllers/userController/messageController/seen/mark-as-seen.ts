@@ -1,7 +1,7 @@
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
-import pool from "../../../../config/database-connection.js";
 import { processSeenMessages } from "./process-seen-message.js";
+import pool from "../../../../config/database-connection.js";
 
 // Use the globally augmented user type
 export interface MessageDetail {
@@ -66,15 +66,12 @@ export const markAsSeen = async (req: Request, res: Response) => {
       }
     }
 
-    console.log(`✅ Viewer ${viewer_id} marked messages as seen:`, validMessageIds);
-
     return res.json({
       success: true,
       updated,
       seenMessageIds: validMessageIds,
     });
   } catch (error) {
-    console.error(`❌ Error in markAsSeen for viewerId ${viewer_id}:`, error);
     return res.status(500).json({ error: "Internal server error" });
   } finally {
     if (connection) connection.release();

@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
 import { documentMap, infoMap, getImagePath } from '../../../../utils/getImagePath';
+import { useEffect } from 'react';
 
 const ViewDocument = ({ user, onClose }) => {
 

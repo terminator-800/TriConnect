@@ -7,8 +7,8 @@ import VerificationStatus from '../../../Dashboards/BusinessEmployer/Verificatio
 import ConfirmStatusChange from '../../../../components/ConfirmStatusChange';
 import ConfirmDeleteJobPost from '../../../../components/ConfirmDeleteJobPost';
 import Sidebar from '../Sidebar';
-import Form from '../../BusinessEmployer/VerificationForm/Form';
 import JobTable from './JobTable';
+import Form from '../../BusinessEmployer/VerificationForm/Form';
 
 const ManageJobPost = () => {
     const [showForm, setShowForm] = useState(false);

@@ -12,9 +12,11 @@ export const useConversations = (role) => {
       );
       return response.data;
     },
-    onError: (error) => {
-      console.error('Error fetching conversations:', error?.response?.data || error.message);
+
+    onError: () => {
+      alert('Failed to fetch conversations. Please try again.');
     },
+
     staleTime: 1000 * 60,
   });
 };
@@ -29,12 +31,15 @@ export const useMessageHistory = (role, conversation_id) => {
       );
       return response.data;
     },
+
     enabled: !!role && !!conversation_id,
     staleTime: 1000 * 30,
     refetchOnMount: true,
-    onError: (error) => {
-      console.error('Error fetching messages:', error?.response?.data || error.message);
-    },
+
+    onError: () => {
+      alert('Failed to fetch messages. Please try again.');
+    }
+
   });
 };
 
@@ -42,6 +47,7 @@ export const useMarkAsSeen = (role, conversation_id) => {
   const queryClient = useQueryClient();
 
   return useMutation({
+
     mutationFn: async (message_id) => {
 
       const response = await axios.patch(
@@ -51,12 +57,15 @@ export const useMarkAsSeen = (role, conversation_id) => {
       );
       return response.data;
     },
+
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['messages', role, conversation_id] });
     },
-    onError: (error) => {
-      console.error('Error marking messages as seen:', error?.response?.data || error.message);
-    },
+
+    onError: () => {
+      alert('Failed to mark message as seen. Please try again.');
+    }
+
   });
 };
 
@@ -86,10 +95,10 @@ export const useSendMessage = (role) => {
       return res.data;
     },
 
-    onError: (error) => {
-      console.error('Message send failed:', error?.response?.data || error.message);
+    onError: () => {
       alert('Failed to send message. Try again.');
-    },
+    }
+    
   });
 };
 

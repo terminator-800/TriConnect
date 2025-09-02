@@ -1,20 +1,19 @@
 import dotenv from 'dotenv';
 dotenv.config();
 import type { Request, Response } from "express";
+import type { PoolConnection } from "mysql2/promise";
 import { findUsersEmail } from "../../../service/find-user-email-service.js";
 import { createUsers } from "./create-user.js";
 import type { User } from "../../../interface/interface.js";
 import { ROLE } from "../../../utils/roles.js";
-import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import nodemailer from "nodemailer";
+import bcrypt from "bcrypt";
 import pool from "../../../config/database-connection.js";
-import type { PoolConnection } from "mysql2/promise";
+import jwt from "jsonwebtoken";
 
 const { CLIENT_ORIGIN, JWT_SECRET, EMAIL_USER, EMAIL_PASS } = process.env;
 
 if (!CLIENT_ORIGIN || !JWT_SECRET || !EMAIL_USER || !EMAIL_PASS) {
-  console.error("❌ Missing required environment variables.");
   process.exit(1);
 }
 
@@ -104,7 +103,6 @@ export const registerUser = async (request: Request <unknown, unknown, RegisterU
 
   } catch (error: unknown) {
     if (connection) connection.rollback();
-    console.error("❌ Error sending email:", (error as Error).stack || (error as Error).message);
     return response.status(500).json({ message: "Server error." });
 
   } finally {

@@ -1,7 +1,7 @@
-import type { JwtPayload } from "jsonwebtoken";
-import jwt from "jsonwebtoken";
 import type { Pool, PoolConnection } from "mysql2/promise";
+import type { JwtPayload } from "jsonwebtoken";
 import { ROLE } from "../utils/roles.js";
+import jwt from "jsonwebtoken";
 
 type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -86,7 +86,6 @@ export async function getUserInfo(pool: Pool, user_id: number): Promise<UserReco
             is_registered: row.is_registered
         };
     } catch (error) {
-        console.error("Error fetching user info by ID:", error);
         return null;
     } finally {
         if (connection) connection.release();

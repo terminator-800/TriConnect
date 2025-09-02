@@ -134,11 +134,10 @@ export const getUserConversations = async (
                         agency_authorized_person: row.agency_authorized_person,
                     } as ManpowerProviderConversation;
                 default:
-                    return base; // fallback
+                    return base;
             }
         });
     } catch (error) {
-        console.error('Error fetching user conversations:', error);
         throw error;
     }
 };

@@ -11,11 +11,14 @@ export const updateStatus = async (
     connection: PoolConnection,
     status: string,
     jobPostId: number
-): Promise<ResultSetHeader> => {
-    const [result] = await connection.query<ResultSetHeader>(
-        "UPDATE job_post SET jobpost_status = ? WHERE job_post_id = ?",
-        [status, jobPostId]
-    );
-
-    return result;
+): Promise<ResultSetHeader | null> => {
+    try {
+        const [result] = await connection.query<ResultSetHeader>(
+            "UPDATE job_post SET jobpost_status = ? WHERE job_post_id = ?",
+            [status, jobPostId]
+        );
+        return result;
+    } catch (error) {
+        return null;
+    }
 };

@@ -15,9 +15,13 @@ export async function getReportedUsersById(
     connection: PoolConnection,
     reportedBy: number
 ): Promise<ReportedUser[]> {
-    const [rows] = await connection.execute<RowDataPacket[]>(
-        `SELECT * FROM reports WHERE reported_by = ?`,
-        [reportedBy]
-    );
-    return rows as ReportedUser[];
+    try {
+        const [rows] = await connection.execute<RowDataPacket[]>(
+            `SELECT * FROM reports WHERE reported_by = ?`,
+            [reportedBy]
+        );
+        return rows as ReportedUser[];
+    } catch (error) {
+        throw new Error("Failed to fetch reported users.");
+    }
 }

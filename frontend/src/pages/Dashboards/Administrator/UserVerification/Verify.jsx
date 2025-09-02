@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
-import { ROLE_LABELS } from '../../../../../utils/role';
 import { useVerifyUser } from '../../../../../hooks/useVerifyUser';
+import { ROLE_LABELS } from '../../../../../utils/role';
+import { useEffect } from 'react';
 
 const Verify = ({ onClose, user }) => {
   if (!user) return null;

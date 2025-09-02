@@ -4,10 +4,9 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import http from "http";
 import path from "path";
-dotenv.config();
-console.log("🌍 CLIENT_ORIGIN:", process.env.CLIENT_ORIGIN);
-
 import { fileURLToPath } from 'url';
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -85,13 +84,8 @@ async function startServer() {
 
     app.locals.db = connection;
 
-    server.listen(process.env.API_PORT || 3001, () => {
-      console.log(`✅ Server running with Socket.IO on port ${process.env.API_PORT}`);
-      console.log(`✅ Server running with Socket.IO on port ${process.env.API_BASE_URL}`);
-
-    });
+    server.listen(process.env.API_PORT || 3001);
   } catch (error: unknown) {
-    console.error("❌ Failed to start server:", (error as Error).message);
     process.exit(1);
   } finally {
     if (connection) connection.release();

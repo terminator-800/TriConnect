@@ -1,9 +1,9 @@
 import { ROLE_LABELS, roleColors, getInitials } from '../../../../../utils/role';
 import { useUserFeedbacks } from '../../../../../hooks/useUserFeedbacks';
 import { useState } from 'react';
-import Sidebar from '../Sidebar';
-import Pagination from '../../../../components/Pagination';
 import ViewFeedback from './ViewFeedback';
+import Pagination from '../../../../components/Pagination';
+import Sidebar from '../Sidebar';
 
 const UserFeedback = () => {
   const [currentPage, setCurrentPage] = useState(1);

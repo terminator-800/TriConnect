@@ -71,7 +71,6 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
         });
     } catch (error: any) {
         if (connection) await connection.rollback();
-        console.error("Forgot password error:", error.message);
         return res.status(500).json({ message: "Server error" });
     } finally {
         if (connection) connection.release();

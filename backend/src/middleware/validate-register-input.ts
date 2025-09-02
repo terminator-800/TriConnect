@@ -25,6 +25,5 @@ export function validateRegisterInput(
         return res.status(400).json({ message: 'Invalid role' });
     }
 
-    console.log('Middleware validating registration input:', { email, role });
     next();
 }

@@ -45,30 +45,23 @@ function initializeSocket(server: any, userSocketMap: UserSocketMap) {
   };
 
   io.on("connection", (socket: Socket) => {
-    console.log("🔌 User connected:", socket.id);
 
     socket.on("joinRoom", (roomId: string | number) => {
-      if (!roomId) return console.log("❌ Invalid roomId:", roomId);
-      socket.join(roomId.toString());
-      console.log(`🛋️ User joined room: ${roomId}`);
+      if (!roomId) return socket.join(roomId.toString());
     });
 
     socket.on("leaveRoom", (roomId: string | number) => {
-      if (!roomId) return console.log("❌ Invalid roomId:", roomId);
-      socket.leave(roomId.toString());
-      console.log(`🚪 User left room: ${roomId}`);
+      if (!roomId) return socket.leave(roomId.toString());
     });
 
     socket.on("register", (user_id: number) => {
       if (userSocketMap[user_id] && userSocketMap[user_id] !== socket.id) {
-        console.log(`⚠️ Overwriting existing socket for user ${user_id}`);
+
       }
       userSocketMap[user_id] = socket.id;
-      console.log(`✅ User ${user_id} registered with socket ${socket.id}`);
-
       sendQueuedMessages(user_id, socket);
     });
-
+    
     socket.on(
       "markMessagesSeen",
       async (
@@ -88,8 +81,7 @@ function initializeSocket(server: any, userSocketMap: UserSocketMap) {
 
           if (callback) callback({ success: true });
         } catch (err: any) {
-          console.error("❌ Error updating messagesSeen:", err);
-          if (callback) callback({ success: false, error: err.message });
+          if (callback) callback({ success: false, error: "Unable to mark messages as seen" });
         }
       }
     );
@@ -101,9 +93,8 @@ function initializeSocket(server: any, userSocketMap: UserSocketMap) {
 
       if (disconnectedUserId) {
         delete userSocketMap[Number(disconnectedUserId)];
-        console.log(`❌ User ${disconnectedUserId} disconnected`);
       } else {
-        console.log(`❌ Unknown socket disconnected: ${socket.id}`);
+
       }
     });
   });
@@ -172,7 +163,6 @@ function initializeSocket(server: any, userSocketMap: UserSocketMap) {
               message.sender_name = "Unknown User";
             }
           } catch (error: any) {
-            console.log("Could not get sender name for message:", error.message);
             message.sender_name = "Unknown User";
           }
 
@@ -180,7 +170,7 @@ function initializeSocket(server: any, userSocketMap: UserSocketMap) {
         }
       });
     } catch (err) {
-      console.error("❌ Error sending queued messages:", err);
+      throw err;
     }
   };
 

@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useUserProfile } from "../../../../../hooks/useUserProfiles";
+import { ROLE } from '../../../../../utils/role';
+import VerificationStatus from '../VerificationForm/VerificationStatus';
+import PersonalInfo from './PersonalInfo';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../VerificationForm/Form';
-import PersonalInfo from './PersonalInfo';
 import Security from './Security';
-import VerificationStatus from '../VerificationForm/VerificationStatus';
-import { ROLE } from '../../../../../utils/role';
 
 const ManpowerProviderProfile = () => {
   const personal = 'personal'
@@ -29,9 +29,6 @@ const ManpowerProviderProfile = () => {
     refetch,
   } = useUserProfile(ROLE.MANPOWER_PROVIDER);
 
-  console.log(profileData, 'profileData');
-  
-
   useEffect(() => {
     if (profileData) {
       setFormData({
@@ -50,7 +47,7 @@ const ManpowerProviderProfile = () => {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (isError) return <div>{error?.message || 'Failed to fetch profile data.'}</div>;
+  if (isError) return <div>Something went wrong. Please try again later.</div>;
 
   return (
     <>

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useMarkMessagesAsSeen } from './helper'
+import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
+import { useQueryClient } from '@tanstack/react-query';
 import { getInitials } from './helper';
+import { useChatRoom } from '../../../../../hooks/useChatRoom';
+import { useSocket } from '../../../../../hooks/useSocket';
 import { ROLE } from '../../../../../utils/role';
 import icons from '../../../../assets/svg/Icons';
-import { useSocket } from '../../../../../hooks/useSocket';
-import { useChatRoom } from '../../../../../hooks/useChatRoom';
-import { useQueryClient } from '@tanstack/react-query';
 import socket from '../../../../../utils/socket';
 
 const ChatWindow = ({ selectedUser }) => {
@@ -19,10 +19,8 @@ const ChatWindow = ({ selectedUser }) => {
   const currentUserId = profileData?.user_id;
 
   const { conversation_id = null } = selectedUser || {};
-  // console.log(conversation_id, 'conversation id jobseeker');
 
   const { data: messages = [], isLoading, isError } = useMessageHistory(ROLE.JOBSEEKER, conversation_id);
-  console.log(messages, "messages");
   
     // Initialize socket connection
     useSocket(currentUserId, ROLE.JOBSEEKER);
@@ -43,16 +41,12 @@ const ChatWindow = ({ selectedUser }) => {
     if (!conversation_id) return;
 
     const handleNewMessage = (newMessage) => {
-      console.log('📨 New message received in ChatWindow:', newMessage);
       
-      // Only update if the message belongs to the current conversation
       if (Number(newMessage.conversation_id) === Number(conversation_id)) {
-        // Invalidate the messages query to refetch with the new message
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.JOBSEEKER, conversation_id]
         });
         
-        // Also invalidate conversations to update the last message
         queryClient.invalidateQueries({
           queryKey: ['conversations', ROLE.JOBSEEKER]
         });
@@ -60,10 +54,8 @@ const ChatWindow = ({ selectedUser }) => {
     };
 
     const handleMessagesSeen = (data) => {
-      console.log('👁️ Messages seen update in ChatWindow:', data);
       
       if (Number(data.conversation_id) === Number(conversation_id)) {
-        // Invalidate to update the seen status
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.JOBSEEKER, conversation_id]
         });
@@ -150,7 +142,6 @@ const ChatWindow = ({ selectedUser }) => {
         </div>
       </div>
 
-
       {previewImage && (
         <div className="fixed inset-0 bg-opacity-70 flex items-center justify-center z-50">
           <div className="relative bg-white p-4 rounded-lg max-w-full max-h-full border border-gray-300">
@@ -168,6 +159,7 @@ const ChatWindow = ({ selectedUser }) => {
           </div>
         </div>
       )}
+      
     </div>
   );
 };

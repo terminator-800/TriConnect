@@ -1,6 +1,7 @@
 import icons from '../../../../assets/svg/Icons';
 
 const VerificationStatus = ({ profileData, openForm }) => {
+  
   if (profileData.is_rejected) {
     return (
       <div className="flex items-center justify-between w-full">

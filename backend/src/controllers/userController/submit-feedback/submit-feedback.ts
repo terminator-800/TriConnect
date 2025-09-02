@@ -1,8 +1,8 @@
+import { hasSubmittedFeedback, saveFeedback } from "./feedback-helper.js";
+import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import pool from "../../../config/database-connection.js";
-import { hasSubmittedFeedback, saveFeedback } from "./feedback-helper.js";
-import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 
 interface FeedbackRequestBody {
     message: string;
@@ -46,7 +46,6 @@ export const submitFeedback = async (req: FeedbackRequest, res: Response): Promi
         });
     } catch (error) {
         if (connection) await connection.rollback();
-        console.error("Error submitting feedback:", error);
         return res.status(500).json({ message: "Failed to submit feedback." });
     } finally {
         if (connection) connection.release();

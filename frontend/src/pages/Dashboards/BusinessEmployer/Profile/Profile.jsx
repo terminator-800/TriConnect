@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { ROLE } from '../../../../../utils/role';
-import Form from '../VerificationForm/Form';
-import Sidebar from '../Sidebar';
-import icons from '../../../../assets/svg/Icons';
+import VerificationStatus from '../VerificationForm/VerificationStatus';
 import PersonalInfo from '../Profile/PersonalInfo';
 import Security from '../Profile/Security';
-import VerificationStatus from '../VerificationForm/VerificationStatus';
+import Sidebar from '../Sidebar';
+import icons from '../../../../assets/svg/Icons';
+import Form from '../VerificationForm/Form';
 
 const Profile = () => {
   const personal = 'personal'
@@ -50,7 +50,7 @@ const Profile = () => {
   };
 
   if (loading) return <div>Loading...</div>;
-  if (isError) return <div>{error.message}</div>;
+  if (isError) return <div>Error!</div>;
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({ ...prev, [field]: value }));

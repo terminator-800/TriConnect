@@ -1,6 +1,6 @@
 import type { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
 import { ROLE } from '../utils/roles.js';
+import jwt from 'jsonwebtoken';
 
 export type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -40,7 +40,6 @@ export const authenticate = (
     }
 
     if (!token) {
-        console.log(`[AUTH FAILED] No token provided for ${req.method} ${req.originalUrl}`);
         return res.status(401).json({ error: 'Unauthorized: No token provided.' });
     }
 
@@ -54,13 +53,8 @@ export const authenticate = (
             is_registered: decoded.is_registered,
         };
 
-        console.log(
-            `[AUTH OK] User ${decoded.user_id} (${decoded.role}) accessed ${req.method} ${req.originalUrl}`
-        );
-
         next();
     } catch (error: any) {
-        console.log(`[AUTH FAILED] Invalid token for ${req.method} ${req.originalUrl}:`, error.message);
         res.status(401).json({ error: 'Unauthorized: Invalid token.' });
     }
 };

@@ -1,7 +1,7 @@
-import type { Response } from "express";
-import pool from "../../config/database-connection.js";
 import type { CustomRequest } from "../../types/express/auth.js"; 
 import type { RowDataPacket } from "mysql2/promise";
+import type { Response } from "express";
+import pool from "../../config/database-connection.js";
 
 interface UserFeedback extends RowDataPacket {
   feedback_id: number;
@@ -26,7 +26,6 @@ export const usersFeedbacks = async (req: CustomRequest, res: Response) => {
     return res.status(200).json(feedbacks);
 
   } catch (error) {
-    console.error("Error fetching user feedback:", error);
     return res.status(500).json({ message: "Failed to fetch user feedback." });
   } finally {
     if (connection) connection.release();
@@ -56,6 +55,5 @@ async function getUserFeedbacks(connection: Awaited<ReturnType<typeof pool.getCo
         ORDER BY feedback.created_at DESC
     `);
 
-  // cast rows to UserFeedback[]
   return rows as UserFeedback[];
 }

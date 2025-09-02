@@ -1,6 +1,6 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
-import { ROLE } from "../../../utils/roles.js";
 import { format } from "date-fns";
+import { ROLE } from "../../../utils/roles.js";
 
 export interface JobseekerProfile {
     user_id: number;
@@ -59,7 +59,6 @@ export async function getJobseekerProfile(connection: PoolConnection, user_id: n
 
         return profile;
     } catch (error) {
-        console.error("Error fetching jobseeker profile:", error);
         throw error;
     }
 }

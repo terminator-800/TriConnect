@@ -1,6 +1,7 @@
-import { getInitials } from './helper';
 import { useMarkAsSeen } from '../../../../../hooks/CHAT';
+import { getInitials } from './helper';
 import { ROLE } from '../../../../../utils/role';
+
 const ConversationList = ({ users, selectedUser, onSelect }) => {
 
     const { mutate: markAsSeen } = useMarkAsSeen(ROLE.MANPOWER_PROVIDER, selectedUser?.conversation_id);

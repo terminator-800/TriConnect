@@ -34,7 +34,7 @@ export const useLogin = () => {
       return res.data;
 
     } catch (err) {
-      setError(err);
+      setError(err.response?.data?.message || err.message || 'Login failed');
       throw err;
     } finally {
       setIsLoading(false);

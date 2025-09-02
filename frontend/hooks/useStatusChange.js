@@ -22,7 +22,7 @@ export const useStatusChange = (role) => {
 
   return {
     changeStatus: mutation.mutateAsync,
-    isLoading: mutation.isPending,
+    isLoading: mutation.isLoading,
     error: mutation.error,
     status: mutation.status,
   };

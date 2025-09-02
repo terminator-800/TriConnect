@@ -45,13 +45,12 @@ const ManpowerProviderForm = ({ onClose, onSubmitSuccess }) => {
         }
       );
     },
-    onSuccess: (res) => {
+    onSuccess: () => {
       alert('Requirements submitted successfully!');
-      console.log('✅ Upload success:', res.data);
       onSubmitSuccess?.();
     },
-    onError: (error) => {
-      console.error('❌ Upload error:', error.response?.data || error.message);
+    onError: () => {
+      alert('Requirements submitted failed!');
     },
   });
 

@@ -1,5 +1,5 @@
-import type { PoolConnection } from "mysql2/promise";
 import type { AuthenticatedUser } from "../../../types/express/auth.js";
+import type { PoolConnection } from "mysql2/promise";
 
 /** Validate that a user ID is provided */
 export function validateUserId(user_id: string | number | undefined): asserts user_id {

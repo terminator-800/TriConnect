@@ -1,7 +1,7 @@
+import { useNavigate, useParams } from 'react-router-dom'
 import { useState } from 'react'
 import BackButton from '../../components/BackButton'
 import Navbar from '../Navbar'
-import { useNavigate, useParams } from 'react-router-dom'
 
 const EmployerType = () => {
   const business = "business"

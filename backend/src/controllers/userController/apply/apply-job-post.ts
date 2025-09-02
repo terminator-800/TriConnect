@@ -1,10 +1,10 @@
 import { insertJobApplication } from './apply-job-post-helper.js';
-import { handleMessageUpload } from '../../../service/handle-message-upload-service.js';
 import type { PoolConnection } from 'mysql2/promise';
+import { handleMessageUpload } from '../../../service/handle-message-upload-service.js';
 import type { CustomRequest } from '../../../types/express/auth.js';
+import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 import type { Response } from 'express';
 import pool from '../../../config/database-connection.js';
-import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 
 interface Message {
   conversation_id?: number;
@@ -35,22 +35,21 @@ export const apply = async (req: CustomRequest, res: Response) => {
       ? await Promise.all(
         req.files.map(async (f: any) => {
           const secureUrl = await uploadToCloudinary(f.path, 'job_applications');
-          return { path: secureUrl }; 
+          return { path: secureUrl };
         })
       )
       : undefined;
-      
+
     const newMessage: Message = await handleMessageUpload(connection, {
       sender_id,
       receiver_id,
       message,
-       files: uploadedFiles,
+      files: uploadedFiles,
     });
 
 
     if (!newMessage.conversation_id) {
       await connection.rollback();
-      console.error('❌ Cannot broadcast: conversation_id is missing!', newMessage);
       return res.status(400).json({ error: 'Missing conversation_id' });
     }
 
@@ -64,14 +63,12 @@ export const apply = async (req: CustomRequest, res: Response) => {
     const roomId = newMessage.conversation_id;
 
     io.to(roomId.toString()).emit('receiveMessage', newMessage);
-    console.log(`📨 Sent application to room ${roomId}`, newMessage);
 
     const receiverSocketId = userSocketMap?.[receiver_id];
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('receiveMessage', newMessage);
-      console.log(`📢 Also notified receiver ${receiver_id} via socket ${receiverSocketId}`);
     } else {
-      console.log(`⚠️ Receiver ${receiver_id} not currently connected`);
+      res.status(500).json({ error: 'Internal server error' });
     }
 
     res.status(201).json({
@@ -82,7 +79,6 @@ export const apply = async (req: CustomRequest, res: Response) => {
 
   } catch (error) {
     if (connection) await connection.rollback();
-    console.error('❌ Error applying to job post:', error);
     res.status(500).json({ error: 'Internal server error' });
   } finally {
     if (connection) connection.release();

@@ -1,14 +1,14 @@
 import { useEffect, useRef, useState } from 'react';
-import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useMarkMessagesAsSeen } from './helper'
+import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
-import { getInitials } from './helper';
-import { ROLE } from '../../../../../utils/role';
-import icons from '../../../../assets/svg/Icons';
-import { useSocket } from '../../../../../hooks/useSocket';
-import { useChatRoom } from '../../../../../hooks/useChatRoom'
 import { useQueryClient } from '@tanstack/react-query';
+import { getInitials } from './helper';
+import { useChatRoom } from '../../../../../hooks/useChatRoom'
+import { useSocket } from '../../../../../hooks/useSocket';
+import { ROLE } from '../../../../../utils/role';
 import socket from '../../../../../utils/socket';
+import icons from '../../../../assets/svg/Icons';
 
 const ChatWindow = ({ selectedUser }) => {
   const endRef = useRef(null);
@@ -40,16 +40,12 @@ const ChatWindow = ({ selectedUser }) => {
     if (!conversation_id) return;
 
     const handleNewMessage = (newMessage) => {
-      console.log('📨 New message received in ChatWindow:', newMessage);
       
-      // Only update if the message belongs to the current conversation
       if (Number(newMessage.conversation_id) === Number(conversation_id)) {
-        // Invalidate the messages query to refetch with the new message
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.INDIVIDUAL_EMPLOYER, conversation_id]
         });
         
-        // Also invalidate conversations to update the last message
         queryClient.invalidateQueries({
           queryKey: ['conversations', ROLE.INDIVIDUAL_EMPLOYER]
         });
@@ -57,10 +53,7 @@ const ChatWindow = ({ selectedUser }) => {
     };
 
     const handleMessagesSeen = (data) => {
-      console.log('👁️ Messages seen update in ChatWindow:', data);
-      
       if (Number(data.conversation_id) === Number(conversation_id)) {
-        // Invalidate to update the seen status
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.INDIVIDUAL_EMPLOYER, conversation_id]
         });

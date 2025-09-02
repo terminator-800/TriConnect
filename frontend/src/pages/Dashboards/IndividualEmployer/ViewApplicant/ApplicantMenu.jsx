@@ -1,5 +1,3 @@
-import React from 'react';
-
 const ApplicantMenu = ({ onRejectClick }) => {
   return (
     <div className="absolute right-10 top-10 bg-white border border-gray-300 rounded-lg shadow-md z-10 p-2">

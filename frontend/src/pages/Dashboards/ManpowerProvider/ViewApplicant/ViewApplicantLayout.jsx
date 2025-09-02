@@ -2,12 +2,12 @@ import { useMemo, useState } from 'react';
 import { useApplicants } from '../../../../../hooks/useApplicants';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { ROLE } from '../../../../../utils/role';
+import VerificationStatus from '../VerificationForm/VerificationStatus';
 import ApplicantMenu from './ApplicantMenu';
 import RejectApplicant from './RejectApplicant';
 import Pagination from '../../../../components/Pagination';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
-import VerificationStatus from '../VerificationForm/VerificationStatus';
 import Form from '../VerificationForm/Form';
 
 const ViewApplicant = () => {

@@ -17,7 +17,6 @@ const ReportedUser = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedReport, setSelectedReport] = useState(null);
   const { data: allReportedUsers = [], isLoading, isError } = useAllReportedUsers();
-  console.log(allReportedUsers, 'reported users');
 
   const totalPages = Math.ceil(allReportedUsers.length / USERS_PER_PAGE);
   const startIndex = (currentPage - 1) * USERS_PER_PAGE;
@@ -29,7 +28,6 @@ const ReportedUser = () => {
     if (parts.length === 1) return parts[0][0].toUpperCase();
     return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
-
 
   return (
     <>

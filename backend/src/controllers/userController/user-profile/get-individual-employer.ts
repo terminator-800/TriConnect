@@ -65,7 +65,6 @@ export async function getIndividualEmployerProfile(connection: PoolConnection, u
 
         return profile;
     } catch (error) {
-        console.error("Error fetching individual employer profile:", error);
         throw error;
     }
 }

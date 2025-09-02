@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { ROLE } from '../utils/role';
+import axios from 'axios';
 
 const ALLOWED_ROLES = [
   ROLE.BUSINESS_EMPLOYER,

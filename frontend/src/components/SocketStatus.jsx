@@ -9,19 +9,16 @@ const SocketStatus = () => {
     const onConnect = () => {
       setIsConnected(true);
       setConnectionStatus('Connected');
-      console.log('🔌 Socket connected');
     };
 
     const onDisconnect = () => {
       setIsConnected(false);
       setConnectionStatus('Disconnected');
-      console.log('❌ Socket disconnected');
     };
 
     const onConnectError = (error) => {
       setIsConnected(false);
       setConnectionStatus('Connection Error');
-      console.error('❌ Socket connection error:', error);
     };
 
     // Set up event listeners

@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
-import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useMarkMessagesAsSeen } from './helper'
+import { useMessageHistory } from '../../../../../hooks/CHAT';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
+import { useQueryClient } from '@tanstack/react-query';
 import { getInitials } from './helper';
+import { useChatRoom } from '../../../../../hooks/useChatRoom'
+import { useSocket } from '../../../../../hooks/useSocket';
 import { ROLE } from '../../../../../utils/role';
 import icons from '../../../../assets/svg/Icons';
-import { useSocket } from '../../../../../hooks/useSocket';
-import { useChatRoom } from '../../../../../hooks/useChatRoom'
-import { useQueryClient } from '@tanstack/react-query';
 import socket from '../../../../../utils/socket';
 
 const ChatWindow = ({ selectedUser }) => {
@@ -40,27 +40,20 @@ const ChatWindow = ({ selectedUser }) => {
     if (!conversation_id) return;
 
     const handleNewMessage = (newMessage) => {
-      console.log('📨 New message received in ChatWindow:', newMessage);
       
-      // Only update if the message belongs to the current conversation
       if (Number(newMessage.conversation_id) === Number(conversation_id)) {
-        // Invalidate the messages query to refetch with the new message
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.MANPOWER_PROVIDER, conversation_id]
         });
         
-        // Also invalidate conversations to update the last message
         queryClient.invalidateQueries({
           queryKey: ['conversations', ROLE.MANPOWER_PROVIDER]
         });
       }
     };
 
-    const handleMessagesSeen = (data) => {
-      console.log('👁️ Messages seen update in ChatWindow:', data);
-      
+    const handleMessagesSeen = (data) => {      
       if (Number(data.conversation_id) === Number(conversation_id)) {
-        // Invalidate to update the seen status
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.MANPOWER_PROVIDER, conversation_id]
         });

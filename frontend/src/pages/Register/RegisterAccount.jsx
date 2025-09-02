@@ -1,10 +1,10 @@
-import { useState } from 'react'
+import { useResendVerification } from '../../../hooks/useResendVeification'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useState } from 'react'
+import { ROLE } from '../../../utils/role'
 import BackButton from '../../components/BackButton'
 import axios from 'axios'
 import Navbar from '../Navbar'
-import { ROLE } from '../../../utils/role'
-import { useResendVerification } from '../../../hooks/useResendVeification'
 
 const RegisterAccount = () => {
   const { mutate: resendVerification, isLoading: isResending } = useResendVerification();
@@ -35,7 +35,6 @@ const RegisterAccount = () => {
               password: password,
               role: ROLE.BUSINESS_EMPLOYER
             };
-            console.log(data);
             const businessRes = await axios.post(
               `${import.meta.env.VITE_API_URL}/register/${ROLE.BUSINESS_EMPLOYER}`,
               data
@@ -44,7 +43,6 @@ const RegisterAccount = () => {
               navigate('/register/employer/business/account/verify');
               alert("Business employer account created successfully");
             } else {
-              console.log(businessRes.status);
               alert("Business employer account creation failed");
             }
           } catch (error) {
@@ -52,7 +50,6 @@ const RegisterAccount = () => {
               setShowResend(true);
               alert("Email already exists. Would you like to resend the verification email?");
             } else {
-              console.error("Registration failed:", error);
               alert("Account creation failed");
             }
           }
@@ -63,12 +60,10 @@ const RegisterAccount = () => {
               password: password,
               role: ROLE.INDIVIDUAL_EMPLOYER
             };
-            console.log(data);
             const individualRes = await axios.post(
               `${import.meta.env.VITE_API_URL}/register/${ROLE.INDIVIDUAL_EMPLOYER}`,
               data
             );
-            console.log(data);
 
             if (individualRes.status === 201) {
               alert("Individual employer account created successfully");
@@ -81,7 +76,6 @@ const RegisterAccount = () => {
               setShowResend(true);
               alert("Email already exists. Would you like to resend the verification email?");
             } else {
-              console.error("Registration failed:", error);
               alert("Account creation failed");
             }
           }
@@ -93,9 +87,7 @@ const RegisterAccount = () => {
             password: password,
             role: accountType
           };
-          console.log(data);
           const res = await axios.post(`${import.meta.env.VITE_API_URL}/register/${accountType}`, data);
-          console.log(data);
           if (res.status === 201) {
             alert(
               accountType === "jobseeker"
@@ -111,16 +103,13 @@ const RegisterAccount = () => {
             setShowResend(true);
             alert("Email already exists. Would you like to resend the verification email?");
           } else {
-            console.error("Registration failed:", error);
             alert("Account creation failed");
           }
         }
       }
     } catch (error) {
       if (error.response && error.response.status === 409) {
-        console.log(error);
       } else {
-        console.error(error);
         alert("Account creation failed");
       }
     }
@@ -160,8 +149,6 @@ const RegisterAccount = () => {
             </div>
           </form>
 
-
-
           {showResend && (
             <div className="text-center mt-4">
               <p>Didn't get the verification email?</p>
@@ -183,7 +170,6 @@ const RegisterAccount = () => {
                       alert("Verification email resent. Please check your inbox.");
                     },
                     onError: (error) => {
-                      console.error("Resend failed:", error);
                       alert("Failed to resend verification email.");
                     }
                   });

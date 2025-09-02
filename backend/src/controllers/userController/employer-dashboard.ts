@@ -74,7 +74,6 @@ export const employerDashboard = async (
 
     return res.status(200).json({ recentJobPosts, recentApplicants: applicants });
   } catch (error) {
-    console.error("❌ Error building employer dashboard:", error);
     return res.status(500).json({ message: "Failed to load dashboard" });
   } finally {
     if (connection) connection.release();

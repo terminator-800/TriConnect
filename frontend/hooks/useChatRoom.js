@@ -7,12 +7,10 @@ export const useChatRoom = (conversationId) => {
 
     // Join the conversation room
     socket.emit('joinRoom', conversationId);
-    console.log(`🛋️ Joined room: ${conversationId}`);
 
     return () => {
       // Leave room when component unmounts or conversation changes
       socket.emit('leaveRoom', conversationId);
-      console.log(`🚪 Left room: ${conversationId}`);
     };
   }, [conversationId]);
 };

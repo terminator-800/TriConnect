@@ -57,7 +57,6 @@ export async function getManpowerProviderProfile(connection: PoolConnection, use
 
         return profile;
     } catch (error) {
-        console.error("Error fetching manpower provider profile:", error);
         throw error;
     }
 }

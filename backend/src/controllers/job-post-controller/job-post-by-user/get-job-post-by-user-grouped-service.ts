@@ -1,5 +1,5 @@
-import { format } from "date-fns";
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import { format } from "date-fns";
 
 export type UserRole = "jobseeker" | "individual-employer" | "business-employer" | "manpower-provider";
 export type JobCategory = "pending" | "active" | "completed";
@@ -120,7 +120,6 @@ export async function getJobPostsByUserGrouped(
       ...grouped,
     };
   } catch (error) {
-    console.error("❌ Error fetching job posts by user:", error);
     throw error;
   }
 }

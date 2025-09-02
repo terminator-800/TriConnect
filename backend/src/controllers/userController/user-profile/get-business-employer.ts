@@ -59,7 +59,6 @@ export async function getBusinessEmployerProfile(connection: PoolConnection, use
 
         return profile;
     } catch (error) {
-        console.error("Error fetching business employer profile:", error);
         throw error;
     }
 }

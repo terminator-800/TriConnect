@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
 import { ROLE } from '../utils/role';
+import axios from 'axios';
 
 export const useApplicants = ({ page = 1, pageSize = 10, role } = {}) =>
   useQuery({

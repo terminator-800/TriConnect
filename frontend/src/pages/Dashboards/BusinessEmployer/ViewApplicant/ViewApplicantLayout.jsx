@@ -2,20 +2,19 @@ import { useMemo, useState } from 'react';
 import { useApplicants } from '../../../../../hooks/useApplicants';
 import { useUserProfile } from '../../../../../hooks/useUserProfiles';
 import { ROLE } from '../../../../../utils/role';
-import ApplicantMenu from './ApplicantMenu';
+import VerificationStatus from '../VerificationForm/VerificationStatus';
 import RejectApplicant from './RejectApplicant';
+import ApplicantMenu from './ApplicantMenu';
+import ViewProfile from '../../../../components/ViewProfile';
 import Pagination from '../../../../components/Pagination';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
-import VerificationStatus from '../VerificationForm/VerificationStatus';
 import Form from '../VerificationForm/Form';
-import ViewProfile from '../../../../components/ViewProfile';
 
 const ViewApplicant = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize] = useState(7);
   const { data, isLoading, error } = useApplicants({ page: currentPage, pageSize, role: ROLE.BUSINESS_EMPLOYER });
-  console.log(data, "DATA useApplicants");
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [showForm, setShowForm] = useState(false);

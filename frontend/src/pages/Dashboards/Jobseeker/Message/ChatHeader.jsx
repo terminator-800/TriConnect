@@ -1,7 +1,7 @@
+import { useReportedUsers } from '../../../../../hooks/REPORT';
 import { getInitials } from './helper';
 import { useState } from 'react';
 import { ROLE } from '../../../../../utils/role';
-import { useReportedUsers } from '../../../../../hooks/REPORT';
 import ReportUser from '../../../../components/ReportUser';
 import icons from '../../../../assets/svg/Icons';
 

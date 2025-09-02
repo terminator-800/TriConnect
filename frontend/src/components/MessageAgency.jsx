@@ -61,8 +61,7 @@ const MessageAgency = ({ receiver, role, onClose }) => {
       }, 1500);
     },
 
-    onError: (err) => {
-      console.error('Message failed:', err.response?.data || err.message);
+    onError: () => {
       alert('Something went wrong. Please try again.');
     },
   });

@@ -1,5 +1,5 @@
-import type { Request, Response } from "express";
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import type { Request, Response } from "express";
 import { format } from "date-fns";
 import pool from "../../config/database-connection.js";
 
@@ -68,6 +68,11 @@ interface FormattedReport {
 
 export const reportedUsers = async (req: Request, res: Response): Promise<void> => {
     let connection: PoolConnection | undefined;
+    
+    if (req.user?.role !== "administrator") {
+        res.status(403).json({ error: "Forbidden: Admins only." });
+        return;
+    }
 
     try {
         connection = await pool.getConnection();
@@ -166,7 +171,6 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
 
         res.json(formattedReports);
     } catch (error) {
-        console.error("Error fetching reported users:", error);
         res.status(500).json({ error: "Internal server error" });
     } finally {
         if (connection) connection.release();

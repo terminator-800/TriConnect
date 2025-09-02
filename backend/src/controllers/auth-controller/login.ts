@@ -34,7 +34,6 @@ export const login = async (request: CustomRequest, response: Response) => {
         const isMatch = await bcrypt.compare(password, user.password);
 
         if (!isMatch) {
-            console.error("❌ Password does NOT match");
             return response.status(401).json({ message: "Invalid email or password" });
         }
 
@@ -67,7 +66,6 @@ export const login = async (request: CustomRequest, response: Response) => {
             token
         });
     } catch (error) {
-        console.error("Error during login:", error);
         response.status(500).json({ message: "Server error" });
     } finally {
         if (connection) connection.release();

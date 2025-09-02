@@ -4,7 +4,7 @@ import { getJobPostById } from "../../service/job-post-by-id-service.js";
 import pool from "../../config/database-connection.js";
 
 interface RejectJobPostParams {
-  job_post_id?: string | number; 
+  job_post_id?: string | number;
 }
 
 interface RejectJobPostResult {
@@ -17,6 +17,11 @@ export const rejectJobPost = async (
   res: Response
 ): Promise<void> => {
   const jobPostId = req.params.job_post_id;
+
+  if (req.user?.role !== "administrator") {
+    res.status(403).json({ error: "Forbidden: Admins only." });
+    return;
+  }
 
   if (!jobPostId) {
     res.status(400).json({ error: "job_post_id parameter is required" });
@@ -37,7 +42,6 @@ export const rejectJobPost = async (
 
     res.status(200).json({ message: result.message });
   } catch (error: any) {
-    console.error("Error rejecting jobpost:", error);
     res.status(500).json({ error: "Internal server error." });
   } finally {
     if (connection) connection.release();
@@ -65,7 +69,6 @@ async function rejectJobPostIfExists(
 
     return { success: true, message: "Jobpost rejected successfully." };
   } catch (error) {
-    console.error("Error in rejectJobPostIfExists:", error);
     throw error;
   }
 }

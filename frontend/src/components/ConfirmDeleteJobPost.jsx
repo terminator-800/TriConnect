@@ -1,6 +1,6 @@
+import { useDeleteJobPost } from '../../hooks/useDeleteJobPost';
 import { useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { useDeleteJobPost } from '../../hooks/useDeleteJobPost';
 
 const ConfirmDeleteJobPost = ({ onClose, data, role }) => {
   if (!data) return null;
@@ -20,7 +20,7 @@ const ConfirmDeleteJobPost = ({ onClose, data, role }) => {
       await deleteJobPost(data.job_post_id);
       onClose();
     } catch (err) {
-      console.error('Error deleting job post:', err);
+      alert('Failed to delete job post. Please try again.');
     }
   };
 

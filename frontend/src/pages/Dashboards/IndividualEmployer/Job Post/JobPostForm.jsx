@@ -1,6 +1,6 @@
+import { useCreateJobPost } from "../../../../../hooks/useCreateJobPost";
 import { useState } from "react";
 import { ROLE } from "../../../../../utils/role";
-import { useCreateJobPost } from "../../../../../hooks/useCreateJobPost";
 
 const JobPostForm = () => {
   const [job_title, setJobTitle] = useState("");
@@ -25,6 +25,7 @@ const JobPostForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!agreeToReview) return alert('You must agree to review before submitting');
 
     const data = {
       job_title,
