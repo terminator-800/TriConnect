@@ -5,7 +5,8 @@ import type { Response } from "express";
 import bcrypt from "bcrypt";
 import pool from "../../config/database-connection.js";
 import jwt from "jsonwebtoken";
-
+import logger from "../../config/logger.js";
+import { log } from "console";
 interface UserRow extends RowDataPacket {
     user_id: number;
     email: string;
@@ -59,6 +60,7 @@ export const login = async (request: CustomRequest, response: Response) => {
             maxAge: 24 * 60 * 60 * 1000,
         });
 
+        logger.info(`User logged in: ${user.email} (ID: ${user.user_id})`);
         return response.status(200).json({
             message: "Login successful",
             role: user.role,
@@ -66,6 +68,7 @@ export const login = async (request: CustomRequest, response: Response) => {
             token
         });
     } catch (error) {
+        logger.error("Login error:", { error });
         response.status(500).json({ message: "Server error" });
     } finally {
         if (connection) connection.release();
