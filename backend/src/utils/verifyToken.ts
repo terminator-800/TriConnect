@@ -2,6 +2,7 @@ import express from "express";
 import type { Request, Response, Router } from "express";
 import type { JwtPayload } from "jsonwebtoken";
 import type { Role } from "../types/express/auth.js";
+import logger from "../config/logger.js";
 import jwt from "jsonwebtoken";
 
 const router: Router = express.Router();
@@ -16,6 +17,7 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
     let token = request.cookies?.token;
 
     if (!process.env.JWT_SECRET) {
+      logger.error("JWT_SECRET is not configured in the environment.");
       return response.status(500).json({ authenticated: false, message: "Server misconfiguration" });
     }
 
@@ -35,6 +37,7 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
     const decoded = jwt.verify(token, process.env.JWT_SECRET) as AuthTokenPayload;
 
     if (typeof decoded !== "object" || !("user_id" in decoded) || !("role" in decoded)) {
+      logger.warn("Token has invalid structure", { decoded });
       return response.status(401).json({ authenticated: false, role: null, user: null, message: "Invalid token structure" });
     }
 
@@ -46,6 +49,7 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
     });
 
   } catch (error: any) {
+    logger.error("Unexpected error in /auth/verify-token", { error });
     return response.status(401).json({
       authenticated: false,
       message: "Invalid or expired token",

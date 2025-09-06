@@ -1,4 +1,5 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 export async function findExistingReport(
     connection: PoolConnection,
@@ -12,8 +13,12 @@ export async function findExistingReport(
         );
 
         return existing;
-
     } catch (error) {
+        logger.error("Failed to check existing report", {
+            error,
+            reportedBy,
+            reportedUserId,
+        });
         throw error;
     }
 }

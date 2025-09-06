@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import { processSeenMessages } from "./process-seen-message.js";
+import logger from "../../../../config/logger.js";
 import pool from "../../../../config/database-connection.js";
 
 // Use the globally augmented user type
@@ -20,24 +21,33 @@ interface SenderToMessages {
 export const markAsSeen = async (req: Request, res: Response) => {
   let connection: PoolConnection | undefined;
   const viewer_id = req.user?.user_id;
+  const ip = req.ip;
 
   if (!viewer_id) {
+    logger.warn("Unauthorized attempt to mark messages as seen", { ip });
     return res.status(401).json({ error: "Unauthorized" });
   }
 
   const { message_id } = req.body as { message_id: number[] };
 
   if (!Array.isArray(message_id) || message_id.length === 0) {
+    logger.warn("Invalid message IDs provided for markAsSeen", { viewer_id, ip, message_id });
     return res.status(400).json({ error: "Invalid message_ids" });
   }
 
   try {
     connection = await pool.getConnection();
 
+    if (!connection) {
+      logger.error("Failed to get DB connection for markAsSeen", { viewer_id, ip });
+      return res.status(500).json({ error: "Database connection not available" });
+    }
+
     const { validMessageIds, updated, messageDetails } =
       await processSeenMessages(connection, message_id, viewer_id);
 
     if (validMessageIds.length === 0) {
+      logger.warn("No messages belong to the viewer for markAsSeen", { viewer_id, ip, message_id });
       return res.status(403).json({ error: "No messages belong to the viewer" });
     }
 
@@ -72,8 +82,15 @@ export const markAsSeen = async (req: Request, res: Response) => {
       seenMessageIds: validMessageIds,
     });
   } catch (error) {
+    logger.error("Unexpected error in markAsSeen handler", { error, viewer_id, ip });
     return res.status(500).json({ error: "Internal server error" });
   } finally {
-    if (connection) connection.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (releaseError) {
+        logger.error("Failed to release DB connection in markAsSeen", { releaseError, viewer_id, ip });
+      }
+    }
   }
 };

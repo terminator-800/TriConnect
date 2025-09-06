@@ -1,4 +1,5 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 // Define ReportedUser here
 export interface ReportedUser {
@@ -22,6 +23,10 @@ export async function getReportedUsersById(
         );
         return rows as ReportedUser[];
     } catch (error) {
+        logger.error("Error fetching reported users by ID", {
+            error,
+            reportedBy,
+        });
         throw new Error("Failed to fetch reported users.");
     }
 }

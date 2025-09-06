@@ -1,8 +1,9 @@
-import type { CustomRequest } from "../../types/express/auth.js"; 
+import type { CustomRequest } from "../../types/express/auth.js";
 import type { Response } from "express";
 import { format } from "date-fns";
 import { ROLE } from "../../utils/roles.js";
 import pool from "../../config/database-connection.js";
+import logger from "../../config/logger.js";
 
 type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -76,6 +77,7 @@ export const verifiedUsers = async (req: CustomRequest, res: Response) => {
         const role = req.user?.role;
 
         if (role !== ROLE.ADMINISTRATOR) {
+            logger.warn(`Unauthorized attempt by user ID ${req.user?.user_id} to fetch verified users.`);
             return res.status(403).json({ message: "Forbidden: Administrator only" });
         }
 
@@ -192,8 +194,15 @@ export const verifiedUsers = async (req: CustomRequest, res: Response) => {
         res.json(formatted);
 
     } catch (error) {
+        logger.error("Unexpected error in verifiedUsers", { error });
         res.status(500).json({ message: "Failed to get verified users." });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (error) {
+                logger.error("Failed to release DB connection", { error });
+            }
+        }
     }
 };

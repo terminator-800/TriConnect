@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createMessagesTable(connection: Pool | PoolConnection) {
   const query = `
@@ -18,6 +19,12 @@ export async function createMessagesTable(connection: Pool | PoolConnection) {
       INDEX idx_receiver_id (receiver_id)
     );
   `;
-  await connection.execute(query);
+
+  try {
+    await connection.execute(query);
+  } catch (error: unknown) {
+    logger.error('Failed to create messages table', { error });
+    throw error; 
+  }
 }
 

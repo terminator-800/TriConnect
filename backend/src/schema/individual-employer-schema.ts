@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createIndividualEmployerTable(connection: Pool | PoolConnection) {
   const query = `
@@ -16,6 +17,11 @@ export async function createIndividualEmployerTable(connection: Pool | PoolConne
       FOREIGN KEY (individual_employer_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
   `;
-  await connection.execute(query);
+  try {
+    await connection.execute(query);
+  } catch (error: unknown) {
+    logger.error('Failed to create individual employer table', { error });
+    throw error; 
+  }
 }
 

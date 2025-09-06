@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createJobseekerTable(connection: Pool | PoolConnection) {
   const query = `
@@ -18,6 +19,12 @@ export async function createJobseekerTable(connection: Pool | PoolConnection) {
       FOREIGN KEY (jobseeker_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
   `;
-  await connection.execute(query);
+
+  try {
+    await connection.execute(query);
+  } catch (error: unknown) {
+    logger.error('Failed to create jobseeker table', { error });
+    throw error; 
+  }
 }
 

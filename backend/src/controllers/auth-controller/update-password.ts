@@ -1,4 +1,5 @@
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import logger from "../../config/logger.js";
 
 export const updateUserPassword = async (
     connection: PoolConnection,
@@ -13,6 +14,10 @@ export const updateUserPassword = async (
 
         return result;
     } catch (error: any) {
-        throw error;
+        logger.error("Failed to update user password", {
+            error,
+            email
+        });
+        throw error; 
     }
 };

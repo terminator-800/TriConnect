@@ -2,6 +2,7 @@ import type { Pool, PoolConnection } from "mysql2/promise";
 import type { JwtPayload } from "jsonwebtoken";
 import { ROLE } from "../utils/roles.js";
 import jwt from "jsonwebtoken";
+import logger from "../config/logger.js";
 
 type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -34,32 +35,42 @@ export const secureVerifyToken = async (
     token: string,
     getUser: (user_id: number) => Promise<UserRecord | null>
 ): Promise<{ user_id: number; role: Role }> => {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET!) as TokenPayload;
+        const { user_id, email, role, is_registered } = decoded;
 
-    const { user_id, email, role, is_registered } = decoded;
+        if (!user_id || !email || !role) {
+            logger.error("Token missing critical fields", { decoded });
+            throw new Error("Missing critical token fields.");
+        }
 
-    if (!user_id || !email || !role) {
-        throw new Error("Missing critical token fields.");
+        if (!is_registered) {
+            logger.error(`User ${user_id} is not registered.`);
+            throw new Error("User is not registered.");
+        }
+
+        if (!allowedRoles.includes(role)) {
+            logger.error(`Role '${role}' not authorized to perform this action.`);
+            throw new Error("Role not authorized to perform this action.");
+        }
+
+        const user: UserRecord | null = await getUser(user_id);
+
+        if (
+            !user ||
+            user.email !== email ||
+            user.role !== role ||
+            user.is_registered !== is_registered
+        ) {
+            logger.error(`Token data mismatch for user ${user_id}`, { tokenData: decoded, dbUser: user });
+            throw new Error("Token data does not match database record.");
+        }
+
+        return { user_id, role };
+    } catch (error) {
+        logger.error("Token verification failed", { error });
+        throw error instanceof Error ? error : new Error("Token verification failed");
     }
-
-    if (!is_registered) throw new Error("User is not registered.");
-
-    if (!allowedRoles.includes(role)) {
-        throw new Error("Role not authorized to perform this action.");
-    }
-
-    const user: UserRecord | null = await getUser(user_id);
-
-    if (
-        !user ||
-        user.email !== email ||
-        user.role !== role ||
-        user.is_registered !== is_registered
-    ) {
-        throw new Error("Token data does not match database record.");
-    }
-
-    return { user_id, role };
 };
 
 /**
@@ -86,8 +97,16 @@ export async function getUserInfo(pool: Pool, user_id: number): Promise<UserReco
             is_registered: row.is_registered
         };
     } catch (error) {
-        return null;
+        logger.error(`Failed to fetch user info for user_id ${user_id}`, { error });
+        throw error;
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError: unknown) {
+                logger.error("Failed to release MySQL connection", { error: releaseError });
+                throw releaseError instanceof Error ? releaseError : new Error("Failed to release MySQL connection");
+            }
+        }
     }
 }

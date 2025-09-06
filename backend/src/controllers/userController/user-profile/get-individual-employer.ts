@@ -1,6 +1,7 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { format } from "date-fns";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 
 export interface IndividualEmployerProfile {
     user_id: number;
@@ -65,6 +66,7 @@ export async function getIndividualEmployerProfile(connection: PoolConnection, u
 
         return profile;
     } catch (error) {
+        logger.error("Failed to fetch individual-employer profile", { error, user_id });
         throw error;
     }
 }

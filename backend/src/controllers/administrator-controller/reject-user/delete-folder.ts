@@ -1,6 +1,7 @@
 import { type Role } from "./reject-user-helper.js";
 import fs from "fs/promises";
 import path from "path";
+import logger from "../../../config/logger.js";
 
 // Base uploads folder
 const UPLOADS_BASE = path.join(
@@ -29,8 +30,10 @@ export async function deleteUserFilesAndFolders(
         const fullPath = path.join(UPLOADS_BASE, file.replace(/^uploads[\\/]/, ""));
         try {
             await fs.unlink(fullPath);
-        } catch (err: any) {
+            logger.info(`Deleted file: ${fullPath} for user ${userId}`, { role });
 
+        } catch (err: any) {
+            logger.error(`Failed to delete file: ${fullPath} for user ${userId}`, { role, error: err });
         }
     }
 
@@ -41,8 +44,9 @@ export async function deleteUserFilesAndFolders(
 
         try {
             await fs.rm(folderPath, { recursive: true, force: true });
+            logger.info(`Deleted folder: ${folderPath} for user ${userId}`, { role });
         } catch (err: any) {
-
+            logger.error(`Failed to delete folder: ${folderPath} for user ${userId}`, { role, error: err });
         }
     }
 
@@ -52,8 +56,9 @@ export async function deleteUserFilesAndFolders(
         const remaining = await fs.readdir(userFolderPath);
         if (remaining.length === 0) {
             await fs.rm(userFolderPath, { recursive: true, force: true });
+            logger.info(`Deleted empty parent folder: ${userFolderPath} for user ${userId}`, { role });
         }
     } catch (err: any) {
-
+        logger.error(`Failed to clean up user folder: ${userFolderPath} for user ${userId}`, { role, error: err });
     }
 }

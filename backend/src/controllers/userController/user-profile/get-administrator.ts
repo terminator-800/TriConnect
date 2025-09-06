@@ -1,5 +1,6 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 
 export interface AdministratorProfile {
     user_id: number;
@@ -11,7 +12,7 @@ export interface AdministratorProfile {
     role: typeof ROLE.ADMINISTRATOR;
 }
 
-export async function getAdministratorProfile(connection: PoolConnection, user_id: number): Promise <AdministratorProfile | null> {
+export async function getAdministratorProfile(connection: PoolConnection, user_id: number): Promise<AdministratorProfile | null> {
     try {
         const [rows] = await connection.query<RowDataPacket[]>(
             `
@@ -44,6 +45,7 @@ export async function getAdministratorProfile(connection: PoolConnection, user_i
 
         return profile;
     } catch (error) {
+        logger.error("Failed to fetch administrator profile", { error, user_id });
         throw error;
     }
 }

@@ -3,6 +3,7 @@ import type { Response } from "express";
 import { format } from "date-fns";
 import { ROLE } from "../../utils/roles.js";
 import pool from "../../config/database-connection.js";
+import logger from "../../config/logger.js";
 
 type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -79,8 +80,9 @@ type VerifiedJobPost =
 
 export const verifiedJobPosts = async (req: CustomRequest, res: Response) => {
     let connection: Awaited<ReturnType<typeof pool.getConnection>> | undefined;
-    
+
     if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        logger.warn(`User ID ${req.user?.user_id} attempted to fetch verified job posts without authorization.`);
         return res.status(403).json({ message: "Forbidden: Administrator only" });
     }
 
@@ -238,8 +240,15 @@ export const verifiedJobPosts = async (req: CustomRequest, res: Response) => {
         res.json(formatted);
 
     } catch (error) {
+        logger.error("Unexpected error in verifiedJobPosts", { error });
         res.status(500).json({ message: 'Failed to get verified job posts.' });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (error) {
+                logger.error("Failed to release DB connection", { error });
+            }
+        }
     }
 };

@@ -1,5 +1,5 @@
-import { Server, Socket } from "socket.io";
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import { Server, Socket } from "socket.io";
 import pool from "./database-connection.js";
 
 type UserSocketMap = Record<number, string>;

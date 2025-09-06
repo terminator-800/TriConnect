@@ -2,6 +2,7 @@ import { getJobPostsByUserGrouped, type JobPostsByUser } from "./get-job-post-by
 import type { PoolConnection } from "mysql2/promise";
 import type { CustomRequest } from "../../../types/express/auth.js";
 import type { Response } from "express";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 
 export const jobPostsByUser = async (req: CustomRequest, res: Response): Promise<void> => {
@@ -19,8 +20,15 @@ export const jobPostsByUser = async (req: CustomRequest, res: Response): Promise
         const posts: JobPostsByUser = await getJobPostsByUserGrouped(connection, user_id);
         res.status(200).json(posts);
     } catch (err) {
+        logger.error("Failed to fetch job posts by user", { error: err, user_id, ip: req.ip });
         res.status(500).json({ message: "Failed to fetch job posts" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection in jobPostsByUser", { error: releaseError });
+            }
+        }
     }
 };

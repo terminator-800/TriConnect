@@ -4,6 +4,7 @@ import type { PoolConnection } from "mysql2/promise";
 import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 import { getUserInfo } from "./get-user-info.js";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 import jwt from "jsonwebtoken";
 
@@ -21,6 +22,7 @@ interface MulterFiles {
 
 export const uploadRequirement = async (req: Request, res: Response) => {
   let connection: PoolConnection | undefined;
+  const ip = req.ip;
 
   try {
     connection = await pool.getConnection();
@@ -28,20 +30,26 @@ export const uploadRequirement = async (req: Request, res: Response) => {
 
     const token = req.cookies?.token;
 
-    if (!token) return res.status(401).json({ message: "No token provided" });
+    if (!token) {
+      logger.warn("No JWT token provided", { ip });
+      return res.status(401).json({ message: "No token provided" })
+    };
 
     let decoded: JwtPayload;
 
     try {
       decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
     } catch (err: any) {
+      logger.warn("Invalid or expired JWT token", { ip, error: err });
       return res.status(403).json({ message: "Invalid or expired token" });
     }
 
     const { user_id, email, role, is_registered } = decoded;
 
-    if (!user_id || !email || !role || !is_registered)
+    if (!user_id || !email || !role || !is_registered) {
+      logger.warn("Invalid JWT payload", { user_id, email, role, is_registered, ip });
       return res.status(400).json({ message: "Invalid token payload" });
+    }
 
     const allowedRoles = [
       ROLE.JOBSEEKER,
@@ -50,14 +58,17 @@ export const uploadRequirement = async (req: Request, res: Response) => {
       ROLE.MANPOWER_PROVIDER,
     ];
 
-    if (!allowedRoles.includes(role))
+    if (!allowedRoles.includes(role)) {
+      logger.warn("Unauthorized role attempted to upload requirement", { role, user_id, ip });
       return res.status(403).json({ message: "Unauthorized role" });
+    }
 
     const matchedUser = await getUserInfo(connection, user_id);
 
-    if (!matchedUser || matchedUser.email !== email || matchedUser.role !== role)
+    if (!matchedUser || matchedUser.email !== email || matchedUser.role !== role) {
+      logger.warn("User validation failed", { user_id, email, role, ip });
       return res.status(403).json({ message: "User validation failed" });
-
+    }
     const files = req.files as MulterFiles;
 
     let payload: any = { user_id, role };
@@ -168,6 +179,7 @@ export const uploadRequirement = async (req: Request, res: Response) => {
         break;
 
       default:
+        logger.warn("Invalid role encountered", { role, user_id, ip });
         return res.status(400).json({ message: "Invalid role" });
     }
 
@@ -176,9 +188,18 @@ export const uploadRequirement = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: `${role} requirements uploaded successfully` });
   } catch (err: any) {
-    try { await connection?.rollback(); } catch { }
+    try {
+      await connection?.rollback();
+    } catch (rollbackError) {
+      logger.error("Rollback failed", { error: rollbackError, ip });
+    }
+    logger.error("Failed to process requirement upload", { error: err, ip, user: req.user });
     return res.status(500).json({ message: "Server error" });
   } finally {
-    if (connection) connection.release();
+    try {
+      if (connection) connection.release();
+    } catch (releaseError) {
+      logger.error("Failed to release DB connection", { error: releaseError, ip });
+    }
   }
 };

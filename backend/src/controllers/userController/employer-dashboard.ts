@@ -3,6 +3,7 @@ import { getApplicantsByEmployer } from "../../service/get-applicants-by-employe
 import type { Request, Response } from "express";
 import type { AuthenticatedUser } from "../../types/express/auth.js";
 import { format } from "date-fns";
+import logger from "../../config/logger.js";
 import pool from "../../config/database-connection.js";
 
 // Type for recent job posts query result
@@ -25,14 +26,23 @@ export const employerDashboard = async (
   res: Response
 ): Promise<Response> => {
   let connection: PoolConnection | undefined;
+  const ip = req.ip;
+  const user_id = req.user?.user_id;
 
   try {
     const employerUserId = req.user?.user_id;
+    
     if (!employerUserId) {
+      logger.warn("Unauthorized access attempt to dashboard", { ip });
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     connection = await pool.getConnection();
+
+    if (!connection) {
+      logger.error("Failed to obtain DB connection", { ip, user_id });
+      return res.status(500).json({ message: "Internal server error" });
+    }
 
     // Recent job posts (top 3 by created_at) with applicant count (excluding rejected)
     const [recentPostsRows] = await connection.query<JobPostRow[]>(
@@ -74,8 +84,13 @@ export const employerDashboard = async (
 
     return res.status(200).json({ recentJobPosts, recentApplicants: applicants });
   } catch (error) {
+    logger.error("Failed to load employer dashboard", { error, ip, user: req.user });
     return res.status(500).json({ message: "Failed to load dashboard" });
   } finally {
-    if (connection) connection.release();
+    try {
+      if (connection) connection.release();
+    } catch (releaseError) {
+      logger.error("Failed to release DB connection", { error: releaseError, ip, user_id });
+    }
   }
 };

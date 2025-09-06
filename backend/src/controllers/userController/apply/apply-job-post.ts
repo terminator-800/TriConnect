@@ -4,7 +4,9 @@ import { handleMessageUpload } from '../../../service/handle-message-upload-serv
 import type { CustomRequest } from '../../../types/express/auth.js';
 import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 import type { Response } from 'express';
+import logger from '../../../config/logger.js';
 import pool from '../../../config/database-connection.js';
+import { ROLE } from '../../../utils/roles.js';
 
 interface Message {
   conversation_id?: number;
@@ -14,15 +16,25 @@ interface Message {
   [key: string]: any;
 }
 
+const allowedRoles: typeof ROLE[keyof typeof ROLE][] = [
+  ROLE.JOBSEEKER,
+  ROLE.MANPOWER_PROVIDER
+];
+
 export const apply = async (req: CustomRequest, res: Response) => {
   let connection: PoolConnection | undefined;
-
+  const ip = req.ip;
   const { receiver_id, message, job_post_id } = req.body;
   const sender_id = req.user?.user_id;
   const role = req.user?.role;
 
   if (!sender_id || !role) {
     return res.status(401).json({ error: 'Unauthorized: missing user info' });
+  }
+
+  if (!allowedRoles.includes(role as typeof ROLE[keyof typeof ROLE])) {
+    logger.warn("Unauthorized role tried to apply", { sender_id, role, ip });
+    return res.status(403).json({ error: "Forbidden: Only authorized users can apply." });
   }
 
   try {
@@ -47,9 +59,15 @@ export const apply = async (req: CustomRequest, res: Response) => {
       files: uploadedFiles,
     });
 
-
     if (!newMessage.conversation_id) {
       await connection.rollback();
+      logger.error('Missing conversation_id after message upload', {
+        sender_id,
+        receiver_id,
+        job_post_id,
+        uploadedFilesCount: uploadedFiles?.length ?? 0,
+        ip
+      });
       return res.status(400).json({ error: 'Missing conversation_id' });
     }
 
@@ -79,8 +97,22 @@ export const apply = async (req: CustomRequest, res: Response) => {
 
   } catch (error) {
     if (connection) await connection.rollback();
+    logger.error('Error applying for job and sending message', {
+      error,
+      sender_id,
+      receiver_id,
+      job_post_id,
+      filesCount: req.files ? (Array.isArray(req.files) ? req.files.length : Object.values(req.files).flat().length) : 0,
+      ip
+    });
     res.status(500).json({ error: 'Internal server error' });
   } finally {
-    if (connection) connection.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (releaseError) {
+        logger.error('Failed to release DB connection in apply', { error: releaseError });
+      }
+    }
   }
 };

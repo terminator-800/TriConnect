@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from "express";
+import logger from './config/logger.js';
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import http from "http";
@@ -84,11 +85,21 @@ async function startServer() {
 
     app.locals.db = connection;
 
-    server.listen(process.env.API_PORT || 3001);
+    const port = process.env.API_PORT || 3001;
+
+    server.listen(port, () => {
+      logger.info(`Server running on port ${port}`);
+    });
+
   } catch (error: unknown) {
+    logger.error("Failed to start server", { error });
     process.exit(1);
   } finally {
-    if (connection) connection.release();
+    try {
+      if (connection) connection.release();
+    } catch (releaseError) {
+      logger.error("Failed to release DB connection", { releaseError });
+    }
   }
 }
 

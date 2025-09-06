@@ -1,6 +1,7 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { format } from "date-fns";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 
 export interface JobseekerProfile {
     user_id: number;
@@ -8,17 +9,17 @@ export interface JobseekerProfile {
     email: string;
     gender: string;
     phone: string;
-    date_of_birth: string; 
+    date_of_birth: string;
     is_verified: boolean | number;
     is_submitted: boolean | number;
     is_rejected: boolean | number;
     account_status: string;
-    role: typeof ROLE.JOBSEEKER; 
+    role: typeof ROLE.JOBSEEKER;
 }
 
-export async function getJobseekerProfile(connection: PoolConnection, user_id: number): Promise <JobseekerProfile | null> {
+export async function getJobseekerProfile(connection: PoolConnection, user_id: number): Promise<JobseekerProfile | null> {
     try {
-        const [rows] = await connection.query <RowDataPacket[]> (
+        const [rows] = await connection.query<RowDataPacket[]>(
             `
       SELECT 
         j.jobseeker_id AS user_id,
@@ -39,7 +40,7 @@ export async function getJobseekerProfile(connection: PoolConnection, user_id: n
         );
 
         const row = rows[0];
-        if (!row) return null; 
+        if (!row) return null;
 
         const profile: JobseekerProfile = {
             user_id: row.user_id,
@@ -59,6 +60,7 @@ export async function getJobseekerProfile(connection: PoolConnection, user_id: n
 
         return profile;
     } catch (error) {
+        logger.error("Failed to fetch jobseeker profile", { error, user_id });
         throw error;
     }
 }

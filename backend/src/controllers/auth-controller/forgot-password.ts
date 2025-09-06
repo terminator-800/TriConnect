@@ -4,6 +4,7 @@ import { ROLE } from "../../utils/roles.js";
 import jwt from "jsonwebtoken";
 import pool from "../../config/database-connection.js";
 import nodemailer from "nodemailer";
+import logger from "../../config/logger.js";
 
 type Role = typeof ROLE[keyof typeof ROLE];
 
@@ -19,7 +20,17 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
     let connection: Awaited<ReturnType<typeof pool.getConnection>> | undefined;
     const { email } = req.body as { email?: string };
 
-    if (!email) return res.status(400).json({ message: "Email is required." });
+    if (!email) {
+        logger.warn("Forgot password request missing email", { ip: req.ip, body: req.body });
+        return res.status(400).json({ message: "Email is required." });
+    }
+
+    for (const key of ["JWT_SECRET", "EMAIL_USER", "EMAIL_PASS", "CLIENT_ORIGIN"]) {
+        if (!process.env[key]) {
+            console.error(`Missing required environment variable: ${key}`);
+            process.exit(1);
+        }
+    }
 
     try {
         connection = await pool.getConnection();
@@ -37,6 +48,7 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
 
         // Validate role is one of the allowed ROLE values
         if (!Object.values(ROLE).includes(user.role as Role)) {
+            logger.warn(`Invalid role detected during forgot password: ${user.role}`, { user });
             await connection.rollback();
             return res.status(400).json({ message: "Invalid role." });
         }
@@ -70,9 +82,22 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
             message: "If this email exists, a reset link has been sent.",
         });
     } catch (error: any) {
-        if (connection) await connection.rollback();
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                logger.error("Failed to rollback transaction", { error: rollbackError });
+            }
+        }
+        logger.error("Unexpected error in forgotPassword handler", { error });
         return res.status(500).json({ message: "Server error" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection", { error: releaseError });
+            }
+        }
     }
 };

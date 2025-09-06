@@ -1,5 +1,6 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 
 export interface ManpowerProviderProfile {
     user_id: number;
@@ -57,6 +58,7 @@ export async function getManpowerProviderProfile(connection: PoolConnection, use
 
         return profile;
     } catch (error) {
+        logger.error("Failed to fetch manpower provider profile", { error, user_id });
         throw error;
     }
 }

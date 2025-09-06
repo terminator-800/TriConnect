@@ -3,12 +3,13 @@ import type { RowDataPacket, ResultSetHeader } from 'mysql2';
 import type { PoolConnection } from 'mysql2/promise';
 import type { AdminData } from '../../../interface/interface.js'
 import { ROLE } from '../../../utils/roles.js'
+import logger from '../../../config/logger.js';
 
-export async function findOrCreateAdmin(connection:  PoolConnection, data: AdminData) {
+export async function findOrCreateAdmin(connection: PoolConnection, data: AdminData) {
 
     try {
         const [rows] = await connection.execute<RowDataPacket[]>(
-           SELECT_ADMIN_BY_EMAIL,
+            SELECT_ADMIN_BY_EMAIL,
             [data.email]
         );
 
@@ -33,7 +34,20 @@ export async function findOrCreateAdmin(connection:  PoolConnection, data: Admin
                 verified_at: new Date().toISOString(),
             },
         };
-    } catch (error) {
-        throw error;
+    } catch (error: any) {
+        // Log MySQL query errors
+        if (error.code && error.code.startsWith('ER_')) {
+            logger.error("Database query failed in findOrCreateAdmin", { email: data.email, error });
+        }
+        // Log connection errors
+        else if (error.code === 'ECONNREFUSED') {
+            logger.error("Database connection refused in findOrCreateAdmin", { email: data.email, error });
+        }
+        // Fallback for unexpected errors
+        else {
+            logger.error("Unexpected error in findOrCreateAdmin", { email: data.email, error });
+        }
+
+        throw error; 
     }
-};
+}

@@ -3,7 +3,7 @@ import { updateUserPassword } from "./update-password.js";
 import type { JwtPayload } from "jsonwebtoken";
 import pool from "../../config/database-connection.js";
 import jwt from "jsonwebtoken";
-
+import logger from "../../config/logger.js";
 
 interface ResetPasswordBody {
     token?: string;
@@ -19,6 +19,7 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
     const { token, password } = req.body as ResetPasswordBody;
 
     if (!token || !password) {
+        logger.warn("Reset password request missing token or password", { body: req.body, ip: req.ip });
         return res.status(400).json({ message: "Token and new password are required." });
     }
 
@@ -32,10 +33,17 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
         await updateUserPassword(connection, email, password);
         await connection.commit();
 
+        logger.info("Password reset successfully", { email });
         return res.status(200).json({ message: "Password has been reset successfully." });
 
     } catch (error: any) {
-        if (connection) await connection.rollback();
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                logger.error("Failed to rollback DB transaction during password reset", { error: rollbackError });
+            }
+        }
 
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({ message: "Your reset link has expired. Please request a new one." });
@@ -45,8 +53,16 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
             return res.status(401).json({ message: "Invalid reset token. Please request a new one." });
         }
 
+        logger.error("Unexpected error during password reset", { error });
         return res.status(500).json({ message: "Server error" });
+
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (error) {
+                logger.error("Failed to release DB connection during password reset", { error });
+            }
+        }
     }
 };

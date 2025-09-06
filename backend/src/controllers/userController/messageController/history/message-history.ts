@@ -1,15 +1,20 @@
 import { getMessageHistoryByConversationId } from '../../messageController/history/get-message-history.js';
 import type { Request, Response } from 'express';
+import type { AuthenticatedUser } from '../../../../types/express/auth.js';
 import type { PoolConnection } from 'mysql2/promise';
+import logger from '../../../../config/logger.js';
 import pool from '../../../../config/database-connection.js';
 
 export const messageHistory = async (req: Request, res: Response): Promise<void> => {
   let connection: PoolConnection | undefined;
+  const ip = req.ip;
+  const user_id = (req.user as AuthenticatedUser)?.user_id;
 
   try {
     const conversation_id = req.params.conversation_id;
 
     if (!conversation_id) {
+      logger.warn("Missing conversation_id parameter", { user_id, ip });
       res.status(400).json({ error: 'conversation_id is required' });
       return;
     }
@@ -19,9 +24,16 @@ export const messageHistory = async (req: Request, res: Response): Promise<void>
     const messages = await getMessageHistoryByConversationId(connection, conversation_id);
 
     res.json(messages);
-  } catch (err) {
+  } catch (error) {
+    logger.error("Unexpected error in messageHistory handler", { error, user_id, ip });
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
-    connection?.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (releaseError) {
+        logger.error("Failed to release DB connection", { error: releaseError, user_id, ip });
+      }
+    }
   }
 };

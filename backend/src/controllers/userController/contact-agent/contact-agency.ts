@@ -3,8 +3,10 @@ import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 import { handleMessageUpload } from "../../../service/handle-message-upload-service.js";
 import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 import fs from "fs";
+import { ROLE } from "../../../utils/roles.js";
 
 interface FileUpload {
     path: string;
@@ -23,8 +25,16 @@ interface HandleMessageUploadParams {
     files: FileUpload[] | undefined;
 }
 
+const allowedRoles: typeof ROLE[keyof typeof ROLE][] = [
+    ROLE.BUSINESS_EMPLOYER,
+    ROLE.INDIVIDUAL_EMPLOYER,
+    ROLE.JOBSEEKER
+];
+
 export const contactAgency: RequestHandler = async (request: Request, res: Response) => {
     const r = request as ContactAgencyRequest;
+    const role = r.user?.role;
+    const ip = request.ip;
     const sender_id = r.user?.user_id;
     const { receiver_id, message } = request.body as { receiver_id: number; message: string };
 
@@ -33,6 +43,11 @@ export const contactAgency: RequestHandler = async (request: Request, res: Respo
     }
 
     let connection: PoolConnection | undefined;
+
+    if (!allowedRoles.includes(role as typeof ROLE[keyof typeof ROLE])) {
+        logger.warn("Unauthorized role tried to contact agency", { sender_id, role, ip });
+        return res.status(403).json({ error: "Forbidden: Only authorized users can contact agencies." });
+    }
 
     try {
         connection = await pool.getConnection();
@@ -68,6 +83,7 @@ export const contactAgency: RequestHandler = async (request: Request, res: Respo
 
         if (!newMessage?.conversation_id) {
             await connection.rollback();
+            logger.warn("Message upload returned no conversation_id", { sender_id, receiver_id });
             return res.status(400).json({ error: "Message upload failed or missing conversation_id" });
         }
 
@@ -93,11 +109,23 @@ export const contactAgency: RequestHandler = async (request: Request, res: Respo
             conversation_id: newMessage.conversation_id,
             file_url: newMessage.file_url,
         });
-        
+
     } catch (error) {
         if (connection) await connection.rollback();
+        logger.error("Failed to contact agency", {
+            error,
+            sender_id,
+            receiver_id,
+            message,
+            filesCount: r.files ? r.files.length : r.file ? 1 : 0,
+            ip: request.ip
+        });
         return res.status(500).json({ error: "Internal server error" });
     } finally {
-        if (connection) connection.release();
+        try {
+            if (connection) connection.release();
+        } catch (releaseError) {
+            logger.error("Failed to release database connection", { error: releaseError });
+        }
     }
 };

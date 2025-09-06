@@ -4,6 +4,7 @@ import type { PoolConnection } from "mysql2/promise";
 import { findExistingReport } from "./find-existing-report.js";
 import { uploadToCloudinary } from "../../../utils/upload-to-cloudinary.js";
 import { insertNewReport } from "./insert-new-report.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 
 interface ReportUserRequest extends Request {
@@ -35,8 +36,6 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
         const filesRaw = req.files;
         let files: Express.Multer.File[] = [];
 
-
-
         if (Array.isArray(filesRaw)) {
             files = filesRaw;
         } else if (filesRaw && typeof filesRaw === 'object') {
@@ -46,7 +45,6 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
         if (!reportedBy || !reportedUserId || !reason) {
             return res.status(400).json({ error: "Missing required fields." });
         }
-
 
         const existing = await findExistingReport(
             connection,
@@ -70,7 +68,6 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
             conversationId
         );
 
-
         // Upload files to Cloudinary and insert into DB
         if (files.length > 0) {
             await Promise.all(
@@ -88,9 +85,30 @@ export const reportUser = async (req: ReportUserRequest, res: Response) => {
         await connection.commit();
         res.status(200).json({ message: "Report submitted successfully." });
     } catch (error) {
-        if (connection) await connection.rollback();
+
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (error) {
+                logger.error("Failed to rollback transaction", { error });
+            }
+        }
+
+        logger.error("Failed to submit report", {
+            error,
+            user_id: req.user?.user_id,
+            body: req.body,
+            filesCount: req.files ? (Array.isArray(req.files) ? req.files.length : Object.values(req.files).flat().length) : 0
+        });
+
         res.status(500).json({ error: "Failed to submit report." });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection", { error: releaseError });
+            }
+        }
     }
 };

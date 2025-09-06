@@ -1,4 +1,5 @@
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 /**
  * Update the status of a job post
@@ -19,6 +20,7 @@ export const updateStatus = async (
         );
         return result;
     } catch (error) {
+        logger.error("Failed to update job post status", { error, jobPostId, status });
         return null;
     }
 };

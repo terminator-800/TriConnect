@@ -1,5 +1,6 @@
 import type { AuthenticatedUser } from "../../../types/express/auth.js";
 import type { PoolConnection } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 /** Validate that a user ID is provided */
 export function validateUserId(user_id: string | number | undefined): asserts user_id {
@@ -25,12 +26,18 @@ export async function restrictUserInDB(
     user_id: string | number,
     reason?: string
 ): Promise<void> {
-    await connection.query(
-        `UPDATE users 
-         SET account_status = 'restricted', 
-             status_reason = ?, 
-             status_updated_at = NOW()
-         WHERE user_id = ?`,
-        [reason || 'Violation of terms', user_id]
-    );
+    try {
+        await connection.query(
+            `UPDATE users 
+             SET account_status = 'restricted', 
+                 status_reason = ?, 
+                 status_updated_at = NOW()
+             WHERE user_id = ?`,
+            [reason || 'Violation of terms', user_id]
+        );
+        logger.info(`User ${user_id} restricted in DB`, { reason });
+    } catch (error: any) {
+        logger.error('restrictUserInDB failed', { user_id, reason, error });
+        throw error;
+    }
 }

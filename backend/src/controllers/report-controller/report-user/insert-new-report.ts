@@ -1,4 +1,5 @@
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 export async function insertNewReport(
     connection: PoolConnection,
@@ -14,10 +15,17 @@ export async function insertNewReport(
          VALUES (?, ?, ?, ?, ?)`,
             [reportedBy, reportedUserId, reason, message ?? null, conversationId ?? null]
         );
-    
+
         return result.insertId;
-        
     } catch (error) {
+        logger.error("Failed to insert new report", {
+            error,
+            reportedBy,
+            reportedUserId,
+            reason,
+            message,
+            conversationId,
+        });
         throw error;
     }
 }

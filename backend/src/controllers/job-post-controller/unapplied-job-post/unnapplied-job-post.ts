@@ -3,6 +3,7 @@ import type { PoolConnection } from "mysql2/promise";
 import type { CustomRequest } from "../../../types/express/auth.js";
 import type { Response } from "express";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 
 export const unappliedJobPosts = async (req: CustomRequest, res: Response): Promise<void> => {
@@ -25,14 +26,27 @@ export const unappliedJobPosts = async (req: CustomRequest, res: Response): Prom
         }
 
         if (process.env.NODE_ENV !== "production") {
-            
+
         }
 
         const jobPosts: FlattenedJobPost[] = await getUnappliedJobPosts(connection, applicant_id);
         res.status(200).json(jobPosts);
-    } catch (err) {
+    } catch (error) {
+        logger.error("Failed to fetch unapplied job posts", {
+            error,
+            user_id: req.user?.user_id,
+            role: req.user?.role,
+            ip: req.ip,
+            body: req.body,
+        });
         res.status(500).json({ error: "Failed to fetch unapplied job posts" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection in unappliedJobPosts", { error: releaseError });
+            }
+        }
     }
 };

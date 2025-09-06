@@ -1,5 +1,6 @@
 import type { PoolConnection, RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { fileURLToPath } from 'url';
+import logger from "../config/logger.js";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -18,8 +19,10 @@ interface HandleMessageUploadParams {
 
 export const handleMessageUpload = async (
   connection: PoolConnection,
-  { sender_id, receiver_id, message, files }: HandleMessageUploadParams
+  { sender_id, receiver_id, message, files }: HandleMessageUploadParams,
+  ip?: string
 ) => {
+
   try {
     const user_small_id = Math.min(sender_id, receiver_id);
     const user_large_id = Math.max(sender_id, receiver_id);
@@ -53,8 +56,8 @@ export const handleMessageUpload = async (
 
     if (files && files.length > 0) {
       for (const file of files) {
-        const normalizedPath = file.path.replace(/\\/g, "/"); 
-        const file_url = normalizedPath; 
+        const normalizedPath = file.path.replace(/\\/g, "/");
+        const file_url = normalizedPath;
 
         await connection.query(
           `INSERT INTO messages (conversation_id, sender_id, receiver_id, message_type, file_url)
@@ -73,12 +76,16 @@ export const handleMessageUpload = async (
     );
 
     const latestMessage = newMessageRows?.[0];
+    
     if (!latestMessage) {
+      const errMsg = "Failed to retrieve the latest message.";
+      logger.error(errMsg, { sender_id, receiver_id, conversation_id, ip });
       throw new Error("Failed to retrieve the latest message.");
     }
 
     return latestMessage;
   } catch (error) {
-    throw error;
+    logger.error("Error in handleMessageUpload", { error, sender_id, receiver_id, ip });
+    throw new Error("Failed to handle message upload.");
   }
 };

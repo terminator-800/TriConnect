@@ -1,5 +1,6 @@
 import type { PoolConnection, RowDataPacket } from 'mysql2/promise';
 import { format } from 'date-fns';
+import logger from '../../../../config/logger.js';
 
 // DB row type returned from your query
 interface ConversationRow extends RowDataPacket {
@@ -138,7 +139,8 @@ export const getUserConversations = async (
             }
         });
     } catch (error) {
-        throw error;
+        logger.error("Failed to fetch user conversations", { error, user_id });
+        return [];
     }
 };
 

@@ -4,6 +4,7 @@ import type { PoolConnection } from 'mysql2/promise';
 import { handleMessageUpload } from '../../../../service/handle-message-upload-service.js';
 import type { RowDataPacket } from 'mysql2';
 import { uploadToCloudinary } from '../../../../utils/upload-to-cloudinary.js';
+import logger from '../../../../config/logger.js';
 import pool from '../../../../config/database-connection.js';
 
 // Extend Express Request to include your user and optional files
@@ -43,8 +44,12 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
   let connection: PoolConnection | undefined;
   const { receiver_id, message_text } = req.body;
   const sender_id = req.user?.user_id;
+  const ip = req.ip;
 
-  if (!sender_id) return res.status(401).json({ error: 'Unauthorized' });
+  if (!sender_id) {
+    logger.warn("Unauthorized message attempt", { ip });
+    return res.status(401).json({ error: 'Unauthorized' });
+  }
 
   try {
     connection = await pool.getConnection();
@@ -59,14 +64,20 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
     }
 
     let uploadedFiles: { path: string }[] = [];
-    if (filesArray.length > 0) {
-      uploadedFiles = await Promise.all(
-        filesArray.map(async (file) => {
-          const secureUrl = await uploadToCloudinary(file.path, 'chat_messages');
-          return { path: secureUrl };
-        })
-      );
+    try {
+      if (filesArray.length > 0) {
+        uploadedFiles = await Promise.all(
+          filesArray.map(async (file) => {
+            const secureUrl = await uploadToCloudinary(file.path, 'chat_messages');
+            return { path: secureUrl };
+          })
+        );
+      }
+    } catch (error) {
+      logger.error("Failed to upload file to Cloudinary", { error, sender_id, ip });
+      return { path: '' };
     }
+
 
     // Upload the message
     const rawMessage = await handleMessageUpload(connection, {
@@ -86,7 +97,10 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
     };
 
     const roomId = newMessage.conversation_id;
-    if (!roomId) return res.status(400).json({ error: 'Missing conversation_id' });
+    if (!roomId) {
+      logger.warn("Missing conversation_id after message upload", { sender_id, receiver_id, ip });
+      return res.status(400).json({ error: 'Missing conversation_id' });
+    }
 
     const io = req.app.get('io') as any;
     const userSocketMap = req.app.get('userSocketMap') as Record<number, string>;
@@ -132,7 +146,7 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
         if (nameResult.length > 0) senderName = nameResult[0]!.full_name;
       }
     } catch (error: any) {
-      
+
     }
 
     newMessage.sender_name = senderName;
@@ -156,8 +170,15 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
       file_url: newMessage.file_url || null,
     });
   } catch (error) {
+    logger.error("Unexpected error in replyMessage handler", { error, sender_id, receiver_id, ip });
     res.status(500).json({ error: 'Internal server error' });
   } finally {
-    if (connection) connection.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (releaseError) {
+        logger.error("Failed to release DB connection", { error: releaseError, sender_id, ip });
+      }
+    }
   }
 };

@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createConversationsTable(connection: Pool | PoolConnection) {
   const query = `
@@ -12,6 +13,11 @@ export async function createConversationsTable(connection: Pool | PoolConnection
       UNIQUE KEY unique_pair (user_small_id, user_large_id)
     );
   `;
-  await connection.execute(query);
+  try {
+    await connection.execute(query);
+  } catch (error) {
+    logger.error('Failed to create conversations table', { error });
+    throw new Error('Could not create conversations table');
+  }
 }
 

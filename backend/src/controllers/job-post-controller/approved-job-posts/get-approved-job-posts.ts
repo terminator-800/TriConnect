@@ -1,4 +1,5 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 export interface ApprovedJobPost extends RowDataPacket {
     job_post_id: number;
@@ -10,7 +11,7 @@ export interface ApprovedJobPost extends RowDataPacket {
     status: string;
     job_type: string | null;
     jobpost_status: string | null;
-    is_verified_jobpost: number; 
+    is_verified_jobpost: number;
     created_at: string | Date;
     full_name?: string | null;
     business_name?: string | null;
@@ -42,6 +43,7 @@ export async function getApprovedJobPosts(
 
         return rows;
     } catch (error) {
+        logger.error("Failed to fetch approved job posts", { error });
         throw error;
     }
 }

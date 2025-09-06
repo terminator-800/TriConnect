@@ -2,6 +2,7 @@ import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import { createJobPosts } from "../../userController/create-job-post/create-job-post-service.js";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 
 // Request body type
@@ -48,7 +49,7 @@ const allowedRoles: typeof ROLE[keyof typeof ROLE][] = [
 export const createJobPost = async (request: Request<unknown, unknown, CreateJobPostBody>, response: Response) => {
 
     const { user } = request as Request & { user: AuthenticatedUser };
-
+    const ip = request.ip;
     let connection: PoolConnection | undefined;
 
     try {
@@ -57,6 +58,7 @@ export const createJobPost = async (request: Request<unknown, unknown, CreateJob
         const { user_id, role } = user;
 
         if (!allowedRoles.includes(role)) {
+            logger.warn("Unauthorized role tried to create job post", { user_id, role, ip });
             return response.status(403).json({ error: "Forbidden: Only authorized employers can create job posts." });
         }
 
@@ -76,6 +78,7 @@ export const createJobPost = async (request: Request<unknown, unknown, CreateJob
         });
 
         if ('error' in result) {
+            logger.warn("Validation or service error returned from createJobPosts", { result, user_id, ip });
             return response.status(400).json({ error: result.error });
         }
 
@@ -85,8 +88,13 @@ export const createJobPost = async (request: Request<unknown, unknown, CreateJob
         });
 
     } catch (err) {
+        logger.error("Unexpected error in createJobPost controller", { error: err, ip, user_id: user?.user_id });
         return response.status(500).json({ error: "Internal server error." });
     } finally {
-        if (connection) connection.release();
+        try {
+            if (connection) connection.release();
+        } catch (releaseError) {
+            logger.error("Failed to release DB connection", { error: releaseError, ip, user_id: user?.user_id });
+        }
     }
 };

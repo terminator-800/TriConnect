@@ -1,5 +1,6 @@
 import { format } from "date-fns";
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 export type UserRole = "jobseeker" | "individual-employer" | "business-employer" | "manpower-provider";
 
@@ -38,32 +39,32 @@ export interface JobPostRow extends RowDataPacket {
 
 export type FlattenedJobPost =
   | ({
-      role: "individual-employer";
-      employer_name: string;
-      submitted_by: string;
-      full_name: string;
-      gender: string | undefined;
-      present_address: string | undefined;
-    } & BaseJobPost)
+    role: "individual-employer";
+    employer_name: string;
+    submitted_by: string;
+    full_name: string;
+    gender: string | undefined;
+    present_address: string | undefined;
+  } & BaseJobPost)
   | ({
-      role: "business-employer";
-      employer_name: string;
-      submitted_by: string;
-      business_name: string;
-      business_address: string | undefined;
-      industry: string | undefined;
-      business_size: string | undefined;
-      authorized_person: string | undefined;
-    } & BaseJobPost)
+    role: "business-employer";
+    employer_name: string;
+    submitted_by: string;
+    business_name: string;
+    business_address: string | undefined;
+    industry: string | undefined;
+    business_size: string | undefined;
+    authorized_person: string | undefined;
+  } & BaseJobPost)
   | ({
-      role: "manpower-provider";
-      employer_name: string;
-      submitted_by: string;
-      agency_name: string;
-      agency_address: string | undefined;
-      agency_services: string | undefined;
-      agency_authorized_person: string | undefined;
-    } & BaseJobPost)
+    role: "manpower-provider";
+    employer_name: string;
+    submitted_by: string;
+    agency_name: string;
+    agency_address: string | undefined;
+    agency_services: string | undefined;
+    agency_authorized_person: string | undefined;
+  } & BaseJobPost)
   | BaseJobPost;
 
 interface BaseJobPost {
@@ -205,6 +206,7 @@ export async function getUnappliedJobPosts(
 
     return flattened;
   } catch (error) {
+    logger.error("Failed to fetch unapplied job posts", { error, applicant_id });
     throw error;
   }
 }

@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createBusinessEmployerTable(connection: Pool | PoolConnection) {
   const query = `
@@ -16,5 +17,10 @@ export async function createBusinessEmployerTable(connection: Pool | PoolConnect
       FOREIGN KEY (business_employer_id) REFERENCES users(user_id) ON DELETE CASCADE
     );
   `;
-  await connection.execute(query);
+  try {
+    await connection.execute(query);
+  } catch (error) {
+    logger.error('Failed to create business_employer table', { error });
+    throw new Error('Could not create business_employer table');
+  }
 }

@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createReportsTable(connection: Pool | PoolConnection) {
   const query = `
@@ -27,6 +28,12 @@ export async function createReportsTable(connection: Pool | PoolConnection) {
       INDEX idx_job_post_id (job_post_id)
     );
   `;
-  await connection.execute(query);
+
+  try {
+    await connection.execute(query);
+  } catch (error: unknown) {
+    logger.error('Failed to create reports table', { error });
+    throw error; // re-throw for upstream handling
+  }
 }
 

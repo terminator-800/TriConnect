@@ -1,5 +1,6 @@
 import { addMonths } from "date-fns";
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
+import logger from "../../../config/logger.js";
 
 /**
  * Soft-delete a job post by updating its status and expiration date.
@@ -19,10 +20,15 @@ export const deleteJobPost = async (
     WHERE job_post_id = ?
   `;
 
-  const [result] = await connection.query<ResultSetHeader>(
-    softDeleteQuery,
-    ['deleted', expiresAt, jobPostId]
-  );
+  try {
+    const [result] = await connection.query<ResultSetHeader>(
+      softDeleteQuery,
+      ['deleted', expiresAt, jobPostId]
+    );
 
-  return result;
+    return result;
+  } catch (error) {
+    logger.error("Failed to soft-delete job post", { error, jobPostId });
+    throw new Error("Database error while soft-deleting job post");
+  }
 };

@@ -1,5 +1,6 @@
 import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { format } from "date-fns";
+import logger from "../../../config/logger.js";
 
 export type UserRole = "jobseeker" | "individual-employer" | "business-employer" | "manpower-provider";
 export type JobCategory = "pending" | "active" | "completed";
@@ -46,6 +47,10 @@ export async function getJobPostsByUserGrouped(
       `SELECT is_verified, is_rejected, is_submitted FROM users WHERE user_id = ?`,
       [user_id]
     );
+
+    if (!userStatus) {
+      throw new Error(`User status not found for user_id ${user_id}`);
+    }
 
     // Fetch grouped job posts
     const [rows] = await connection.query<RowDataPacket[] & JobPostRow[]>(
@@ -120,6 +125,7 @@ export async function getJobPostsByUserGrouped(
       ...grouped,
     };
   } catch (error) {
+    logger.error("Failed to fetch or process job posts by user", { error, user_id });
     throw error;
   }
 }

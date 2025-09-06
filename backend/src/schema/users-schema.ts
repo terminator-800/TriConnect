@@ -1,4 +1,5 @@
 import type { Pool, PoolConnection } from 'mysql2/promise';
+import logger from '../config/logger.js';
 
 export async function createUsersTable(connection: Pool | PoolConnection) {
   const query = `
@@ -27,5 +28,11 @@ export async function createUsersTable(connection: Pool | PoolConnection) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
-  await connection.execute(query);
+  
+  try {
+    await connection.execute(query);
+  } catch (error: unknown) {
+    logger.error('Failed to create users table', { error });
+    throw error;
+  }
 }

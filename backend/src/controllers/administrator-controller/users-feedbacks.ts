@@ -1,7 +1,8 @@
-import type { CustomRequest } from "../../types/express/auth.js"; 
+import type { CustomRequest } from "../../types/express/auth.js";
 import type { RowDataPacket } from "mysql2/promise";
 import type { Response } from "express";
 import pool from "../../config/database-connection.js";
+import logger from "../../config/logger.js";
 
 interface UserFeedback extends RowDataPacket {
   feedback_id: number;
@@ -17,6 +18,7 @@ export const usersFeedbacks = async (req: CustomRequest, res: Response) => {
 
   try {
     if (req.user?.role !== "administrator") {
+      logger.warn(`User ID ${req.user?.user_id} attempted to fetch feedback without proper authorization.`);
       return res.status(403).json({ message: "Forbidden: Admins only" });
     }
 
@@ -26,14 +28,22 @@ export const usersFeedbacks = async (req: CustomRequest, res: Response) => {
     return res.status(200).json(feedbacks);
 
   } catch (error) {
+    logger.error("An unexpected error occurred in the usersFeedbacks", { error });
     return res.status(500).json({ message: "Failed to fetch user feedback." });
   } finally {
-    if (connection) connection.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (error) {
+        logger.error("Failed to release DB connection", { error });
+      }
+    }
   }
 };
 
 async function getUserFeedbacks(connection: Awaited<ReturnType<typeof pool.getConnection>>): Promise<UserFeedback[]> {
-  const [rows] = await connection.query<RowDataPacket[]>(`
+  try {
+    const [rows] = await connection.query<RowDataPacket[]>(`
         SELECT
             feedback.feedback_id,
             feedback.user_id,
@@ -55,5 +65,9 @@ async function getUserFeedbacks(connection: Awaited<ReturnType<typeof pool.getCo
         ORDER BY feedback.created_at DESC
     `);
 
-  return rows as UserFeedback[];
+    return rows as UserFeedback[];
+  } catch (error) {
+    logger.error("Database query failed in getUserFeedbacks", { error });
+    throw error;
+  }
 }

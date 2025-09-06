@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import pool from "../../config/database-connection.js";
 import dotenv from 'dotenv';
 dotenv.config();
+import logger from "../../config/logger.js";
 
 function generateCloudinaryUrl(fileUrl: string | null): string | null {
     if (!fileUrl) return null;
@@ -82,7 +83,9 @@ type SubmittedUser =
     | SubmittedUserBase;
 
 export const submittedUsers = async (req: Request, res: Response) => {
+    
     if (req.user?.role !== "administrator") {
+        logger.warn(`Unauthorized access attempt by user ID ${req.user?.user_id}.`);
         return res.status(403).json({ error: "Forbidden: Admins only." });
     }
 
@@ -93,14 +96,22 @@ export const submittedUsers = async (req: Request, res: Response) => {
         const users: SubmittedUser[] = await getSubmittedUsers(connection);
         res.json(users);
     } catch (err) {
+        logger.error("Failed to fetch submitted users from DB", { error: err });
         res.status(500).json({ error: "Failed to fetch submitted users" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection", { error: releaseError });
+            }
+        }
     }
 };
 
 async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedUser[]> {
-    const [rows]: any[] = await connection.query(`
+    try {
+        const [rows]: any[] = await connection.query(`
         SELECT 
             u.user_id,
             u.email,
@@ -166,81 +177,85 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
         ORDER BY u.created_at DESC;
   `);
 
-    return rows.map((user: any) => {
-        const base: SubmittedUserBase = {
-            user_id: user.user_id,
-            email: user.email,
-            role: user.role,
-            created_at: user.created_at
-                ? format(new Date(user.created_at), "MMMM dd, yyyy 'at' hh:mm a")
-                : null,
-            verified_at: user.verified_at
-                ? format(new Date(user.verified_at), "MMMM dd, yyyy 'at' hh:mm a")
-                : null,
-        };
+        return rows.map((user: any) => {
+            const base: SubmittedUserBase = {
+                user_id: user.user_id,
+                email: user.email,
+                role: user.role,
+                created_at: user.created_at
+                    ? format(new Date(user.created_at), "MMMM dd, yyyy 'at' hh:mm a")
+                    : null,
+                verified_at: user.verified_at
+                    ? format(new Date(user.verified_at), "MMMM dd, yyyy 'at' hh:mm a")
+                    : null,
+            };
 
-        switch (user.role) {
-            case "jobseeker":
-                return {
-                    ...base,
-                    full_name: user.js_full_name,
-                    date_of_birth: user.js_dob ? format(new Date(user.js_dob), "MMMM dd, yyyy") : null,
-                    phone: user.js_phone,
-                    gender: user.js_gender,
-                    present_address: user.js_present_address,
-                    permanent_address: user.js_permanent_address,
-                    education: user.js_education,
-                    skills: user.js_skills,
-                    government_id: generateCloudinaryUrl(user.js_government_id),
-                    selfie_with_id: generateCloudinaryUrl(user.js_selfie_with_id),
-                    nbi_barangay_clearance: generateCloudinaryUrl(user.js_nbi_barangay_clearance),
-                } as JobseekerUser;
+            switch (user.role) {
+                case "jobseeker":
+                    return {
+                        ...base,
+                        full_name: user.js_full_name,
+                        date_of_birth: user.js_dob ? format(new Date(user.js_dob), "MMMM dd, yyyy") : null,
+                        phone: user.js_phone,
+                        gender: user.js_gender,
+                        present_address: user.js_present_address,
+                        permanent_address: user.js_permanent_address,
+                        education: user.js_education,
+                        skills: user.js_skills,
+                        government_id: generateCloudinaryUrl(user.js_government_id),
+                        selfie_with_id: generateCloudinaryUrl(user.js_selfie_with_id),
+                        nbi_barangay_clearance: generateCloudinaryUrl(user.js_nbi_barangay_clearance),
+                    } as JobseekerUser;
 
-            case "individual-employer":
-                return {
-                    ...base,
-                    full_name: user.ie_full_name,
-                    date_of_birth: user.ie_dob ? format(new Date(user.ie_dob), "MMMM dd, yyyy") : null,
-                    phone: user.ie_phone,
-                    gender: user.ie_gender,
-                    present_address: user.ie_present_address,
-                    permanent_address: user.ie_permanent_address,
-                    government_id: generateCloudinaryUrl(user.ie_government_id),
-                    selfie_with_id: generateCloudinaryUrl(user.ie_selfie_with_id),
-                    nbi_barangay_clearance: generateCloudinaryUrl(user.ie_nbi_barangay_clearance),
-                } as IndividualEmployerUser;
+                case "individual-employer":
+                    return {
+                        ...base,
+                        full_name: user.ie_full_name,
+                        date_of_birth: user.ie_dob ? format(new Date(user.ie_dob), "MMMM dd, yyyy") : null,
+                        phone: user.ie_phone,
+                        gender: user.ie_gender,
+                        present_address: user.ie_present_address,
+                        permanent_address: user.ie_permanent_address,
+                        government_id: generateCloudinaryUrl(user.ie_government_id),
+                        selfie_with_id: generateCloudinaryUrl(user.ie_selfie_with_id),
+                        nbi_barangay_clearance: generateCloudinaryUrl(user.ie_nbi_barangay_clearance),
+                    } as IndividualEmployerUser;
 
-            case "business-employer":
-                return {
-                    ...base,
-                    business_name: user.business_name,
-                    business_address: user.business_address,
-                    industry: user.industry,
-                    business_size: user.business_size,
-                    authorized_person: user.authorized_person,
-                    authorized_person_id: generateCloudinaryUrl(user.business_authorized_person_id),
-                    business_permit_BIR: generateCloudinaryUrl(user.business_permit_BIR),
-                    DTI: generateCloudinaryUrl(user.DTI),
-                    business_establishment: generateCloudinaryUrl(user.business_establishment),
+                case "business-employer":
+                    return {
+                        ...base,
+                        business_name: user.business_name,
+                        business_address: user.business_address,
+                        industry: user.industry,
+                        business_size: user.business_size,
+                        authorized_person: user.authorized_person,
+                        authorized_person_id: generateCloudinaryUrl(user.business_authorized_person_id),
+                        business_permit_BIR: generateCloudinaryUrl(user.business_permit_BIR),
+                        DTI: generateCloudinaryUrl(user.DTI),
+                        business_establishment: generateCloudinaryUrl(user.business_establishment),
 
-                } as BusinessEmployerUser;
+                    } as BusinessEmployerUser;
 
-            case "manpower-provider":
-                return {
-                    ...base,
-                    agency_name: user.agency_name,
-                    agency_address: user.agency_address,
-                    agency_services: user.agency_services,
-                    agency_authorized_person: user.agency_authorized_person,
-                    authorized_person_id: generateCloudinaryUrl(user.mp_authorized_person_id),
-                    dole_registration_number: generateCloudinaryUrl(user.dole_registration_number),
-                    mayors_permit: generateCloudinaryUrl(user.mayors_permit),
-                    agency_certificate: generateCloudinaryUrl(user.agency_certificate),
-                } as ManpowerProviderUser;
+                case "manpower-provider":
+                    return {
+                        ...base,
+                        agency_name: user.agency_name,
+                        agency_address: user.agency_address,
+                        agency_services: user.agency_services,
+                        agency_authorized_person: user.agency_authorized_person,
+                        authorized_person_id: generateCloudinaryUrl(user.mp_authorized_person_id),
+                        dole_registration_number: generateCloudinaryUrl(user.dole_registration_number),
+                        mayors_permit: generateCloudinaryUrl(user.mayors_permit),
+                        agency_certificate: generateCloudinaryUrl(user.agency_certificate),
+                    } as ManpowerProviderUser;
 
-            default:
-                return base;
-        }
-    });
+                default:
+                    return base;
+            }
+        });
+    } catch (error) {
+        logger.error("Database query failed in getSubmittedUsers", { error: error });
+        throw error;
+    }
 }
 

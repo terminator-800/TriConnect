@@ -11,16 +11,19 @@ export interface AuthenticatedUser {
 }
 
 export interface CustomRequest extends Request {
-    user?: AuthenticatedUser;          
+    user?: AuthenticatedUser;
     files?: Express.Multer.File[] | { [fieldname: string]: Express.Multer.File[] } | undefined;
-    tempFolderId?: string;              
-    body: Record<string, any>;          
+    tempFolderId?: string;
+    body: Record<string, any>;
 }
 
 declare global {
     namespace Express {
         interface Request {
             user?: AuthenticatedUser;
+            role: Role;
+            user_id: number;
+            is_registered: boolean | 0 | 1;
         }
     }
 }

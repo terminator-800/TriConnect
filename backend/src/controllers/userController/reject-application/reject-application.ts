@@ -1,7 +1,9 @@
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
 import type { Request, Response } from "express";
 import type { AuthenticatedUser } from "../../../types/express/auth.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
+import { ROLE } from "../../../utils/roles.js";
 
 // Make params optional
 interface RejectApplicationParams {
@@ -18,11 +20,24 @@ type RejectApplicationRequest = Request<
   user?: AuthenticatedUser;
 };
 
+const allowedRoles: typeof ROLE[keyof typeof ROLE][] = [
+  ROLE.BUSINESS_EMPLOYER,
+  ROLE.INDIVIDUAL_EMPLOYER,
+  ROLE.MANPOWER_PROVIDER
+];
+
 export const rejectApplication = async (
   req: RejectApplicationRequest,
   res: Response
 ): Promise<Response> => {
   let connection: PoolConnection | undefined;
+  const ip = req.ip;
+  const role = req.user?.role;
+
+  if (!allowedRoles.includes(role as typeof ROLE[keyof typeof ROLE])) {
+    logger.warn("Unauthorized role tried to rejecting an application", { ip, role });
+    return res.status(403).json({ error: "Forbidden: Only authorized users can reject an applications." });
+  }
 
   try {
     const employerUserId = req.user?.user_id;
@@ -31,10 +46,12 @@ export const rejectApplication = async (
       : NaN;
 
     if (!employerUserId) {
+      logger.warn("Unauthorized attempt to reject application", { ip });
       return res.status(401).json({ message: "Unauthorized" });
     }
 
     if (!Number.isFinite(applicationId)) {
+      logger.warn("Invalid application ID in rejectApplication", { employerUserId, applicationId, ip });
       return res.status(400).json({ message: "Invalid application ID" });
     }
 
@@ -51,6 +68,7 @@ export const rejectApplication = async (
     );
 
     if (result.affectedRows === 0) {
+      logger.warn("Application not found or not owned by employer", { employerUserId, applicationId, ip });
       return res
         .status(404)
         .json({ message: "Application not found or not owned by employer" });
@@ -58,8 +76,15 @@ export const rejectApplication = async (
 
     return res.status(200).json({ message: "Application rejected successfully" });
   } catch (error) {
+    logger.error("Failed to reject application", { error, ip, params: req.params, user: req.user });
     return res.status(500).json({ message: "Failed to reject application" });
   } finally {
-    if (connection) connection.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (releaseError) {
+        logger.error("Failed to release DB connection in rejectApplication", { releaseError, ip });
+      }
+    }
   }
 };

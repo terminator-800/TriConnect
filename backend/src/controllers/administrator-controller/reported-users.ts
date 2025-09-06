@@ -2,6 +2,7 @@ import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import type { Request, Response } from "express";
 import { format } from "date-fns";
 import pool from "../../config/database-connection.js";
+import logger from "../../config/logger.js";
 
 // --- DB Row Types ---
 interface ReportRow extends RowDataPacket {
@@ -68,8 +69,9 @@ interface FormattedReport {
 
 export const reportedUsers = async (req: Request, res: Response): Promise<void> => {
     let connection: PoolConnection | undefined;
-    
+
     if (req.user?.role !== "administrator") {
+        logger.warn(`Unauthorized access attempt by user ID ${req.user?.user_id}.`);
         res.status(403).json({ error: "Forbidden: Admins only." });
         return;
     }
@@ -129,6 +131,7 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
 
         const formattedReports: FormattedReport[] = await Promise.all(
             rows.map(async (row) => {
+               
                 const [proofs] = await connection!.query<ProofRow[]>(
                     `SELECT proof_id, file_url, file_type, uploaded_at FROM report_proofs WHERE report_id = ?`,
                     [row.report_id]
@@ -171,8 +174,15 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
 
         res.json(formattedReports);
     } catch (error) {
+        logger.error("Error in reportedUsers endpoint", { error, userId: req.user?.user_id });
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection", { error: releaseError });
+            }
+        }
     }
 };

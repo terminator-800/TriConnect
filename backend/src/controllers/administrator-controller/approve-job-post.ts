@@ -3,6 +3,7 @@ import type { PoolConnection } from "mysql2/promise";
 import { getJobPostById } from "../../service/job-post-by-id-service.js";
 import { ROLE } from "../../utils/roles.js";
 import pool from "../../config/database-connection.js";
+import logger from "../../config/logger.js";
 
 interface ApproveJobPostParams {
     job_post_id?: string;
@@ -11,12 +12,14 @@ interface ApproveJobPostParams {
 export const approveJobPost = async (req: Request<ApproveJobPostParams>, res: Response): Promise<void> => {
 
     if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        logger.warn(`Unauthorized attempt by user ID ${req.user?.user_id} to approve a job post.`);
         res.status(403).json({ error: "Forbidden: Admins only." });
         return;
     }
-    
+
     const jobPostId = Number(req.params.job_post_id);
     if (isNaN(jobPostId)) {
+        logger.warn(`Invalid job_post_id received: ${req.params.job_post_id}`);
         res.status(400).json({ message: "Invalid job_post_id" });
         return;
     }
@@ -29,15 +32,24 @@ export const approveJobPost = async (req: Request<ApproveJobPostParams>, res: Re
         const result = await approveJobPostIfExists(connection, jobPostId);
 
         if (!result.success) {
+            logger.info(`Job post not found: ID ${jobPostId}`);
             res.status(404).json({ message: result.message });
             return;
         }
 
+        logger.info(`Job post approved successfully: ID ${jobPostId} by user ${req.user.user_id}`);
         res.status(200).json({ message: result.message });
     } catch (error: any) {
+        logger.error("Error approving job post at (approve-job-post)", { error, userId: req.user?.user_id, jobPostId: req.params.job_post_id });
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection", { error: releaseError, userId: req.user?.user_id });
+            }
+        }
     }
 };
 
@@ -68,6 +80,7 @@ async function approveJobPostIfExists(connection: PoolConnection, jobPostId: num
 
         return { success: true, message: 'Jobpost approved successfully.' };
     } catch (error) {
+        logger.error("Database error during job post approval at (approve-job-post)", { error, jobPostId });
         throw error;
     }
 }

@@ -7,6 +7,7 @@ import { markRegistered } from "../../userController/email-verification/mark-reg
 import { ROLE } from '../../../utils/roles.js'
 import type { User } from '../../../interface/interface.js';
 import jwt from "jsonwebtoken";
+import logger from '../../../config/logger.js';
 import pool from "../../../config/database-connection.js";
 
 interface JwtPayload {
@@ -19,10 +20,12 @@ export const verifyEmail = async (request: Request<{}, {}, {}, { token?: string 
   const { token } = request.query;
 
   if (!token || Array.isArray(token)) {
+    logger.warn("Missing or invalid token in verifyEmail request", { token });
     return response.status(400).send("Missing or invalid token.");
   }
 
   if (!process.env.JWT_SECRET) {
+    logger.error("JWT_SECRET not configured in environment variables");
     return response.status(500).json({ message: "Internal server error" });
   }
 
@@ -37,12 +40,17 @@ export const verifyEmail = async (request: Request<{}, {}, {}, { token?: string 
     const { email, role } = decoded;
 
     if (!email || !role || !Object.values(ROLE).includes(role)) {
+      logger.warn("Invalid token payload in verifyEmail", { payload: decoded });
       return response.status(400).send("Invalid token payload.");
     }
 
     const user: User | null = await findUsersEmail(connection, email);
 
-    if (!user) return response.status(404).send("User not found.");
+    if (!user) {
+      logger.warn("User not found during email verification", { email });
+      return response.status(404).send("User not found.");
+    }
+
     if (user.is_registered) return response.status(200).send("User already verified.");
 
     await markRegistered(connection, email);
@@ -51,10 +59,20 @@ export const verifyEmail = async (request: Request<{}, {}, {}, { token?: string 
     return response.status(200).send("Email verified and account registered!");
 
   } catch (error: unknown) {
-
-    if (connection) await connection.rollback();
+    if (connection) {
+      try {
+        await connection.rollback();
+      } catch (rollbackError) {
+        logger.error("Failed to rollback transaction in verifyEmail", { error: rollbackError });
+      }
+    }
+    logger.error("Error during email verification", { error });
     return response.status(400).send("Invalid or expired verification link.");
   } finally {
-    connection?.release();
+    try {
+      connection?.release();
+    } catch (releaseError) {
+      logger.error("Failed to release database connection in verifyEmail", { error: releaseError });
+    }
   }
 };

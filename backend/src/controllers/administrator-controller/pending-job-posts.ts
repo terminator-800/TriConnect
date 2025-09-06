@@ -3,6 +3,7 @@ import type { PoolConnection } from "mysql2/promise";
 import { format } from "date-fns";
 import { ROLE } from "../../utils/roles.js";
 import pool from "../../config/database-connection.js";
+import logger from "../../config/logger.js";
 
 type Role =
     | "jobseeker"
@@ -59,8 +60,9 @@ type PendingJobPost =
 
 export const pendingJobPosts = async (req: Request, res: Response) => {
     let connection: PoolConnection | undefined;
-    
+
     if (req.user?.role !== ROLE.ADMINISTRATOR) {
+        logger.warn(`Unauthorized attempt by user ID ${req.user?.user_id} to access pending job posts.`);
         res.status(403).json({ error: "Forbidden: Admins only." });
         return;
     }
@@ -71,14 +73,25 @@ export const pendingJobPosts = async (req: Request, res: Response) => {
 
         res.status(200).json(jobposts);
     } catch (error) {
+        logger.error(`Unexpected error in pendingJobPosts) endpoint`, {
+            error,
+            user_id: req.user?.user_id,
+        });
         res.status(500).json({ message: "Failed to fetch job posts" });
     } finally {
-        if (connection) connection.release();
+        if (connection) {
+            try {
+                connection.release();
+            } catch (releaseError) {
+                logger.error("Failed to release DB connection", { error: releaseError, userId: req.user?.user_id });
+            }
+        }
     }
 };
 
 async function getPendingJobPosts(connection: PoolConnection): Promise<PendingJobPost[]> {
-    const query = `
+    try {
+        const query = `
     SELECT 
       jp.job_post_id,
       jp.user_id,
@@ -115,60 +128,64 @@ async function getPendingJobPosts(connection: PoolConnection): Promise<PendingJo
     ORDER BY jp.created_at DESC;
   `;
 
-    const [rows]: any[] = await connection.query(query);
+        const [rows]: any[] = await connection.query(query);
 
-    return rows.map((post: any) => {
-        const base: JobPostBase = {
-            job_post_id: post.job_post_id,
-            user_id: post.user_id,
-            job_title: post.job_title,
-            job_description: post.job_description,
-            location: post.location,
-            salary_range: post.salary_range,
-            required_skill: post.required_skill,
-            job_type: post.job_type,
-            role: post.role,
-            created_at: post.created_at
-                ? format(new Date(post.created_at), "MMMM d, yyyy 'at' hh:mm a")
-                : null,
-        };
+        return rows.map((post: any) => {
+            const base: JobPostBase = {
+                job_post_id: post.job_post_id,
+                user_id: post.user_id,
+                job_title: post.job_title,
+                job_description: post.job_description,
+                location: post.location,
+                salary_range: post.salary_range,
+                required_skill: post.required_skill,
+                job_type: post.job_type,
+                role: post.role,
+                created_at: post.created_at
+                    ? format(new Date(post.created_at), "MMMM d, yyyy 'at' hh:mm a")
+                    : null,
+            };
 
-        switch (post.role) {
-            case ROLE.BUSINESS_EMPLOYER:
-                return {
-                    ...base,
-                    employer_name: post.business_name,
-                    submitted_by: post.be_authorized_person,
-                    business_name: post.business_name,
-                    business_address: post.business_address,
-                    industry: post.industry,
-                    business_size: post.business_size,
-                    authorized_person: post.be_authorized_person,
-                } as BusinessEmployerJobPost;
+            switch (post.role) {
+                case ROLE.BUSINESS_EMPLOYER:
+                    return {
+                        ...base,
+                        employer_name: post.business_name,
+                        submitted_by: post.be_authorized_person,
+                        business_name: post.business_name,
+                        business_address: post.business_address,
+                        industry: post.industry,
+                        business_size: post.business_size,
+                        authorized_person: post.be_authorized_person,
+                    } as BusinessEmployerJobPost;
 
-            case ROLE.INDIVIDUAL_EMPLOYER:
-                return {
-                    ...base,
-                    employer_name: post.individual_full_name,
-                    submitted_by: post.individual_full_name,
-                    full_name: post.individual_full_name,
-                    gender: post.individual_gender,
-                    present_address: post.individual_present_address,
-                } as IndividualEmployerJobPost;
+                case ROLE.INDIVIDUAL_EMPLOYER:
+                    return {
+                        ...base,
+                        employer_name: post.individual_full_name,
+                        submitted_by: post.individual_full_name,
+                        full_name: post.individual_full_name,
+                        gender: post.individual_gender,
+                        present_address: post.individual_present_address,
+                    } as IndividualEmployerJobPost;
 
-            case ROLE.MANPOWER_PROVIDER:
-                return {
-                    ...base,
-                    employer_name: post.agency_name,
-                    submitted_by: post.agency_authorized_person,
-                    agency_name: post.agency_name,
-                    agency_address: post.agency_address,
-                    agency_services: post.agency_services,
-                    agency_authorized_person: post.agency_authorized_person,
-                } as ManpowerProviderJobPost;
+                case ROLE.MANPOWER_PROVIDER:
+                    return {
+                        ...base,
+                        employer_name: post.agency_name,
+                        submitted_by: post.agency_authorized_person,
+                        agency_name: post.agency_name,
+                        agency_address: post.agency_address,
+                        agency_services: post.agency_services,
+                        agency_authorized_person: post.agency_authorized_person,
+                    } as ManpowerProviderJobPost;
 
-            default:
-                return base;
-        }
-    });
+                default:
+                    return base;
+            }
+        });
+    } catch (error) {
+        logger.error("Database query error in getPendingJobPosts at (pending-job-posts)", { error });
+        throw error;
+    }
 }

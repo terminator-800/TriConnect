@@ -3,6 +3,7 @@ import type { AuthenticatedUser } from "../../../middleware/authenticate.js";
 import type { Request, Response } from "express";
 import type { PoolConnection } from "mysql2/promise";
 import { ROLE } from "../../../utils/roles.js";
+import logger from "../../../config/logger.js";
 import pool from "../../../config/database-connection.js";
 
 // Extend Express Request to include authenticated user info
@@ -21,14 +22,14 @@ interface Agency {
 
 export const uncontactedAgencies = async (req: CustomRequest, res: Response) => {
   let connection: PoolConnection | undefined;
-
+  const ip = req.ip;
   try {
     connection = await pool.getConnection();
-
     const user_id = req.user?.user_id;
     const role = req.user?.role;
 
     if (!user_id || !role) {
+      logger.warn("Invalid user data in token", { user_id, ip });
       return res.status(401).json({ message: "Unauthorized. Invalid token or user not found." });
     }
 
@@ -37,6 +38,7 @@ export const uncontactedAgencies = async (req: CustomRequest, res: Response) => 
       role !== ROLE.INDIVIDUAL_EMPLOYER &&
       role !== ROLE.JOBSEEKER
     ) {
+      logger.warn("Forbidden role attempted to access uncontactedAgencies", { role, user_id, ip });
       return res.status(403).json({ message: "Forbidden. Only valid roles can access this resource." });
     }
 
@@ -45,18 +47,24 @@ export const uncontactedAgencies = async (req: CustomRequest, res: Response) => 
 
     // Map DB rows to the API's Agency interface
     const agencies: Agency[] = rows.map((r) => ({
-      agency_id: r.user_id, // map user_id to agency_id
+      agency_id: r.user_id,
       agency_name: r.agency_name,
       agency_address: r.agency_address,
       agency_services: r.agency_services,
-      agency_authorized_person: r.agency_authorized_person ?? "N/A", 
+      agency_authorized_person: r.agency_authorized_person ?? "N/A",
     }));
 
     return res.json(agencies);
   } catch (error) {
-    console.error("❌ Error fetching uncontacted agencies:", error);
+    logger.error("Failed to fetch uncontacted agencies", { error, user: req.user, ip });
     return res.status(500).json({ message: "Server error." });
   } finally {
-    if (connection) connection.release();
+    if (connection) {
+      try {
+        connection.release();
+      } catch (releaseError) {
+        logger.error("Failed to release DB connection in uncontactedAgencies", { releaseError, user: req.user, ip });
+      }
+    }
   }
 };
