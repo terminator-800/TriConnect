@@ -1,5 +1,4 @@
 import type { PoolConnection } from "mysql2/promise";
-import logger from "../../../config/logger.js";
 
 export async function insertJobApplication(
   connection: PoolConnection,
@@ -14,12 +13,6 @@ export async function insertJobApplication(
       [job_post_id, applicant_id, role]
     );
   } catch (error) {
-     logger.error("Failed to insert job application", {
-      error,
-      job_post_id,
-      applicant_id,
-      role
-    });
     throw error;
   }
 }

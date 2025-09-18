@@ -15,6 +15,11 @@ const ChatHeader = ({ selectedUser }) => {
 
   const authorizedPerson = selectedUser?.agency_authorized_person || selectedUser?.authorized_person || null;
 
+  const displayProfile =
+    selectedUser?.role === 'business-employer' || selectedUser?.role === 'manpower-provider'
+      ? selectedUser?.authorized_profile
+      : selectedUser?.profile;
+
   if (!selectedUser) {
     return (
       <div className="flex items-center justify-center p-4 border-b border-gray-300 bg-white text-gray-400">
@@ -29,17 +34,33 @@ const ChatHeader = ({ selectedUser }) => {
       {selectedUser ? (
         <>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
-              {getInitials(authorizedPerson)}
+            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold overflow-hidden">
+            
+             {/* Authorized Persons */}
+              {displayProfile ? (
+
+                <img
+                  src={displayProfile}
+                  alt={authorizedPerson}
+                  className="w-full h-full object-cover"
+                />
+
+              ) : (
+                getInitials(authorizedPerson) || 'unknown'
+              )}
+
             </div>
 
             <div className="text-sm text-gray-700">
+
               <span className="font-medium">
                 Sent by: {authorizedPerson}
               </span>
+
               <div className="text-xs text-gray-500">
                 {selectedUser.sent_at && `Last message: ${selectedUser.sent_at}`}
               </div>
+
             </div>
           </div>
 

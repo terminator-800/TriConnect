@@ -54,14 +54,17 @@ export const viewApplicants = async (req: ApplicantsRequest, res: Response): Pro
     const result = await getApplicantsByEmployer(connection, employerUserId, { page, pageSize });
 
     return res.status(200).json(result);
-  } catch (error) {
-    logger.error("Unexpected error in viewApplicants", { error, ip, user: req.user });
+  } catch (error: any) {
+    logger.error("Unexpected error in viewApplicants", {
+      ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ message: "Failed to fetch applicants" });
   } finally {
-    try {
       if (connection) connection.release();
-    } catch (releaseError) {
-      logger.error("Failed to release DB connection", { error: releaseError, ip });
-    }
   }
 };

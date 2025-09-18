@@ -52,8 +52,8 @@ const ViewApplicant = () => {
 
           {profileData?.is_verified ? (
             <>
-              <h1 className="text-5xl font-bold text-blue-900">View Applicants</h1>
-              <p className="text-2xl mt-2">Manage applicants for your job postings</p>
+              <h1 className="text-2xl font-bold text-blue-900">View Applicants</h1>
+              <p className="mt-2">Manage applicants for your job postings</p>
 
               <div className="flex-1 mt-10">
                 <div className=" rounded-2xl shadow-lg border border-gray-300 bg-white">

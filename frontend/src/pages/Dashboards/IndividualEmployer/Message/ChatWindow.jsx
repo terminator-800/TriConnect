@@ -21,11 +21,11 @@ const ChatWindow = ({ selectedUser }) => {
   const { conversation_id = null } = selectedUser || {};
   const { data: messages = [], isLoading, isError } = useMessageHistory(ROLE.INDIVIDUAL_EMPLOYER, conversation_id);
 
-   // Initialize socket connection
-   useSocket(currentUserId, ROLE.INDIVIDUAL_EMPLOYER);
-   
-   // Join conversation room
-   useChatRoom(conversation_id);
+  // Initialize socket connection
+  useSocket(currentUserId, ROLE.INDIVIDUAL_EMPLOYER);
+
+  // Join conversation room
+  useChatRoom(conversation_id);
 
   // 🔁 Automatically mark messages as seen
   useMarkMessagesAsSeen({
@@ -40,12 +40,12 @@ const ChatWindow = ({ selectedUser }) => {
     if (!conversation_id) return;
 
     const handleNewMessage = (newMessage) => {
-      
+
       if (Number(newMessage.conversation_id) === Number(conversation_id)) {
         queryClient.invalidateQueries({
           queryKey: ['messages', ROLE.INDIVIDUAL_EMPLOYER, conversation_id]
         });
-        
+
         queryClient.invalidateQueries({
           queryKey: ['conversations', ROLE.INDIVIDUAL_EMPLOYER]
         });
@@ -62,7 +62,7 @@ const ChatWindow = ({ selectedUser }) => {
 
     // Listen for new messages
     socket.on('receiveMessage', handleNewMessage);
-    
+
     // Listen for messages seen updates
     socket.on('messagesSeen', handleMessagesSeen);
 
@@ -91,7 +91,8 @@ const ChatWindow = ({ selectedUser }) => {
           <ul className="flex flex-col space-y-4">
             {messages.map((msg, index) => {
               const isSender = Number(msg.sender_id) === Number(currentUserId);
-              const senderInitials = getInitials(msg.sender_name || '');
+              const senderAvatar = selectedUser?.authorized_profile;
+              const senderInitials = getInitials(selectedUser?.authorized_person || 'unkown');
               const alignment = isSender ? 'justify-end' : 'justify-start';
               const bubbleStyle = isSender
                 ? 'bg-blue-500 text-white rounded-br-none'
@@ -102,9 +103,19 @@ const ChatWindow = ({ selectedUser }) => {
 
               return (
                 <li key={msg.message_id || `msg-${index}`} className={`flex ${alignment} items-end`}>
+                  
+                  {/* AUTHORIZED PERSONEL */}
                   {!isSender && (
-                    <div className="flex-shrink-0 w-8 h-8 bg-gray-400 text-white flex items-center justify-center rounded-full mr-2 text-xs font-semibold">
-                      {senderInitials}
+                    <div className="flex-shrink-0 w-8 h-8 rounded-full mr-2 text-xs font-semibold overflow-hidden flex items-center justify-center bg-gray-400 text-white">
+                      {senderAvatar ? (
+                        <img
+                          src={senderAvatar}
+                          alt="profile"
+                          className="w-full h-full object-cover rounded-full"
+                        />
+                      ) : (
+                        senderInitials
+                      )}
                     </div>
                   )}
 

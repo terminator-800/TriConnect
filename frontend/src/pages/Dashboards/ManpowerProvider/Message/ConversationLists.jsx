@@ -20,7 +20,7 @@ const ConversationList = ({ users, selectedUser, onSelect }) => {
                 const fullName = user.name || user.authorized_person;
                 const initials = getInitials(fullName);
                 const messagePreview = user.message_text?.slice(0, 60);
-        
+
                 return (
                     <li
                         key={user.conversation_id}
@@ -29,13 +29,24 @@ const ConversationList = ({ users, selectedUser, onSelect }) => {
                         onClick={() => handleSelect(user)}
                     >
                         <div className="flex gap-2 flex-1">
-                            {/* Avatar */}
-                            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                {initials || '?'}
+
+                            {/* Profile || LOGO */}
+                            <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden flex items-center justify-center bg-gray-400 text-white font-bold text-sm">
+
+                                {user.profile ? (
+                                    <img
+                                        src={user.profile}
+                                        alt={initials || 'Avatar'}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    initials || '?'
+                                )}
+                                
                             </div>
 
                             <div className="overflow-hidden">
-                                <div className="font-medium truncate">{user.name }</div>
+                                <div className="font-medium truncate">{user.name}</div>
 
                                 {(user.business_name || fullName) && (
                                     <div className="text-sm text-gray-500 truncate">
@@ -53,6 +64,7 @@ const ConversationList = ({ users, selectedUser, onSelect }) => {
                         <div className="text-xs text-gray-400 text-right whitespace-nowrap">
                             {user.sent_at || 'N/A'}
                         </div>
+                        
                     </li>
                 );
             })}

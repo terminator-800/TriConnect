@@ -14,7 +14,6 @@ export const verifyUser = async (req: CustomRequest, res: Response) => {
 
     let connection: PoolConnection | undefined;
 
-    // Only administrators can verify users
     if (req.user?.role !== "administrator") {
         logger.warn(`Unauthorized verify attempt by user ID ${req.user?.user_id}`);
         return res.status(403).json({ message: "Forbidden: Admins only." });
@@ -25,16 +24,17 @@ export const verifyUser = async (req: CustomRequest, res: Response) => {
         await verifyUsers(connection, user_id);
         res.json({ success: true, message: "User verified successfully." });
     } catch (error: any) {
-        logger.error("Unexpected error in verifyUser endpoint", { error });
+        logger.error("Unexpected error in verifyUser endpoint", {
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ message: "Internal server error." });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };
 
@@ -63,7 +63,6 @@ async function verifyUsers(connection: PoolConnection, user_id: string | number)
         return { success: true, user_id };
 
     } catch (error) {
-        logger.error("Error in verifyUsers function", { error });
         throw error;
     }
 }

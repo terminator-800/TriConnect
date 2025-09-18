@@ -7,6 +7,7 @@ import Form from '../Verification Form/Form';
 import PersonalInfo from './PersonalInfo';
 import Security from './Security';
 import VerificationStatus from '../Verification Form/VerificationStatus';
+import ChangeProfile from '../../../../components/ChangeProfile/ChangeProfile';
 
 const JobseekerProfile = () => {
   const personal = 'personal';
@@ -73,11 +74,12 @@ const JobseekerProfile = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Change Profile */}
                 <div className="ml-6">
-                  <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
-                    PHOTO
-                  </div>
+                  <ChangeProfile profileData={profileData}/>
                 </div>
+                
               </div>
 
               {/* Tabs */}

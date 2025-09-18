@@ -34,8 +34,8 @@ const ReportedUser = () => {
       <Sidebar />
       <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50">
         <div>
-          <h1 className="text-4xl font-bold text-blue-900">Reported Users</h1>
-          <p className="text-lg text-gray-700 mt-1">Tagline</p>
+          <h1 className="text-2xl font-bold text-blue-900">Reported Users</h1>
+          <p className="text-gray-700 mt-1">Tagline</p>
 
           <div className="flex-1 mt-10">
             <div className="overflow-hidden rounded-xl shadow bg-white">
@@ -81,9 +81,20 @@ const ReportedUser = () => {
                     <tr key={report.report_id} className="border-t border-gray-200">
                       {/* User Info */}
                       <td className="px-6 py-5 flex items-center gap-3 italic">
-                        <div className="w-10 h-10 bg-gray-200 text-sm font-medium text-gray-600 rounded-full flex items-center justify-center">
-                          {getInitials(report.reported_user?.entity) || 'N/A'}
+
+                        {/* PROFILES */}
+                        <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
+                          {report.reported_user?.profile ? (
+                            <img
+                              src={report.reported_user.profile}
+                              alt={report.reported_user?.name || "User"}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            getInitials(report.reported_user?.entity) || "N/A"
+                          )}
                         </div>
+
                         <div>
                           <div className="font-semibold">{report.reported_user?.entity || 'N/A'}</div>
                         </div>

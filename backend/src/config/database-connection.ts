@@ -1,6 +1,6 @@
 import mysql, { type Pool } from 'mysql2/promise';
 import dotenv from 'dotenv';
-import logger from '../config/logger.js'; 
+import logger from '../config/logger.js';
 
 dotenv.config();
 
@@ -31,8 +31,13 @@ try {
     logger.info("Database pool created successfully");
 
 } catch (error: any) {
-    logger.error("Failed to create database pool", { error });
-    throw error; 
+    logger.error("Failed to create database pool", {
+        name: error?.name || "UnknownError",
+        message: error?.message || "Unknown error",
+        stack: error?.stack || "No stack trace",
+        error, 
+    });
+    throw error;
 }
 
 // Optional: listen for runtime pool errors

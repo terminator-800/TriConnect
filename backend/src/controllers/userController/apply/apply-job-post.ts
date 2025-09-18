@@ -83,12 +83,10 @@ export const apply = async (req: CustomRequest, res: Response) => {
     io.to(roomId.toString()).emit('receiveMessage', newMessage);
 
     const receiverSocketId = userSocketMap?.[receiver_id];
+
     if (receiverSocketId) {
       io.to(receiverSocketId).emit('receiveMessage', newMessage);
-    } else {
-      res.status(500).json({ error: 'Internal server error' });
     }
-
     res.status(201).json({
       message: 'Application sent and message stored',
       conversation_id: newMessage.conversation_id,
@@ -107,12 +105,6 @@ export const apply = async (req: CustomRequest, res: Response) => {
     });
     res.status(500).json({ error: 'Internal server error' });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error('Failed to release DB connection in apply', { error: releaseError });
-      }
-    }
+    if (connection) connection.release();
   }
 };

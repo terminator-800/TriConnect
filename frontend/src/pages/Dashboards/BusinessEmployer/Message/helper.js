@@ -1,6 +1,6 @@
 import { ROLE } from "../../../../../utils/role";
 import { useEffect, useMemo, useRef } from 'react';
-import { useMarkAsSeen } from '../../../../../hooks/CHAT'; 
+import { useMarkAsSeen } from '../../../../../hooks/CHAT';
 
 export const getTabFromLocalStorage = () => {
     return localStorage.getItem('chat-active-tab') || ROLE.JOBSEEKER;
@@ -25,6 +25,7 @@ export const getInitials = (fullName) => {
     return (firstInitial + lastInitial).toUpperCase();
 };
 
+// This is for Chat Headers Data PROPS
 export const filterAndMapConversations = (conversations, activeTab) => {
     const filtered = conversations.filter(convo => convo.role === activeTab);
     const unknown = 'Unknown';
@@ -32,16 +33,21 @@ export const filterAndMapConversations = (conversations, activeTab) => {
     return filtered.map(convo => {
         let name = unknown;
         let authorized_person = null;
-
+        let authorized_profile = null
         switch (convo.role) {
+
             case ROLE.JOBSEEKER:
                 name = convo.full_name || unknown;
                 authorized_person = convo.full_name;
+                 authorized_profile = convo.profile || null;
                 break;
+
             case ROLE.MANPOWER_PROVIDER:
                 name = convo.agency_name || unknown;
                 authorized_person = convo.agency_authorized_person || null;
+                authorized_profile = convo.authorized_profile || null;
                 break;
+
             default:
                 authorized_person = null;
                 break;
@@ -55,7 +61,9 @@ export const filterAndMapConversations = (conversations, activeTab) => {
             role: convo.role,
             conversation_id: convo.conversation_id,
             authorized_person,
-            message_id: convo.message_id
+            message_id: convo.message_id,
+            profile: convo.profile,
+            authorized_profile
         };
     });
 };

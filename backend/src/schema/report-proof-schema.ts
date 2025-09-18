@@ -20,8 +20,7 @@ export async function createReportProofsTable(connection: Pool | PoolConnection)
   
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create report proofs table', { error });
+  } catch (error) {
     throw error; 
   }
 }

@@ -16,8 +16,7 @@ export async function createJobApplicationsTable(connection: Pool | PoolConnecti
   `;
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create job applications table', { error });
+  } catch (error) {
     throw error; 
   }
 }

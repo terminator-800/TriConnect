@@ -30,12 +30,13 @@ import close from './close.svg'
 import verified_check from './verified_check.svg';
 import report_user from './report_user.svg';
 import send from './send.svg';
+import change_profile from './change_profile.svg';
 
 const icons = {
     find_agency,
     dashboard,
     manage_job_post,
-    message ,
+    message,
     view_applicant,
     job_post_details,
     create_job_post,
@@ -63,7 +64,8 @@ const icons = {
     close,
     verified_check,
     report_user,
-    send
+    send,
+    change_profile,
 }
 
 export default icons;

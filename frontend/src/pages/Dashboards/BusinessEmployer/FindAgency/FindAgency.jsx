@@ -23,7 +23,7 @@ const FindAgency = () => {
     isLoading: isAgenciesLoading,
     error: agencyError,
   } = useUncontactedAgencies(ROLE.BUSINESS_EMPLOYER);
-  
+
   // Pagination
   const [currentPage, setCurrentPage] = useState(1);
   const agenciesPerPage = 4;
@@ -99,10 +99,10 @@ const FindAgency = () => {
       <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 pb-32">
         {profileData?.is_verified ? (
           <>
-            <h1 className="text-5xl font-bold text-blue-900">
+            <h1 className="text-2xl font-bold text-blue-900">
               Search for Manpower Provider
             </h1>
-            <p className="text-2xl mt-2">
+            <p className="mt-2">
               Find agencies to help with your recruitment needs
             </p>
 
@@ -118,14 +118,29 @@ const FindAgency = () => {
                       key={agency.agency_id}
                       className="flex flex-col bg-white rounded-xl border border-gray-300 p-6 shadow-md"
                     >
+
                       <div className="flex items-center gap-4">
-                        <div className="w-14 h-14 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-800">
-                          {(agency.agency_name || "").substring(0, 2).toUpperCase()}
+
+                        {/* PROFILE */}
+                        <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
+                          {agency.profile ? (
+                            <img
+                              src={agency.profile}
+                              alt={agency.agency_name || "Agency"}
+                              className="w-full h-full object-cover rounded-full"
+                            />
+                          ) : (
+                            <div className="w-14 h-14 rounded-full bg-gray-300 flex items-center justify-center text-lg font-bold text-gray-800">
+                              {(agency.agency_name || "").substring(0, 2).toUpperCase()}
+                            </div>
+                          )}
                         </div>
+
                         <h2 className="text-xl font-semibold">
                           {agency.agency_name}
                         </h2>
                       </div>
+
                       <div className="flex justify-between mt-6">
                         <button
                           onClick={() => openApply(agency)}

@@ -91,14 +91,20 @@ async function startServer() {
       logger.info(`Server running on port ${port}`);
     });
 
-  } catch (error: unknown) {
-    logger.error("Failed to start server", { error });
+  } catch (error: any) {
+    logger.error("Failed to start server", {
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     process.exit(1);
   } finally {
     try {
       if (connection) connection.release();
-    } catch (releaseError) {
-      logger.error("Failed to release DB connection", { releaseError });
+    } catch (error) {
+      logger.error("Failed to release DB connection", { error });
     }
   }
 }

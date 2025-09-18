@@ -22,6 +22,8 @@ import { submitFeedback } from "../controllers/userController/submit-feedback/su
 import { viewApplicants } from "../controllers/userController/view-applicant/view-applicants.js";
 import { employerDashboard } from "../controllers/userController/employer-dashboard.js";
 import { rejectApplication } from "../controllers/userController/reject-application/reject-application.js";
+import { changeUserProfile } from "../middleware/upload-files.js";
+import { changeProfile } from "../controllers/userController/change-profile/change-profile.js";
 
 const router = express.Router();
 
@@ -44,5 +46,6 @@ router.post("/business-employer/feedback", authenticate, submitFeedback);
 router.get("/business-employer/applicants", authenticate, viewApplicants);
 router.get("/business-employer/dashboard", authenticate, employerDashboard);
 router.patch("/business-employer/applications/:applicationId/reject", authenticate, rejectApplication);
+router.patch("/business-employer/change-profile", authenticate, changeUserProfile, changeProfile);
 
 export default router;

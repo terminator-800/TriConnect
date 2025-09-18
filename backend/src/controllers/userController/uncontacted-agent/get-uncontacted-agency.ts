@@ -6,6 +6,7 @@ export interface UncontactedAgency extends RowDataPacket {
   user_id: number;
   email: string;
   is_verified: boolean | 0 | 1;
+  profile: string | null;
   agency_name: string;
   agency_address: string;
   agency_services: string;
@@ -33,7 +34,7 @@ export const getUncontactedAgencies = async (
 
     const [rows] = await connection.execute<UncontactedAgency[]>(
       `
-    SELECT u.user_id, u.email, u.is_verified, 
+    SELECT u.user_id, u.email, u.is_verified, u.profile,
            mp.agency_name, mp.agency_address, mp.agency_services
     FROM users u
     JOIN manpower_provider mp ON u.user_id = mp.manpower_provider_id
@@ -53,8 +54,6 @@ export const getUncontactedAgencies = async (
 
     return rows;
   } catch (error) {
-    logger.error("Failed to fetch uncontacted agencies", { error, userId });
-    return [];
+    throw error;
   }
-
 };

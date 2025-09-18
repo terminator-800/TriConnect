@@ -14,7 +14,7 @@ export interface ManpowerProviderProfile {
     is_rejected: boolean | number;
     account_status: string;
     role: typeof ROLE.MANPOWER_PROVIDER;
-
+    profile?: string | null;
 }
 
 export async function getManpowerProviderProfile(connection: PoolConnection, user_id: number): Promise<ManpowerProviderProfile | null> {
@@ -31,7 +31,8 @@ export async function getManpowerProviderProfile(connection: PoolConnection, use
         u.is_verified,
         u.is_submitted,
         u.is_rejected,
-        u.account_status
+        u.account_status,
+        u.profile
       FROM manpower_provider m
       JOIN users u ON m.manpower_provider_id = u.user_id
       WHERE m.manpower_provider_id = ?
@@ -53,12 +54,12 @@ export async function getManpowerProviderProfile(connection: PoolConnection, use
             is_submitted: row.is_submitted,
             is_rejected: row.is_rejected,
             account_status: row.account_status,
-            role: ROLE.MANPOWER_PROVIDER
+            role: ROLE.MANPOWER_PROVIDER,
+            profile: row.profile || null
         };
 
         return profile;
     } catch (error) {
-        logger.error("Failed to fetch manpower provider profile", { error, user_id });
         throw error;
     }
 }

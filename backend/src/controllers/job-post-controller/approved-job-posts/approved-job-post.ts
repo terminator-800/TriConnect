@@ -14,15 +14,17 @@ export const approvedJobPosts = async (req: Request, res: Response): Promise<voi
 
         res.status(200).json(jobPosts);
     } catch (error: any) {
-        logger.error("Failed to fetch approved job posts", { error, query: req.query, ip: req.ip });
+        logger.error("Failed to fetch approved job posts", {
+            error: error,
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            query: req.query,
+            ip: req.ip
+        });
         res.status(500).json({ error: "Failed to fetch approved job posts" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (error) {
-                logger.error("Failed to release DB connection in approvedJobPosts", { error });
-            }
-        }
+        if (connection) connection.release();
     }
 };

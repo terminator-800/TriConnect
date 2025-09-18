@@ -75,16 +75,17 @@ export const rejectApplication = async (
     }
 
     return res.status(200).json({ message: "Application rejected successfully" });
-  } catch (error) {
-    logger.error("Failed to reject application", { error, ip, params: req.params, user: req.user });
+  } catch (error: any) {
+    logger.error("Failed to reject application", {
+      ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error during application rejection",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ message: "Failed to reject application" });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection in rejectApplication", { releaseError, ip });
-      }
-    }
+    if (connection) connection.release();
   }
 };

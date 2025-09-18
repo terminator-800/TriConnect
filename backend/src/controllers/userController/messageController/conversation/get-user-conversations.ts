@@ -7,12 +7,15 @@ interface ConversationRow extends RowDataPacket {
     conversation_id: number;
     sender_id: number;
     role: 'jobseeker' | 'individual-employer' | 'business-employer' | 'manpower-provider';
+    profile?: string;
     js_full_name?: string;
     ie_full_name?: string;
     business_name?: string;
     agency_name?: string;
     authorized_person?: string;
+    authorized_person_id?: string;           // ✅ add this
     agency_authorized_person?: string;
+    agency_authorized_person_id?: string;   // ✅ add this
     message_id?: number;
     message_type?: 'text' | 'file';
     message_text?: string | null;
@@ -41,11 +44,13 @@ interface IndividualEmployerConversation extends BaseConversation {
 interface BusinessEmployerConversation extends BaseConversation {
     business_name?: string;
     authorized_person?: string;
+    authorized_profile?: string;  // ✅ add this
 }
 
 interface ManpowerProviderConversation extends BaseConversation {
     agency_name?: string;
     agency_authorized_person?: string;
+    authorized_profile?: string;  // ✅ add this
 }
 
 type UserConversation =
@@ -66,6 +71,7 @@ export const getUserConversations = async (
           c.conversation_id,
           u.user_id AS sender_id,
           u.role,
+          u.profile,
 
           js.full_name AS js_full_name,
           ie.full_name AS ie_full_name,
@@ -73,7 +79,10 @@ export const getUserConversations = async (
           mp.agency_name,
 
           be.authorized_person AS authorized_person,
+          be.authorized_person_id AS authorized_person_id,   -- ✅ add this
+
           mp.agency_authorized_person AS agency_authorized_person,
+          mp.authorized_person_id AS agency_authorized_person_id, -- ✅ add this
 
           m.message_id,
           m.message_type,
@@ -118,22 +127,39 @@ export const getUserConversations = async (
             };
 
             switch (row.role) {
+
                 case 'jobseeker':
-                    return { ...base, full_name: row.js_full_name! } as JobseekerConversation;
+                    return {
+                        ...base,
+                        full_name: row.js_full_name!,
+                        profile: row.profile,
+                    } as JobseekerConversation;
+
                 case 'individual-employer':
-                    return { ...base, full_name: row.ie_full_name! } as IndividualEmployerConversation;
+                    return {
+                        ...base,
+                        full_name: row.ie_full_name!,
+                        profile: row.profile,
+                    } as IndividualEmployerConversation;
+
                 case 'business-employer':
                     return {
                         ...base,
                         business_name: row.business_name,
                         authorized_person: row.authorized_person,
+                        profile: row.profile,
+                        authorized_profile: row.authorized_person_id,
                     } as BusinessEmployerConversation;
+
                 case 'manpower-provider':
                     return {
                         ...base,
                         agency_name: row.agency_name,
                         agency_authorized_person: row.agency_authorized_person,
+                        profile: row.profile,
+                        authorized_profile: row.agency_authorized_person_id,
                     } as ManpowerProviderConversation;
+
                 default:
                     return base;
             }

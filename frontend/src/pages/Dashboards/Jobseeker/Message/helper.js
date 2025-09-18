@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useMarkAsSeen } from '../../../../../hooks/CHAT'; 
+import { useMarkAsSeen } from '../../../../../hooks/CHAT';
 import { ROLE } from "../../../../../utils/role";
 
 export const getTabFromLocalStorage = () => {
@@ -26,8 +26,9 @@ export const getInitials = (fullName) => {
     return (firstInitial + lastInitial).toUpperCase();
 };
 
-
+// This is for Chat Headers Data PROPS
 export const filterAndMapConversations = (conversations, activeTab) => {
+
     const filtered = conversations.filter(convo => {
         if (activeTab === 'employer') {
             return convo.role === ROLE.BUSINESS_EMPLOYER || convo.role === ROLE.INDIVIDUAL_EMPLOYER;
@@ -42,20 +43,32 @@ export const filterAndMapConversations = (conversations, activeTab) => {
     return filtered.map(convo => {
         let name = unknown;
         let authorized_person = null;
+        let authorized_profile = null;
+        let profile = null;
 
         switch (convo.role) {
+
             case ROLE.BUSINESS_EMPLOYER:
                 name = convo.business_name || unknown;
                 authorized_person = convo.authorized_person || null;
+                authorized_profile = convo.authorized_profile || null;
+                profile = convo.profile;
                 break;
+
             case ROLE.INDIVIDUAL_EMPLOYER:
                 name = convo.full_name || unknown;
                 authorized_person = convo.full_name;
+                profile = convo.profile;
+                authorized_profile = convo.profile || null;
+
                 break;
             case ROLE.MANPOWER_PROVIDER:
                 name = convo.agency_name || convo.agency_authorized_person || unknown;
                 authorized_person = convo.agency_authorized_person || null;
+                authorized_profile = convo.authorized_profile || null;
+                profile = convo.profile;
                 break;
+
             default:
                 break;
         }
@@ -69,6 +82,8 @@ export const filterAndMapConversations = (conversations, activeTab) => {
             conversation_id: convo.conversation_id,
             message_id: convo.message_id,
             authorized_person,
+            profile,
+            authorized_profile,
         };
     });
 };

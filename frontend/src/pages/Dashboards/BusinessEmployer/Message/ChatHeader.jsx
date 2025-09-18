@@ -10,7 +10,7 @@ const ChatHeader = ({ selectedUser }) => {
   const [showReportModal, setShowReportModal] = useState(false);
 
   const { data: reportedUsers = [] } = useReportedUsers(ROLE.BUSINESS_EMPLOYER);
-  
+
   const isUserReported = reportedUsers.includes(selectedUser?.sender_id);
 
   if (!selectedUser) {
@@ -28,9 +28,17 @@ const ChatHeader = ({ selectedUser }) => {
       {selectedUser ? (
         <>
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
-              {getInitials(authorizedPerson)}
-            </div>
+            {selectedUser.authorized_profile ? (
+              <img
+                src={selectedUser.authorized_profile}
+                alt={authorizedPerson || "User"}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
+                {getInitials(authorizedPerson)}
+              </div>
+            )}
 
             <div className="text-sm text-gray-700">
               <span className="font-medium">

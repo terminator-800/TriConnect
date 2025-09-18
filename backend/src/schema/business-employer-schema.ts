@@ -20,7 +20,6 @@ export async function createBusinessEmployerTable(connection: Pool | PoolConnect
   try {
     await connection.execute(query);
   } catch (error) {
-    logger.error('Failed to create business_employer table', { error });
-    throw new Error('Could not create business_employer table');
+    throw error;
   }
 }

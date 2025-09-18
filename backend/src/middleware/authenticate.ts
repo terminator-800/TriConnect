@@ -65,7 +65,15 @@ export const authenticate = (req: AuthenticatedRequest, res: Response, next: Nex
 
         next();
     } catch (error: any) {
-        logger.error('Token verification failed', { error, ip: req.ip });
+        logger.error("Token verification failed", {
+            ip: req.ip,
+            token,
+            name: error?.name || "UnknownError",
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(401).json({ error: 'Unauthorized: Invalid token.' });
     }
 };

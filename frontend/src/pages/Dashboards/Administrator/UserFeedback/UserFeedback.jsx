@@ -18,13 +18,14 @@ const UserFeedback = () => {
   const mappedFeedbacks = feedbacks.map((fb) => {
     const name = fb.user_name || 'Unknown';
     return {
-      id: fb.feedback_id ?? 'N/A',                  
+      id: fb.feedback_id ?? 'N/A',
       name,
       type: fb.role || 'Unknown',
       color: roleColors[fb.role] || 'text-gray-500',
       date: fb.submitted_at || 'Unknown',
       message: fb.message || 'No message provided',
-      initials: getInitials(name) || 'Unknown',           
+      initials: getInitials(name) || 'Unknown',
+      profile: fb.profile || null,
     };
   });
 
@@ -38,8 +39,8 @@ const UserFeedback = () => {
     <>
       <Sidebar />
       <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 flex flex-col">
-        <h1 className="text-5xl font-bold text-blue-900">User Feedback</h1>
-        <p className="text-2xl mt-2">
+        <h1 className="text-2xl font-bold text-blue-900">User Feedback</h1>
+        <p className="mt-2">
           Review and manage feedback submitted by TriConnect users
         </p>
 
@@ -61,17 +62,33 @@ const UserFeedback = () => {
                   <th className="px-6 py-3"></th>
                 </tr>
               </thead>
+
               <tbody className="bg-white divide-y divide-gray-200">
+
                 {currentItems.map((fb) => (
-                  <tr key={`${fb.id}-${fb.date}`}>
+
+                  <tr key={fb.id}>
+
                     <td className="px-6 py-4 flex items-center">
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3">
-                        <span className="text-xs font-bold text-gray-600 italic">
-                          {fb.initials}
-                        </span>
+
+                      {/* PROFILE / INITIALS */}
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3 overflow-hidden">
+                        {fb.profile ? ( 
+                          <img
+                            src={fb.profile}
+                            alt={fb.user_name || "User"}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-xs font-bold text-gray-600 italic">
+                            {fb.initials || "n/a"} 
+                          </span>
+                        )}
                       </div>
+
                       <span className="font-semibold italic">{fb.name}</span>
                     </td>
+
                     <td className={`px-6 py-4 font-bold text-sm italic ${fb.color}`}>
                       {ROLE_LABELS[fb.type]}
                     </td>
@@ -85,6 +102,7 @@ const UserFeedback = () => {
                       </button>
                     </td>
                   </tr>
+
                 ))}
 
                 {/* Show empty row if no users */}
@@ -95,6 +113,7 @@ const UserFeedback = () => {
                     </td>
                   </tr>
                 )}
+
               </tbody>
             </table>
           </div>

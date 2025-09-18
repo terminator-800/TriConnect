@@ -23,17 +23,18 @@ export const conversations = async (req: Request, res: Response): Promise<void> 
         const rows: UserConversation[] = await getUserConversations(connection, user_id);
 
         res.json(rows);
-    } catch (err) {
-        logger.error("Unexpected error fetching conversations", { error: err, user_id, ip });
+    } catch (error: any) {
+        logger.error("Unexpected error fetching conversations", {
+            error: error,
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            ip
+        });
         res.status(500).json({ error: 'Server error' });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError, user_id, ip });
-            }
-        }
+        if (connection) connection.release();
     }
 }
 

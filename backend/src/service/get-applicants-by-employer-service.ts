@@ -39,7 +39,6 @@ export async function getApplicantsByEmployer(
   connection: PoolConnection,
   employerUserId: number,
   options: GetApplicantsOptions = {},
-  ip?: string
 ): Promise<ApplicantsResult> {
 
   try {
@@ -118,7 +117,6 @@ export async function getApplicantsByEmployer(
       })),
     };
   } catch (error) {
-    logger.error("Error fetching applicants by employer", { error, employerUserId, options, ip });
     throw new Error("Failed to fetch applicants.");
   }
 }

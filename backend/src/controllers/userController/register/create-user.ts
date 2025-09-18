@@ -44,7 +44,7 @@ export async function createUsers(connection: PoolConnection, email: string, has
 
         return { success: true, user_id: userId };
     } catch (error) {
-        logger.error("Failed to create user", { error, email, role });
+        logger.error("Error creating user", { error, email, role });
         return { success: false, error };
     }
 }

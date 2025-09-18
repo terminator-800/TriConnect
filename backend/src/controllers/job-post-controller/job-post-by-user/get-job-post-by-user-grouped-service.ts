@@ -125,7 +125,6 @@ export async function getJobPostsByUserGrouped(
       ...grouped,
     };
   } catch (error) {
-    logger.error("Failed to fetch or process job posts by user", { error, user_id });
     throw error;
   }
 }

@@ -58,21 +58,19 @@ export const verifyEmail = async (request: Request<{}, {}, {}, { token?: string 
 
     return response.status(200).send("Email verified and account registered!");
 
-  } catch (error: unknown) {
-    if (connection) {
-      try {
-        await connection.rollback();
-      } catch (rollbackError) {
-        logger.error("Failed to rollback transaction in verifyEmail", { error: rollbackError });
-      }
-    }
-    logger.error("Error during email verification", { error });
+  } catch (error: any) {
+
+    if (connection) await connection.rollback();
+    
+    logger.error("Error during email verification", {
+      error,
+      name: error?.name || "UnknownError",
+      message: error?.message || "No message",
+      stack: error?.stack || "No stack trace",
+      cause: error ?.cause || "No cause",
+    });
     return response.status(400).send("Invalid or expired verification link.");
   } finally {
-    try {
-      connection?.release();
-    } catch (releaseError) {
-      logger.error("Failed to release database connection in verifyEmail", { error: releaseError });
-    }
+    if (connection) connection?.release();
   }
 };

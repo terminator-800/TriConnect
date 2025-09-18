@@ -17,6 +17,7 @@ export interface IndividualEmployerProfile {
     is_rejected: boolean | number;
     account_status: string;
     role: typeof ROLE.INDIVIDUAL_EMPLOYER;
+    profile?: string | null;
 }
 
 export async function getIndividualEmployerProfile(connection: PoolConnection, user_id: number): Promise<IndividualEmployerProfile | null> {
@@ -35,7 +36,8 @@ export async function getIndividualEmployerProfile(connection: PoolConnection, u
         u.is_verified,
         u.is_submitted,
         u.is_rejected,
-        u.account_status
+        u.account_status,
+        u.profile
       FROM individual_employer i
       JOIN users u ON i.individual_employer_id = u.user_id
       WHERE i.individual_employer_id = ?
@@ -61,12 +63,12 @@ export async function getIndividualEmployerProfile(connection: PoolConnection, u
             date_of_birth: row.date_of_birth
                 ? format(new Date(row.date_of_birth), "MMMM dd, yyyy 'at' hh:mm a")
                 : null,
-            role: ROLE.INDIVIDUAL_EMPLOYER
+            role: ROLE.INDIVIDUAL_EMPLOYER,
+            profile: row.profile || null
         };
 
         return profile;
     } catch (error) {
-        logger.error("Failed to fetch individual-employer profile", { error, user_id });
         throw error;
     }
 }

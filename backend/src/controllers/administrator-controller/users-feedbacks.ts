@@ -11,12 +11,14 @@ interface UserFeedback extends RowDataPacket {
   message: string;
   submitted_at: string;
   user_name: string | null;
+  profile: string | null
 }
 
 export const usersFeedbacks = async (req: CustomRequest, res: Response) => {
   let connection: Awaited<ReturnType<typeof pool.getConnection>> | undefined;
 
   try {
+
     if (req.user?.role !== "administrator") {
       logger.warn(`User ID ${req.user?.user_id} attempted to fetch feedback without proper authorization.`);
       return res.status(403).json({ message: "Forbidden: Admins only" });
@@ -27,22 +29,24 @@ export const usersFeedbacks = async (req: CustomRequest, res: Response) => {
 
     return res.status(200).json(feedbacks);
 
-  } catch (error) {
-    logger.error("An unexpected error occurred in the usersFeedbacks", { error });
+  } catch (error: any) {
+    logger.error("Error in usersFeedbacks controller", {
+      ip: req.ip,
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      name: error?.name || "UnknownError",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ message: "Failed to fetch user feedback." });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (error) {
-        logger.error("Failed to release DB connection", { error });
-      }
-    }
+    if (connection) connection.release();
   }
 };
 
 async function getUserFeedbacks(connection: Awaited<ReturnType<typeof pool.getConnection>>): Promise<UserFeedback[]> {
   try {
+
     const [rows] = await connection.query<RowDataPacket[]>(`
         SELECT
             feedback.feedback_id,
@@ -56,8 +60,11 @@ async function getUserFeedbacks(connection: Awaited<ReturnType<typeof pool.getCo
                 WHEN feedback.role = 'individual-employer' THEN individual_employer.full_name
                 WHEN feedback.role = 'manpower-provider' THEN manpower_provider.agency_name 
                 ELSE NULL
-            END AS user_name
+            END AS user_name,
+            users.profile AS profile 
+
         FROM feedback feedback
+        LEFT JOIN users users ON feedback.user_id = users.user_id 
         LEFT JOIN jobseeker jobseeker ON feedback.user_id = jobseeker.jobseeker_id
         LEFT JOIN business_employer business_employer ON feedback.user_id = business_employer.business_employer_id
         LEFT JOIN individual_employer individual_employer ON feedback.user_id = individual_employer.individual_employer_id
@@ -66,8 +73,8 @@ async function getUserFeedbacks(connection: Awaited<ReturnType<typeof pool.getCo
     `);
 
     return rows as UserFeedback[];
-  } catch (error) {
-    logger.error("Database query failed in getUserFeedbacks", { error });
+
+  } catch (error: any) {
     throw error;
   }
 }

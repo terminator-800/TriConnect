@@ -1,62 +1,74 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useMarkAsSeen } from '../../../../../hooks/CHAT'; 
+import { useMarkAsSeen } from '../../../../../hooks/CHAT';
 import { ROLE } from "../../../../../utils/role";
 
 export const getTabFromLocalStorage = () => {
-    return localStorage.getItem('chat-active-tab') || ROLE.JOBSEEKER;
+  return localStorage.getItem('chat-active-tab') || ROLE.JOBSEEKER;
 };
 
 export const saveTabToLocalStorage = (tab) => {
-    localStorage.setItem('chat-active-tab', tab);
+  localStorage.setItem('chat-active-tab', tab);
 };
 
 export const getInitials = (fullName) => {
-    if (!fullName || typeof fullName !== 'string') return '?';
+  if (!fullName || typeof fullName !== 'string') return '?';
 
-    const parts = fullName.trim().split(' ');
+  const parts = fullName.trim().split(' ');
 
-    if (parts.length === 1) {
-        return parts[0][0].toUpperCase();
-    }
+  if (parts.length === 1) {
+    return parts[0][0].toUpperCase();
+  }
 
-    const firstInitial = parts[0][0] || '';
-    const lastInitial = parts[parts.length - 1][0] || '';
+  const firstInitial = parts[0][0] || '';
+  const lastInitial = parts[parts.length - 1][0] || '';
 
-    return (firstInitial + lastInitial).toUpperCase();
+  return (firstInitial + lastInitial).toUpperCase();
 };
 
+// This is for Chat Headers Data PROPS
 export const filterAndMapConversations = (conversations, activeTab) => {
-    const filtered = conversations.filter(convo => convo.role === activeTab);
-    const unknown = 'Unknown';
+  const filtered = conversations.filter(convo => convo.role === activeTab);
+  const unknown = 'Unknown';
 
-    return filtered.map(convo => {
-        let name = unknown;
-        let authorized_person = null;
+  return filtered.map(convo => {
+    let name = unknown;
+    let authorized_person = null;
+    let authorized_profile = null
+    let profile = null;
 
-        switch (convo.role) {
-            case ROLE.JOBSEEKER:
-                name = convo.full_name || unknown;
-                authorized_person = convo.full_name;
-                break;
-            case ROLE.MANPOWER_PROVIDER:
-                name = convo.agency_name || unknown;
-                authorized_person = convo.agency_authorized_person || null;
-                break;
-            default:
-                authorized_person = null;
-                break;
-        }
+    switch (convo.role) {
 
-        return {
-            sender_id: convo.sender_id,
-            name,
-            message_text: convo.message_text,
-            sent_at: convo.sent_at,
-            role: convo.role,
-            conversation_id: convo.conversation_id,
-            authorized_person,
-        };
-    });
+      case ROLE.JOBSEEKER:
+        name = convo.full_name || unknown;
+        authorized_person = convo.full_name;
+        profile = convo.profile;
+        authorized_profile = convo.profile;
+        break;
+
+      case ROLE.MANPOWER_PROVIDER:
+        name = convo.agency_name || unknown;
+        authorized_person = convo.agency_authorized_person || null;
+        authorized_profile = convo.authorized_profile;
+        profile = convo.profile;
+        break;
+
+      default:
+        authorized_person = null;
+        break;
+    }
+
+    return {
+      sender_id: convo.sender_id,
+      name,
+      message_text: convo.message_text,
+      sent_at: convo.sent_at,
+      role: convo.role,
+      conversation_id: convo.conversation_id,
+      authorized_person,
+      profile,
+      authorized_profile
+    };
+  });
 };
 
 // Chat Winow Helpers
@@ -76,7 +88,7 @@ export const useMarkMessagesAsSeen = ({ role, conversation_id, messages, current
 
   const newMessagesToMark = useMemo(() => {
     if (!conversation_id) {
-      markedSeenRef.current = new Set(); 
+      markedSeenRef.current = new Set();
       return [];
     }
     return allMessageIds.filter((id) => !markedSeenRef.current.has(id));

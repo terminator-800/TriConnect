@@ -19,8 +19,7 @@ export async function createIndividualEmployerTable(connection: Pool | PoolConne
   `;
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create individual employer table', { error });
+  } catch (error) {
     throw error; 
   }
 }

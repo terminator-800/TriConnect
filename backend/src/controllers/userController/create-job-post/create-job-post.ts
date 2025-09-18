@@ -87,14 +87,18 @@ export const createJobPost = async (request: Request<unknown, unknown, CreateJob
             job_post_id: result.job_post_id,
         });
 
-    } catch (err) {
-        logger.error("Unexpected error in createJobPost controller", { error: err, ip, user_id: user?.user_id });
+    } catch (error: any) {
+        if (connection) connection.rollback();
+        logger.error("Unexpected error in createJobPost controller", {
+            error: error,
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            ip,
+        });
         return response.status(500).json({ error: "Internal server error." });
     } finally {
-        try {
-            if (connection) connection.release();
-        } catch (releaseError) {
-            logger.error("Failed to release DB connection", { error: releaseError, ip, user_id: user?.user_id });
-        }
+        if (connection) connection.release();
     }
 };

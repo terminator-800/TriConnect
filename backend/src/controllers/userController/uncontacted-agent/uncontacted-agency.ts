@@ -17,7 +17,8 @@ interface Agency {
   agency_name: string;
   agency_address: string;
   agency_services: string;
-  agency_authorized_person: string; // adjust if different in DB
+  agency_authorized_person: string;
+  profile: string | null;
 }
 
 export const uncontactedAgencies = async (req: CustomRequest, res: Response) => {
@@ -52,19 +53,21 @@ export const uncontactedAgencies = async (req: CustomRequest, res: Response) => 
       agency_address: r.agency_address,
       agency_services: r.agency_services,
       agency_authorized_person: r.agency_authorized_person ?? "N/A",
+      profile: r.profile,
     }));
 
     return res.json(agencies);
-  } catch (error) {
-    logger.error("Failed to fetch uncontacted agencies", { error, user: req.user, ip });
+  } catch (error: any) {
+    logger.error("Failed to fetch uncontacted agencies", {
+      ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error during fetching uncontacted agencies",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ message: "Server error." });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection in uncontactedAgencies", { releaseError, user: req.user, ip });
-      }
-    }
+    if (connection) connection.release();
   }
 };

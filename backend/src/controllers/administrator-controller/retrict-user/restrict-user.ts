@@ -42,26 +42,20 @@ export const restrictUser = async (req: CustomRequest, res: Response): Promise<v
         });
     } catch (error: any) {
 
-        if (connection) {
-            try {
-                await connection.rollback();
-                logger.warn(`Transaction rolled back for user restriction: ${req.body.user_id}`, { error });
-            } catch (rollbackError: any) {
-                logger.error(`Failed to rollback transaction for user ${req.body.user_id}`, { rollbackError });
-            }
-        }
-
-        logger.error(`Failed to restrict user at (restrict-user): ${req.body.user_id}`, { error });
+        if (connection) await connection.rollback();
+        logger.error(`Failed to restrict user at (restrict-user): ${req.body.user_id}`, {
+            user_id: req.user_id,
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({
             message: 'Failed to restrict user'
         });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError: any) {
-                logger.error(`Failed to release database connection for user ${req.body.user_id}`, { releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };

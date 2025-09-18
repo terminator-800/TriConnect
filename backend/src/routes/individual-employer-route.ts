@@ -15,13 +15,15 @@ import { uncontactedAgencies } from "../controllers/userController/uncontacted-a
 import { validateRegisterInput } from "../middleware/validate-register-input.js";
 import { uploadIndividualEmployerFiles } from "../middleware/upload-files.js";
 import { reportedUsers } from "../controllers/report-controller/reported-user/reported-user.js";
-import { reportUser  } from "../controllers/report-controller/report-user/report-user.js";
+import { reportUser } from "../controllers/report-controller/report-user/report-user.js";
 import { chatImageUpload, reportUpload } from "../middleware/upload-files.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { submitFeedback } from "../controllers/userController/submit-feedback/submit-feedback.js";
 import { viewApplicants } from "../controllers/userController/view-applicant/view-applicants.js";
 import { employerDashboard } from "../controllers/userController/employer-dashboard.js";
 import { rejectApplication } from "../controllers/userController/reject-application/reject-application.js";
+import { changeProfile } from "../controllers/userController/change-profile/change-profile.js";
+import { changeUserProfile } from "./../middleware/upload-files.js";
 
 const router = express.Router();
 
@@ -44,5 +46,6 @@ router.post("/individual-employer/feedback", authenticate, submitFeedback);
 router.get("/individual-employer/applicants", authenticate, viewApplicants);
 router.get("/individual-employer/dashboard", authenticate, employerDashboard);
 router.patch("/individual-employer/applications/:applicationId/reject", authenticate, rejectApplication);
+router.patch("/individual-employer/change-profile", authenticate, changeUserProfile, changeProfile);
 
 export default router;

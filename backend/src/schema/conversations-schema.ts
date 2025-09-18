@@ -16,8 +16,7 @@ export async function createConversationsTable(connection: Pool | PoolConnection
   try {
     await connection.execute(query);
   } catch (error) {
-    logger.error('Failed to create conversations table', { error });
-    throw new Error('Could not create conversations table');
+    throw error;
   }
 }
 

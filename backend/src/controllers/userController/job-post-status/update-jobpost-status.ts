@@ -43,7 +43,7 @@ export const updateJobPostStatus = async (
   }
 
   const jobPostIdNum = Number(jobPostId);
-  
+
   if (isNaN(jobPostIdNum)) {
     logger.warn("Invalid job post ID", { jobPostId, user_id, role, ip });
     return res.status(400).json({ error: "Invalid job post ID" });
@@ -78,28 +78,21 @@ export const updateJobPostStatus = async (
 
     await connection.commit();
     return res.status(200).json({ message: "Job post status updated successfully" });
-  } catch (error) {
+  } catch (error: any) {
 
-    if (connection) {
-      try {
-        await connection.rollback();
-      } catch (rollbackError) {
-        logger.error("Failed to rollback transaction", { rollbackError, jobPostIdNum, user_id, role, ip });
-      }
-    }
+    if (connection) await connection.rollback();
+     
+    logger.error("Unexpected error updating job post status", {
+      error,
+      name: error?.name || "UnknownError",
+      message: error?.message || "No message",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      ip
+    });
 
-    logger.error("Unexpected error updating job post status", { error, jobPostIdNum, user_id, role, ip });
     return res.status(500).json({ error: "Failed to update status" });
-
   } finally {
-
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release database connection", { releaseError, user_id, jobPostIdNum, role, ip });
-      }
-    }
-
+    if (connection) connection.release();
   }
 };

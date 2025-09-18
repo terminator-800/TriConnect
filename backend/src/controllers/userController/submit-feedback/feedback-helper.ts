@@ -16,11 +16,15 @@ export async function hasSubmittedFeedback(
   connection: PoolConnection,
   userId: number
 ): Promise<boolean> {
-  const [rows] = await connection.execute<RowDataPacket[]>(
-    `SELECT feedback_id FROM feedback WHERE user_id = ? LIMIT 1`,
-    [userId]
-  );
-  return rows.length > 0;
+  try {
+    const [rows] = await connection.execute<RowDataPacket[]>(
+      `SELECT feedback_id FROM feedback WHERE user_id = ? LIMIT 1`,
+      [userId]
+    );
+    return rows.length > 0;
+  } catch (error) {
+    throw error
+  }
 }
 
 /**
@@ -32,23 +36,27 @@ export async function saveFeedback(
   role: string,
   message: string
 ): Promise<FeedbackRow | null> {
-  const [result] = await connection.execute<ResultSetHeader>(
-    `INSERT INTO feedback (user_id, role, message) VALUES (?, ?, ?)`,
-    [userId, role, message]
-  );
+  try {
+    const [result] = await connection.execute<ResultSetHeader>(
+      `INSERT INTO feedback (user_id, role, message) VALUES (?, ?, ?)`,
+      [userId, role, message]
+    );
 
-  const insertId = result.insertId;
+    const insertId = result.insertId;
 
-  const [rows] = await connection.execute<FeedbackRow[]>(
-    `SELECT feedback_id, user_id, role, message, created_at 
+    const [rows] = await connection.execute<FeedbackRow[]>(
+      `SELECT feedback_id, user_id, role, message, created_at 
      FROM feedback WHERE feedback_id = ?`,
-    [insertId]
-  );
+      [insertId]
+    );
 
-  const feedback = rows[0];
-  if (!feedback) {
-    return null; // and handle null in the caller
+    const feedback = rows[0];
+    if (!feedback) {
+      return null;
+    }
+
+    return feedback;
+  } catch (error) {
+    throw error
   }
-
-  return feedback;
 }

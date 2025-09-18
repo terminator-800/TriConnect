@@ -27,8 +27,8 @@ const JobPostForm = () => {
 
     return (
         <>
-            <h1 className="text-5xl font-bold text-blue-900">Create Job Post</h1>
-            <p className="text-2xl mt-2">Fill out the form below to post a new job vacancy</p>
+            <h1 className="text-2xl font-bold text-blue-900">Create Job Post</h1>
+            <p className="mt-2">Fill out the form below to post a new job vacancy</p>
 
             <div className="w-full bg-white p-15 rounded mt-15">
                 <form onSubmit={(e) => {

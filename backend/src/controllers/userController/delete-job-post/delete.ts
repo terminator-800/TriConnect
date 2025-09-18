@@ -28,7 +28,6 @@ export const deleteJobPost = async (
 
     return result;
   } catch (error) {
-    logger.error("Failed to soft-delete job post", { error, jobPostId });
     throw new Error("Database error while soft-deleting job post");
   }
 };

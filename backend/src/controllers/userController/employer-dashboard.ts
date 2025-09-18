@@ -31,7 +31,7 @@ export const employerDashboard = async (
 
   try {
     const employerUserId = req.user?.user_id;
-    
+
     if (!employerUserId) {
       logger.warn("Unauthorized access attempt to dashboard", { ip });
       return res.status(401).json({ message: "Unauthorized" });
@@ -83,14 +83,17 @@ export const employerDashboard = async (
     });
 
     return res.status(200).json({ recentJobPosts, recentApplicants: applicants });
-  } catch (error) {
-    logger.error("Failed to load employer dashboard", { error, ip, user: req.user });
+  } catch (error: any) {
+    logger.error("Failed to load employer dashboard", {
+      ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ message: "Failed to load dashboard" });
   } finally {
-    try {
       if (connection) connection.release();
-    } catch (releaseError) {
-      logger.error("Failed to release DB connection", { error: releaseError, ip, user_id });
-    }
   }
 };

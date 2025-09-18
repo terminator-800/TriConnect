@@ -20,7 +20,6 @@ export const updateStatus = async (
         );
         return result;
     } catch (error) {
-        logger.error("Failed to update job post status", { error, jobPostId, status });
-        return null;
+        throw error;
     }
 };

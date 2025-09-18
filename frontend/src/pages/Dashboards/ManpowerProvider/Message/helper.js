@@ -1,69 +1,83 @@
 import { useEffect, useMemo, useRef } from 'react';
-import { useMarkAsSeen } from '../../../../../hooks/CHAT'; 
-import { ROLE } from '../../../../../utils/role'; 
+import { useMarkAsSeen } from '../../../../../hooks/CHAT';
+import { ROLE } from '../../../../../utils/role';
 
 export const getTabFromLocalStorage = () => {
-    return localStorage.getItem('chat-active-tab') || ROLE.BUSINESS_EMPLOYER;
+  return localStorage.getItem('chat-active-tab') || ROLE.BUSINESS_EMPLOYER;
 };
 
 export const saveTabToLocalStorage = (tab) => {
-    localStorage.setItem('chat-active-tab', tab);
+  localStorage.setItem('chat-active-tab', tab);
 };
 
 
 export const getInitials = (fullName) => {
-    if (!fullName || typeof fullName !== 'string') return '?';
+  if (!fullName || typeof fullName !== 'string') return '?';
 
-    const parts = fullName.trim().split(' ');
+  const parts = fullName.trim().split(' ');
 
-    if (parts.length === 1) {
-        return parts[0][0].toUpperCase();
-    }
+  if (parts.length === 1) {
+    return parts[0][0].toUpperCase();
+  }
 
-    const firstInitial = parts[0][0] || '';
-    const lastInitial = parts[parts.length - 1][0] || '';
+  const firstInitial = parts[0][0] || '';
+  const lastInitial = parts[parts.length - 1][0] || '';
 
-    return (firstInitial + lastInitial).toUpperCase();
+  return (firstInitial + lastInitial).toUpperCase();
 };
 
 export const filterAndMapConversations = (conversations, activeTab) => {
-        let unknown = 'Unknown';
-    const filtered = conversations.filter((convo) => {
-        if (activeTab === 'employer') {
-            return convo.role === ROLE.BUSINESS_EMPLOYER || convo.role === ROLE.INDIVIDUAL_EMPLOYER;
-        } 
-        else if (activeTab === 'jobseeker') {
-            return convo.role === ROLE.JOBSEEKER;
-        }
-        return false;
-    });
+  let unknown = 'Unknown';
 
-    return filtered.map((convo) => {
-        let name = unknown;
+  const filtered = conversations.filter((convo) => {
+    if (activeTab === 'employer') {
+      return convo.role === ROLE.BUSINESS_EMPLOYER || convo.role === ROLE.INDIVIDUAL_EMPLOYER;
+    }
+    else if (activeTab === 'jobseeker') {
+      return convo.role === ROLE.JOBSEEKER;
+    }
+    return false;
+  });
 
-        switch (convo.role) {
-            case ROLE.BUSINESS_EMPLOYER:
-                name = convo.business_name || unknown;
-                break;
-            case ROLE.INDIVIDUAL_EMPLOYER:
-              name = convo.full_name || unknown;
-            case ROLE.JOBSEEKER:
-                name = convo.full_name || unknown;
-                break;
-            default:
-                break;
-        }
+  return filtered.map((convo) => {
+    let name = unknown;
+    let authorized_profile = null;
+    let profile = null;
 
-        return {
-            sender_id: convo.sender_id,
-            name,
-            authorized_person: convo.authorized_person,
-            message_text: convo.message_text,
-            sent_at: convo.sent_at,
-            role: convo.role,
-            conversation_id: convo.conversation_id,
-        };
-    });
+    switch (convo.role) {
+      case ROLE.BUSINESS_EMPLOYER:
+        name = convo.business_name || unknown;
+        authorized_profile = convo.authorized_profile || unknown
+        profile = convo.profile || unknown;
+        break;
+      case ROLE.INDIVIDUAL_EMPLOYER:
+        name = convo.full_name || unknown;
+        profile = convo.profile || unknown;
+        authorized_profile = convo.profile || unknown;
+
+      case ROLE.JOBSEEKER:
+        name = convo.full_name || unknown;
+        profile = convo.profile|| unknown;
+        authorized_profile = convo.profile || unknown;
+        break;
+
+      default:
+
+        break;
+    }
+
+    return {
+      sender_id: convo.sender_id,
+      name,
+      authorized_person: convo.authorized_person,
+      message_text: convo.message_text,
+      sent_at: convo.sent_at,
+      role: convo.role,
+      conversation_id: convo.conversation_id,
+      profile,
+      authorized_profile
+    };
+  });
 };
 
 // Chat Winow Helpers
@@ -83,7 +97,7 @@ export const useMarkMessagesAsSeen = ({ role, conversation_id, messages, current
 
   const newMessagesToMark = useMemo(() => {
     if (!conversation_id) {
-      markedSeenRef.current = new Set(); 
+      markedSeenRef.current = new Set();
       return [];
     }
     return allMessageIds.filter((id) => !markedSeenRef.current.has(id));

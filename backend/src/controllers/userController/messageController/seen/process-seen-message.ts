@@ -76,8 +76,6 @@ export const processSeenMessages = async (
             messageDetails: detailsRows,
         };
     } catch (error) {
-        logger.error("Failed to process seen messages", { error, viewer_id, message_id });
-        // Return a safe empty structure instead of throwing
         return { validMessageIds: [], updated: 0, messageDetails: [] };
     }
 };

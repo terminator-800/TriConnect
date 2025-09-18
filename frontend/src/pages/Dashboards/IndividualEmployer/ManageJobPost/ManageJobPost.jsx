@@ -50,9 +50,8 @@ const ManageJobPost = () => {
                 {employer.is_verified ? (
                     <>
                         <header>
-                            <h1 className="text-5xl font-bold text-blue-900">Manage Job Post</h1>
-                            <p className="text-2xl mt-2">View and manage all your job postings</p>
-                            <p className="text-md text-gray-700 mt-1">Welcome, {employer.full_name}</p>
+                            <h1 className="text-2xl font-bold text-blue-900">Manage Job Post</h1>
+                            <p className="mt-2">View and manage all your job postings</p>
                         </header>
 
                         {['pending', 'active', 'completed'].map((key) => (

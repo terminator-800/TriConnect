@@ -19,8 +19,7 @@ export async function createManpowerProviderTable(connection: Pool | PoolConnect
 
    try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create manpower provider table', { error });
+  } catch (error) {
     throw error; 
   }
 }

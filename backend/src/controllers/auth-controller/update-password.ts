@@ -13,11 +13,7 @@ export const updateUserPassword = async (
         );
 
         return result;
-    } catch (error: any) {
-        logger.error("Failed to update user password", {
-            error,
-            email
-        });
-        throw error; 
+    } catch (error) {
+        throw error;
     }
 };

@@ -239,16 +239,17 @@ export const verifiedJobPosts = async (req: CustomRequest, res: Response) => {
 
         res.json(formatted);
 
-    } catch (error) {
-        logger.error("Unexpected error in verifiedJobPosts", { error });
+    } catch (error: any) {
+        logger.error("Unexpected error in verifiedJobPosts", {
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ message: 'Failed to get verified job posts.' });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (error) {
-                logger.error("Failed to release DB connection", { error });
-            }
-        }
+        if (connection) connection.release();
     }
 };

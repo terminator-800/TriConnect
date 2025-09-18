@@ -20,7 +20,6 @@ interface HandleMessageUploadParams {
 export const handleMessageUpload = async (
   connection: PoolConnection,
   { sender_id, receiver_id, message, files }: HandleMessageUploadParams,
-  ip?: string
 ) => {
 
   try {
@@ -79,13 +78,12 @@ export const handleMessageUpload = async (
     
     if (!latestMessage) {
       const errMsg = "Failed to retrieve the latest message.";
-      logger.error(errMsg, { sender_id, receiver_id, conversation_id, ip });
+      logger.error(errMsg, { sender_id, receiver_id, conversation_id });
       throw new Error("Failed to retrieve the latest message.");
     }
 
     return latestMessage;
   } catch (error) {
-    logger.error("Error in handleMessageUpload", { error, sender_id, receiver_id, ip });
     throw new Error("Failed to handle message upload.");
   }
 };

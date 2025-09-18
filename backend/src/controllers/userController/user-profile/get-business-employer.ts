@@ -15,6 +15,8 @@ export interface BusinessEmployerProfile {
     is_rejected: boolean | number;
     account_status: string;
     role: typeof ROLE.BUSINESS_EMPLOYER;
+    profile?: string | null;
+
 }
 
 export async function getBusinessEmployerProfile(connection: PoolConnection, user_id: number): Promise<BusinessEmployerProfile | null> {
@@ -32,7 +34,8 @@ export async function getBusinessEmployerProfile(connection: PoolConnection, use
         u.is_verified,
         u.is_submitted,
         u.is_rejected,
-        u.account_status
+        u.account_status,
+        u.profile
       FROM business_employer b
       JOIN users u ON b.business_employer_id = u.user_id
       WHERE b.business_employer_id = ?
@@ -55,12 +58,12 @@ export async function getBusinessEmployerProfile(connection: PoolConnection, use
             is_submitted: row.is_submitted,
             is_rejected: row.is_rejected,
             account_status: row.account_status,
-            role: ROLE.BUSINESS_EMPLOYER
+            role: ROLE.BUSINESS_EMPLOYER,
+            profile: row.profile || null
         };
 
         return profile;
     } catch (error) {
-        logger.error("Failed to fetch business-employer profile", { error, user_id });
         throw error;
     }
 }

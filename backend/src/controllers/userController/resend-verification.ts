@@ -84,13 +84,16 @@ export const resendVerification: RequestHandler = async (req: Request, res: Resp
 
     return res.status(200).json({ message: "Verification email resent." });
   } catch (error: any) {
-    logger.error("Failed to send verification email", { email, error });
+    logger.error("Failed to send verification email", {
+      email,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ message: "Server error." });
   } finally {
-    try {
       if (connection) connection.release();
-    } catch (releaseError) {
-      logger.error("Failed to release DB connection", { releaseError, email });
-    }
   }
 };

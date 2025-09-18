@@ -7,8 +7,15 @@ export const deleteFromCloudinary = async (publicId: string) => {
     logger.info(`Successfully deleted Cloudinary file: ${publicId}`, { result });
 
     return result;
-  } catch (error) {
-    logger.error(`Failed to delete Cloudinary file: ${publicId}`, { error });
+  } catch (error: any) {
+    logger.error("Failed to delete Cloudinary file", {
+      publicId,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     throw new Error("Failed to delete file from Cloudinary.");
   }
 };

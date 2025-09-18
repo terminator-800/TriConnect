@@ -10,7 +10,6 @@ const VerifiedUser = () => {
     const usersPerPage = 4;
 
     const { data: verifiedUsers = [], isLoading, isError, error } = useVerifiedUsers();
-    
     const [selectedUser, setSelectedUser] = useState(null);
 
     // pagination
@@ -57,17 +56,28 @@ const VerifiedUser = () => {
 
                                         return (
                                             <tr key={user.user_id} className="border-t border-gray-300">
+
+                                                {/* User's Profile */}
                                                 <td className="px-5 py-4 flex items-center space-x-3">
-                                                    <div className="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold italic text-gray-800">
-                                                        {name
-                                                            .split(' ')
-                                                            .map((w) => w[0])
-                                                            .slice(0, 2)
-                                                            .join('')
-                                                            .toUpperCase()}
-                                                    </div>
+                                                    {user.profile ? (
+                                                        <img
+                                                            src={user.profile}
+                                                            alt={name}
+                                                            className="w-10 h-10 rounded-full object-cover"
+                                                        />
+                                                    ) : (
+                                                        <div className="bg-gray-200 rounded-full w-10 h-10 flex items-center justify-center text-sm font-bold italic text-gray-800">
+                                                            {name
+                                                                .split(' ')
+                                                                .map((w) => w[0])
+                                                                .slice(0, 2)
+                                                                .join('')
+                                                                .toUpperCase()}
+                                                        </div>
+                                                    )}
                                                     <span className="italic font-semibold">{name}</span>
                                                 </td>
+
 
                                                 {/* Role column with inline color logic */}
                                                 <td
@@ -89,11 +99,11 @@ const VerifiedUser = () => {
                                                     <span className="text-gray-800">
                                                         {user.verified_at ? (
                                                             <>
-                                                            <span className='text-gray-500'>
-                                                                {user.verified_at}
-                                                            </span>
+                                                                <span className='text-gray-500'>
+                                                                    {user.verified_at}
+                                                                </span>
                                                             </>
-                                                        ): 'N/A'}
+                                                        ) : 'N/A'}
                                                     </span>
                                                     <button
                                                         className="bg-gray-200 px-4 py-1 rounded text-sm cursor-pointer"

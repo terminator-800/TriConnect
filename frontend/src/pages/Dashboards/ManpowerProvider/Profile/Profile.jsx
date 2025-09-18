@@ -7,6 +7,7 @@ import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../VerificationForm/Form';
 import Security from './Security';
+import ChangeProfile from '../../../../components/ChangeProfile/ChangeProfile';
 
 const ManpowerProviderProfile = () => {
   const personal = 'personal'
@@ -74,11 +75,12 @@ const ManpowerProviderProfile = () => {
                     </div>
                   </div>
                 </div>
+
+                {/* Change Profile */}
                 <div className="ml-6">
-                  <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
-                    LOGO
-                  </div>
+                  <ChangeProfile profileData={profileData}/>
                 </div>
+                
               </div>
 
               <div className="bg-white w-full flex justify-between mt-20 gap-5">

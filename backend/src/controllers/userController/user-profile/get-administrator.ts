@@ -45,7 +45,6 @@ export async function getAdministratorProfile(connection: PoolConnection, user_i
 
         return profile;
     } catch (error) {
-        logger.error("Failed to fetch administrator profile", { error, user_id });
         throw error;
     }
 }

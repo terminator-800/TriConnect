@@ -35,20 +35,20 @@ export const createAdministrator = async (): Promise<{ success: boolean; message
                 message: "Administrator account created successfully"
             };
         }
-    } catch (error) {
-        logger.error("Failed to create administrator at (create-administrator)", { error, adminEmail });
+    } catch (error: any) {
+        logger.error("Failed to create administrator at (create-administrator)", {
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            adminEmail
+        });
         return {
             success: false,
             message: "Failed to create administrator"
         };
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError: any) {
-                logger.error("Failed to release database connection", { releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };
 

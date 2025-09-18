@@ -40,16 +40,18 @@ export const approveJobPost = async (req: Request<ApproveJobPostParams>, res: Re
         logger.info(`Job post approved successfully: ID ${jobPostId} by user ${req.user.user_id}`);
         res.status(200).json({ message: result.message });
     } catch (error: any) {
-        logger.error("Error approving job post at (approve-job-post)", { error, userId: req.user?.user_id, jobPostId: req.params.job_post_id });
+        logger.error("Error approving job post at (approve-job-post)", {
+            user_id: req.user_id,
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError, userId: req.user?.user_id });
-            }
-        }
+        if (connection) connection.release();
     }
 };
 
@@ -80,7 +82,6 @@ async function approveJobPostIfExists(connection: PoolConnection, jobPostId: num
 
         return { success: true, message: 'Jobpost approved successfully.' };
     } catch (error) {
-        logger.error("Database error during job post approval at (approve-job-post)", { error, jobPostId });
         throw error;
     }
 }

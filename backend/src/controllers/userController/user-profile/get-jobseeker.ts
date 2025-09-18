@@ -15,6 +15,8 @@ export interface JobseekerProfile {
     is_rejected: boolean | number;
     account_status: string;
     role: typeof ROLE.JOBSEEKER;
+    profile?: string | null;
+
 }
 
 export async function getJobseekerProfile(connection: PoolConnection, user_id: number): Promise<JobseekerProfile | null> {
@@ -31,7 +33,8 @@ export async function getJobseekerProfile(connection: PoolConnection, user_id: n
         u.is_verified,
         u.is_submitted,
         u.is_rejected,
-        u.account_status
+        u.account_status,
+        u.profile
       FROM jobseeker j
       JOIN users u ON j.jobseeker_id = u.user_id
       WHERE j.jobseeker_id = ?
@@ -56,11 +59,11 @@ export async function getJobseekerProfile(connection: PoolConnection, user_id: n
             is_rejected: row.is_rejected,
             account_status: row.account_status,
             role: ROLE.JOBSEEKER,
+            profile: row.profile || null
         };
 
         return profile;
     } catch (error) {
-        logger.error("Failed to fetch jobseeker profile", { error, user_id });
         throw error;
     }
 }

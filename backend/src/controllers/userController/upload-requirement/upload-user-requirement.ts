@@ -185,21 +185,19 @@ export const uploadRequirement = async (req: Request, res: Response) => {
 
     await uploadUserRequirement(connection, payload);
     await connection.commit();
-
     return res.status(200).json({ message: `${role} requirements uploaded successfully` });
-  } catch (err: any) {
-    try {
-      await connection?.rollback();
-    } catch (rollbackError) {
-      logger.error("Rollback failed", { error: rollbackError, ip });
-    }
-    logger.error("Failed to process requirement upload", { error: err, ip, user: req.user });
+  } catch (error: any) {
+    await connection?.rollback();
+    logger.error("Failed to process requirement upload", {
+      ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error during requirement upload",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error: error,
+    });
     return res.status(500).json({ message: "Server error" });
   } finally {
-    try {
       if (connection) connection.release();
-    } catch (releaseError) {
-      logger.error("Failed to release DB connection", { error: releaseError, ip });
-    }
   }
 };

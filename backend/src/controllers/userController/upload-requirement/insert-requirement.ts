@@ -1,6 +1,5 @@
 import type { PoolConnection, ResultSetHeader } from "mysql2/promise";
 import { ROLE } from '../../../utils/roles.js';
-import logger from "../../../config/logger.js";
 
 interface BasePayload {
     role: (typeof ROLE)[keyof typeof ROLE];
@@ -219,10 +218,6 @@ export async function uploadUserRequirement(
         );
 
     } catch (error) {
-        logger.error("Failed to upload user requirement", {
-            error,
-            payload: { user_id: payload.user_id, role: payload.role },
-        });
         throw error;
     }
 }

@@ -81,16 +81,18 @@ export const markAsSeen = async (req: Request, res: Response) => {
       updated,
       seenMessageIds: validMessageIds,
     });
-  } catch (error) {
-    logger.error("Unexpected error in markAsSeen handler", { error, viewer_id, ip });
+  } catch (error: any) {
+    logger.error("Unexpected error in markAsSeen handler", {
+      ip,
+      viewer_id,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return res.status(500).json({ error: "Internal server error" });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection in markAsSeen", { releaseError, viewer_id, ip });
-      }
-    }
+    if (connection) connection.release();
   }
 };

@@ -7,6 +7,7 @@ import Security from '../Profile/Security';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../VerificationForm/Form';
+import ChangeProfile from '../../../../components/ChangeProfile/ChangeProfile';
 
 const Profile = () => {
   const personal = 'personal'
@@ -86,9 +87,7 @@ const Profile = () => {
                   </div>
 
                   <div className="ml-6">
-                    <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
-                      LOGO
-                    </div>
+                    <ChangeProfile profileData={profileData}/>
                   </div>
                 </div>
 
