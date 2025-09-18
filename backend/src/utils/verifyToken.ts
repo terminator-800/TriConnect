@@ -49,7 +49,15 @@ router.get("/auth/verify-token", async (request: Request, response: Response) =>
     });
 
   } catch (error: any) {
-    logger.error("Unexpected error in /auth/verify-token", { error });
+    logger.error("Unexpected error in /auth/verify-token", {
+      ip: request.ip,
+      userAgent: request.headers["user-agent"],
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      name: error?.name || "UnknownError",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return response.status(401).json({
       authenticated: false,
       message: "Invalid or expired token",

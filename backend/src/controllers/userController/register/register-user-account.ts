@@ -108,19 +108,22 @@ export const registerUser = async (request: Request<unknown, unknown, RegisterUs
       message: "Verification email sent. Please check your inbox.",
     });
 
-  } catch (error: unknown) {
-    logger.error("Unexpected error in registerUser", { error, email, role, ip });
+  } catch (error: any) {
+    await connection?.rollback();
+    logger.error("Unexpected error in registerUser", {
+      ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error during user registration",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error
+    });
+    
     if (connection) connection.rollback();
     return response.status(500).json({ message: "Server error." });
 
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection in registerUser", { releaseError, email, role, ip });
-      }
-    }
+    if (connection) connection.release();
   }
 };
 

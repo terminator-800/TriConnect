@@ -63,23 +63,20 @@ export const submitFeedback = async (req: FeedbackRequest, res: Response): Promi
             message: "Feedback submitted successfully!",
             feedback,
         });
-    } catch (error) {
-        logger.error("Failed to submit feedback", { error, user: req.user, ip });
-        if (connection) {
-            try {
-                await connection.rollback();
-            } catch (error) {
-                logger.error("Failed to rollback transaction on feedback submission", { error, user: req.user, ip });
-            }
-        }
+    } catch (error: any) {
+
+        await connection?.rollback();
+
+        logger.error("Failed to submit feedback", {
+            ip,
+            name: error?.name || "UnknownError",
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            error,
+        });
         return res.status(500).json({ message: "Failed to submit feedback." });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection after feedback submission", { releaseError, user: req.user, ip });
-            }
-        }
+        if (connection) connection.release();
     }
 };

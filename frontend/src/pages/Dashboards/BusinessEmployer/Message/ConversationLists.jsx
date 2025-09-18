@@ -1,13 +1,14 @@
 import { getInitials } from './helper';
 
 const ConversationList = ({ users, selectedUser, onSelect }) => {
+
     return (
         <ul>
             {users.map((user) => {
                 const isSelected = selectedUser?.conversation_id === user.conversation_id;
                 const fullName = user.authorized_person || user.agency_authorized_person || '';
                 const initials = getInitials(fullName);
-                
+
                 return (
                     <li
                         key={user.conversation_id}
@@ -17,9 +18,17 @@ const ConversationList = ({ users, selectedUser, onSelect }) => {
                     >
                         <div className="flex gap-2 flex-1">
 
-                            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                {initials || 'N/A'}
-                            </div>
+                            {user.profile ? (
+                                <img
+                                    src={user.profile}
+                                    alt={fullName || "User"}
+                                    className="w-10 h-10 rounded-full object-cover shrink-0"
+                                />
+                            ) : (
+                                <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
+                                    {initials || 'N/A'}
+                                </div>
+                            )}
 
                             <div>
                                 <div className="font-medium">{user.name || 'Unknown Name'}</div>

@@ -24,16 +24,17 @@ export const messageHistory = async (req: Request, res: Response): Promise<void>
     const messages = await getMessageHistoryByConversationId(connection, conversation_id);
 
     res.json(messages);
-  } catch (error) {
-    logger.error("Unexpected error in messageHistory handler", { error, user_id, ip });
+  } catch (error: any) {
+    logger.error("Unexpected error in messageHistory handler", {
+      error,
+      name: error?.name || "UnknownError",
+      message: error?.message || "No message",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      ip
+    });
     res.status(500).json({ error: 'Internal Server Error' });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection", { error: releaseError, user_id, ip });
-      }
-    }
+    if (connection) connection.release();
   }
 };

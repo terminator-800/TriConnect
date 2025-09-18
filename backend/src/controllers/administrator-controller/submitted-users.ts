@@ -83,7 +83,7 @@ type SubmittedUser =
     | SubmittedUserBase;
 
 export const submittedUsers = async (req: Request, res: Response) => {
-    
+
     if (req.user?.role !== "administrator") {
         logger.warn(`Unauthorized access attempt by user ID ${req.user?.user_id}.`);
         return res.status(403).json({ error: "Forbidden: Admins only." });
@@ -95,17 +95,18 @@ export const submittedUsers = async (req: Request, res: Response) => {
         connection = await pool.getConnection();
         const users: SubmittedUser[] = await getSubmittedUsers(connection);
         res.json(users);
-    } catch (err) {
-        logger.error("Failed to fetch submitted users from DB", { error: err });
+    } catch (error: any) {
+        logger.error("Failed to fetch submitted users from DB", {
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ error: "Failed to fetch submitted users" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };
 
@@ -254,7 +255,6 @@ async function getSubmittedUsers(connection: PoolConnection): Promise<SubmittedU
             }
         });
     } catch (error) {
-        logger.error("Database query failed in getSubmittedUsers", { error: error });
         throw error;
     }
 }

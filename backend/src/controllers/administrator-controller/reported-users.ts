@@ -13,7 +13,7 @@ interface ReportRow extends RowDataPacket {
     reporter_id: number;
     reported_user_id: number;
     report_status: string;
-
+    reported_user_profile?: string;
     reported_user_role: string;
     reported_user_status: string;
     reporter_role: string;
@@ -54,6 +54,7 @@ interface FormattedUser {
     status?: string;
     name: string;
     entity: string;
+    profile?: string | null;
 }
 
 interface FormattedReport {
@@ -91,6 +92,7 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
 
                 ru.role AS reported_user_role,
                 ru.account_status AS reported_user_status,
+                ru.profile AS reported_user_profile,
                 rr.role AS reporter_role,
 
                 -- Reporter Names and Extra Info
@@ -131,7 +133,7 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
 
         const formattedReports: FormattedReport[] = await Promise.all(
             rows.map(async (row) => {
-               
+
                 const [proofs] = await connection!.query<ProofRow[]>(
                     `SELECT proof_id, file_url, file_type, uploaded_at FROM report_proofs WHERE report_id = ?`,
                     [row.report_id]
@@ -161,6 +163,7 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
                         status: row.reported_user_status,
                         name: reported_name,
                         entity: reported_entity,
+                        profile: row.reported_user_profile || null
                     },
                     proofs: proofs.map((proof) => ({
                         proof_id: proof.proof_id,
@@ -173,16 +176,17 @@ export const reportedUsers = async (req: Request, res: Response): Promise<void> 
         );
 
         res.json(formattedReports);
-    } catch (error) {
-        logger.error("Error in reportedUsers endpoint", { error, userId: req.user?.user_id });
+    } catch (error: any) {
+        logger.error("Error in reportedUsers endpoint", {
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ error: "Internal server error" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
-};
+}

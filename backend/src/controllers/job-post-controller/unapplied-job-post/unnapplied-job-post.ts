@@ -31,22 +31,16 @@ export const unappliedJobPosts = async (req: CustomRequest, res: Response): Prom
 
         const jobPosts: FlattenedJobPost[] = await getUnappliedJobPosts(connection, applicant_id);
         res.status(200).json(jobPosts);
-    } catch (error) {
+    } catch (error: any) {
         logger.error("Failed to fetch unapplied job posts", {
-            error,
-            user_id: req.user?.user_id,
-            role: req.user?.role,
+            name: error?.name,
+            message: error?.message,
+            stack: error?.stack,
+            cause: error?.cause,
             ip: req.ip,
-            body: req.body,
         });
         res.status(500).json({ error: "Failed to fetch unapplied job posts" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection in unappliedJobPosts", { error: releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };

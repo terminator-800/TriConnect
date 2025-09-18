@@ -25,9 +25,15 @@ export function validateRegisterInput(req: Request<{}, {}, RegisterRequestBody>,
         }
 
         next();
-    } catch (error) {
-        logger.error('Error in validateRegisterInput middleware', { error, body: req.body });
+    } catch (error: any) {
+
+        logger.error("Error in validateRegisterInput middleware", {
+            name: error?.name || "UnknownError",
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            error, 
+        });
         return res.status(500).json({ message: 'Server error in input validation' });
     }
-
 }

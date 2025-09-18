@@ -13,7 +13,7 @@ const ViewFeedback = ({ feedback, onClose }) => {
 
     if (!feedback) return null;
 
-    const { name, type, color, date, message } = feedback;
+    const { profile, name, type, color, date, message } = feedback;
 
     return (
         <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
@@ -26,15 +26,27 @@ const ViewFeedback = ({ feedback, onClose }) => {
                 </button>
 
                 <div className="flex items-center gap-4 mb-4">
-                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center">
-                        <span className="text-lg font-bold text-gray-700 italic">
-                            {getInitials(name)}
-                        </span>
+
+                    {/* PROFILES */}
+                    <div className="w-12 h-12 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                        {profile ? (
+                            <img
+                                src={profile}
+                                alt={name || "User"}
+                                className="w-full h-full object-cover"
+                            />
+                        ) : (
+                            <span className="text-xs font-bold text-gray-600 italic text-center">
+                                {getInitials(name) || "n/a"}
+                            </span>
+                        )}
                     </div>
+
                     <div>
                         <h2 className="text-xl font-bold italic">{name}</h2>
                         <p className={`font-bold italic ${color}`}>{ROLE_LABELS[type]}</p>
                     </div>
+
                 </div>
 
                 <p className="text-sm text-gray-500 mb-2">Submitted on: {date}</p>

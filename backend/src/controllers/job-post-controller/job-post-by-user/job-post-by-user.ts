@@ -19,16 +19,17 @@ export const jobPostsByUser = async (req: CustomRequest, res: Response): Promise
         connection = await pool.getConnection();
         const posts: JobPostsByUser = await getJobPostsByUserGrouped(connection, user_id);
         res.status(200).json(posts);
-    } catch (err) {
-        logger.error("Failed to fetch job posts by user", { error: err, user_id, ip: req.ip });
+    } catch (error: any) {
+        logger.error("Failed to fetch job posts by user", {
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            user_id,
+            ip: req.ip,
+        });
         res.status(500).json({ message: "Failed to fetch job posts" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection in jobPostsByUser", { error: releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };

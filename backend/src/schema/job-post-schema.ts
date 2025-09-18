@@ -27,8 +27,7 @@ export async function createJobPostTable(connection: Pool | PoolConnection) {
   `;
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create job post table', { error });
+  } catch (error) {
     throw error;
   }
 }

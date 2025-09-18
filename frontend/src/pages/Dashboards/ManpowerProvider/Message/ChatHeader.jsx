@@ -22,10 +22,19 @@ const ChatHeader = ({ selectedUser }) => {
         <>
 
           <div className="flex items-center gap-3">
-            {/* Avatar */}
-            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold">
-              {initials}
-            </div>
+            
+            {/* Authorized  Profile */}
+            {selectedUser.authorized_profile ? (
+              <img
+                src={selectedUser.authorized_profile}
+                alt={fullName || "User"}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm">
+                {initials}
+              </div>
+            )}
 
             {/* Details */}
             <div className="text-sm text-gray-700">

@@ -152,13 +152,16 @@ export const getUserProfile = async (
 
     return response.status(200).json(userProfile);
   } catch (error: any) {
-    logger.error("Failed to fetch user profile", { error, ip: request.ip, user: request.user });
+    logger.error("Failed to fetch user profile", {
+      ip: request.ip,
+      name: error?.name || "UnknownError",
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      cause: error?.cause || "No cause",
+      error,
+    });
     return response.status(500).json({ error: 'Internal server error' });
   } finally {
-    try {
-      if (connection) await connection.release();
-    } catch (releaseError) {
-      logger.error("Failed to release DB connection", { error: releaseError, ip: request.ip });
-    }
+      if (connection) connection.release();
   }
 };

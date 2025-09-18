@@ -26,8 +26,8 @@ const ChatLayout = () => {
     <div>
       <Sidebar />
       <div className="pl-110 pr-50 pt-50">
-        <h1 className="text-5xl font-bold text-blue-900">Messages</h1>
-        <p className="text-sm text-gray-600">
+        <h1 className="text-2xl font-bold text-blue-900">Messages</h1>
+        <p className="text-gray-600">
           Keep in touch with employers and agencies — track your job conversations here
         </p>
       </div>

@@ -1,6 +1,7 @@
 import { getInitials } from './helper';
 
 const ConversationList = ({ users, selectedUser, onSelect }) => {
+
     return (
         <ul>
             {users.map((user) => {
@@ -16,9 +17,18 @@ const ConversationList = ({ users, selectedUser, onSelect }) => {
                         onClick={() => onSelect(user)}
                     >
                         <div className="flex gap-2 flex-1">
-                            {/* Avatar */}
-                            <div className="w-10 h-10 rounded-full bg-gray-400 flex items-center justify-center text-white font-bold text-sm shrink-0">
-                                {initials || '?'}
+
+                            {/* Profile || LOGO */}
+                            <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden flex items-center justify-center bg-gray-400 text-white font-bold text-sm">
+                                {user.profile ? (
+                                    <img
+                                        src={user.profile}
+                                        alt={user.authorized_person || user.agency_authorized_person || 'Avatar'}
+                                        className="w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    initials || '?'
+                                )}
                             </div>
 
                             <div>
@@ -33,6 +43,7 @@ const ConversationList = ({ users, selectedUser, onSelect }) => {
                                 <div className="text-sm text-gray-700 truncate">
                                     {user.message_text || 'No message yet'}
                                 </div>
+                                
                             </div>
                         </div>
 

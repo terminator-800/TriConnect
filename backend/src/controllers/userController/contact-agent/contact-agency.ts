@@ -122,10 +122,6 @@ export const contactAgency: RequestHandler = async (request: Request, res: Respo
         });
         return res.status(500).json({ error: "Internal server error" });
     } finally {
-        try {
-            if (connection) connection.release();
-        } catch (releaseError) {
-            logger.error("Failed to release database connection", { error: releaseError });
-        }
+        if (connection) connection.release();
     }
 };

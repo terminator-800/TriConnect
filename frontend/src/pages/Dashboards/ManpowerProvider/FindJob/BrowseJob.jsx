@@ -95,9 +95,20 @@ const BrowseJob = () => {
                     {selectedJobPost ? (
                         <>
                             <div className="flex gap-10 mb-10 mt-5 items-center">
-                                <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
-                                    PHOTO
+                               
+                                {/* Profile && LOGO */}
+                                <div className="w-30 h-30 rounded-full overflow-hidden shadow flex justify-center items-center bg-gray-300 border-2 border-gray-300">
+                                    {selectedJobPost.profile ? (
+                                        <img
+                                            src={selectedJobPost.profile}
+                                            alt="Profile"
+                                            className="w-full h-full object-cover"
+                                        />
+                                    ) : (
+                                        <span className="font-bold text-lg text-gray-800">PHOTO</span>
+                                    )}
                                 </div>
+                                
                                 <div>
                                     <h2 className="text-4xl font-bold mb-3">
                                         {selectedJobPost.job_title}

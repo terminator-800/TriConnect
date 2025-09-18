@@ -82,22 +82,17 @@ export const forgotPassword: RequestHandler = async (req: Request, res: Response
             message: "If this email exists, a reset link has been sent.",
         });
     } catch (error: any) {
-        if (connection) {
-            try {
-                await connection.rollback();
-            } catch (rollbackError) {
-                logger.error("Failed to rollback transaction", { error: rollbackError });
-            }
-        }
-        logger.error("Unexpected error in forgotPassword handler", { error });
+        if (connection) await connection.rollback();
+        logger.error("Unexpected error in forgotPassword handler", {
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            ip: req.ip,
+            email
+        });
         return res.status(500).json({ message: "Server error" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };

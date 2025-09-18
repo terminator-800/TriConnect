@@ -53,19 +53,18 @@ export const dismissReport = async (
 
         res.status(200).json({ message: "Report dismissed and files deleted", report_id });
     } catch (error: any) {
-
-        if (connection) {
-            try {
-                await connection.rollback();
-                logger.warn(`Transaction rolled back due to error`, { report_id: req.body.report_id, error });
-                connection.release();
-                logger.debug(`Database connection released after rollback`);
-            } catch (rollbackError: any) {
-                logger.error(`Failed to rollback or release connection`, { rollbackError });
-            }
-        }
-
-        logger.error("Failed to dismiss report at (dismiss-report)", { report_id: req.body.report_id, error });
+        if (connection) await connection.rollback();
+        logger.error("Failed to dismiss report at (dismiss-report)", {
+            user_id: req.user_id,
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ error: "Failed to dismiss report" });
+    } finally {
+        if (connection) connection.release();
     }
-};
+}; 

@@ -21,8 +21,18 @@ export const logout: RequestHandler = async (request: AuthRequest, response: Res
             message: "Logged out successfully",
             clearLocalStorage: true,
         });
-    } catch (error) {
-        logger.error("Logout failed", { error });
+    } catch (error: any) {
+        logger.error("Logout failed", {
+            error: error,
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            user_email: request.user?.email,
+            user_id: request.user?.user_id,
+            user_role: request.user?.role,
+            ip: request.ip
+        });
         return response.status(500).send("Logout failed");
     }
 };

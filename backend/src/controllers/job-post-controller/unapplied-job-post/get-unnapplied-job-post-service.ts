@@ -9,6 +9,7 @@ export interface JobPostRow extends RowDataPacket {
   user_id: number;
   email: string;
   role: UserRole;
+  profile?: string;
   job_title: string;
   job_description: string;
   location: string;
@@ -71,6 +72,7 @@ interface BaseJobPost {
   job_post_id: number;
   user_id: number;
   email: string;
+  profile?: string;
   role: UserRole;
   job_title: string;
   job_description: string;
@@ -101,6 +103,7 @@ export async function getUnappliedJobPosts(
         jp.approved_at,
         u.role,
         u.email,
+        u.profile,
 
         -- Business employer fields
         be.business_name,
@@ -150,6 +153,7 @@ export async function getUnappliedJobPosts(
         job_post_id: post.job_post_id,
         user_id: post.user_id,
         email: post.email,
+        profile: post.profile,
         role: post.role,
         job_title: post.job_title,
         job_description: post.job_description,
@@ -206,7 +210,6 @@ export async function getUnappliedJobPosts(
 
     return flattened;
   } catch (error) {
-    logger.error("Failed to fetch unapplied job posts", { error, applicant_id });
     throw error;
   }
 }

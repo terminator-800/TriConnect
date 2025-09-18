@@ -94,7 +94,6 @@ export const getMessageHistoryByConversationId = async (
 
         return formattedMessages;
     } catch (error) {
-        logger.error("Failed to fetch message history", { error, conversation_id });
-        return [];
+        throw error;
     }
 };

@@ -12,6 +12,7 @@ interface BaseUser {
     role: Role;
     email: string;
     verified_at: string | null;
+    profile?: string | null;
 }
 
 interface JobseekerUser extends BaseUser {
@@ -86,7 +87,7 @@ export const verifiedUsers = async (req: CustomRequest, res: Response) => {
         const [rows] = await connection.query<any[]>(`
             SELECT 
                 u.user_id, u.role, u.email, u.verified_at,
-
+                 u.profile,
                 -- Jobseeker fields
                 js.full_name AS full_name, js.date_of_birth, js.phone, js.gender,
                 js.present_address, js.permanent_address, js.education, js.skills,
@@ -124,7 +125,8 @@ export const verifiedUsers = async (req: CustomRequest, res: Response) => {
                 user_id: user.user_id,
                 role: user.role,
                 email: user.email,
-                verified_at: user.verified_at ? format(new Date(user.verified_at), "MMMM dd, yy 'at' hh:mm a") : null
+                verified_at: user.verified_at ? format(new Date(user.verified_at), "MMMM dd, yy 'at' hh:mm a") : null,
+                profile: user.profile
             };
 
             if (user.role === ROLE.JOBSEEKER) {
@@ -193,16 +195,17 @@ export const verifiedUsers = async (req: CustomRequest, res: Response) => {
 
         res.json(formatted);
 
-    } catch (error) {
-        logger.error("Unexpected error in verifiedUsers", { error });
+    } catch (error: any) {
+        logger.error("Unexpected error in verifiedUsers", {
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ message: "Failed to get verified users." });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (error) {
-                logger.error("Failed to release DB connection", { error });
-            }
-        }
+        if (connection) connection.release();
     }
 };

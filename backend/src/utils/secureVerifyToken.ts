@@ -67,8 +67,14 @@ export const secureVerifyToken = async (
         }
 
         return { user_id, role };
-    } catch (error) {
-        logger.error("Token verification failed", { error });
+    } catch (error: any) {
+        logger.error("Token verification failed", {
+            name: error?.name || "UnknownError",
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            error,
+        });
         throw error instanceof Error ? error : new Error("Token verification failed");
     }
 };
@@ -78,7 +84,6 @@ export const secureVerifyToken = async (
  */
 export async function getUserInfo(pool: Pool, user_id: number): Promise<UserRecord | null> {
     let connection: PoolConnection | undefined;
-
     try {
         connection = await pool.getConnection();
 
@@ -97,16 +102,6 @@ export async function getUserInfo(pool: Pool, user_id: number): Promise<UserReco
             is_registered: row.is_registered
         };
     } catch (error) {
-        logger.error(`Failed to fetch user info for user_id ${user_id}`, { error });
         throw error;
-    } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError: unknown) {
-                logger.error("Failed to release MySQL connection", { error: releaseError });
-                throw releaseError instanceof Error ? releaseError : new Error("Failed to release MySQL connection");
-            }
-        }
     }
 }

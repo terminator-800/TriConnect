@@ -24,7 +24,12 @@ try {
     logger.info("Cloudinary configured successfully");
 
 } catch (error: any) {
-    logger.error("Cloudinary configuration failed", { error });
+    logger.error("Cloudinary configuration failed", {
+        name: error?.name || "UnknownError",
+        message: error?.message || "Unknown error",
+        stack: error?.stack || "No stack trace",
+        error, 
+    });
     throw error; 
 }
 

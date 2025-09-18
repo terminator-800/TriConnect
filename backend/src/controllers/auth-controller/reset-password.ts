@@ -53,16 +53,17 @@ export const resetPassword: RequestHandler = async (req: Request, res: Response)
             return res.status(401).json({ message: "Invalid reset token. Please request a new one." });
         }
 
-        logger.error("Unexpected error during password reset", { error });
+        logger.error("Unexpected error during password reset", {
+            error: error,
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            ip: req.ip
+        });
         return res.status(500).json({ message: "Server error" });
 
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (error) {
-                logger.error("Failed to release DB connection during password reset", { error });
-            }
-        }
+        if (connection) connection.release();
     }
 };

@@ -17,8 +17,8 @@ import { chatImageUpload, reportUpload } from "../middleware/upload-files.js";
 import { uploadJobseekerFiles } from "../middleware/upload-files.js";
 import { authenticate } from "../middleware/authenticate.js";
 import { submitFeedback } from "../controllers/userController/submit-feedback/submit-feedback.js";
-
-
+import {changeUserProfile} from '../middleware/upload-files.js'
+import { changeProfile } from '../controllers/userController/change-profile/change-profile.js'
 const router = express.Router();
 
 router.post("/register/jobseeker", validateRegisterInput, registerUser);
@@ -35,5 +35,6 @@ router.get('/jobseeker/uncontacted-agencies', authenticate, uncontactedAgencies)
 router.post("/jobseeker/report-user", authenticate, reportUpload, reportUser);
 router.get("/jobseeker/reported-users", authenticate, reportedUsers)
 router.post("/jobseeker/feedback", authenticate, submitFeedback);
+router.patch("/jobseeker/change-profile", authenticate, changeUserProfile, changeProfile);
 
 export default router;

@@ -43,7 +43,6 @@ export async function getApprovedJobPosts(
 
         return rows;
     } catch (error) {
-        logger.error("Failed to fetch approved job posts", { error });
         throw error;
     }
 }

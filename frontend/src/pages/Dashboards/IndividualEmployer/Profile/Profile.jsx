@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useUserProfile } from "../../../../../hooks/useUserProfiles";
 import { ROLE } from '../../../../../utils/role';
 import VerificationStatus from '../Verification Form/VerificationStatus';
+import ChangeProfile from '../../../../components/ChangeProfile/ChangeProfile';
 import PersonalInfo from '../Profile/PersonalInfo';
 import Security from '../Profile/Security';
 import Sidebar from '../Sidebar';
@@ -29,7 +30,7 @@ const IndividualEmployerProfile = () => {
     error,
     refetch,
   } = useUserProfile(ROLE.INDIVIDUAL_EMPLOYER);
-
+  
   useEffect(() => {
     if (profileData) {
       setFormData({
@@ -78,11 +79,10 @@ const IndividualEmployerProfile = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="ml-6">
-                    <div className="bg-gray-300 w-30 h-30 rounded-full flex justify-center items-center font-bold text-lg text-gray-800 shadow">
-                      PHOTO
-                    </div>
-                  </div>
+
+                  {/* Profile */}
+                  <ChangeProfile profileData={profileData}/>
+
                 </div>
 
                 <div className="bg-white w-full flex justify-between mt-20 gap-5">
@@ -127,6 +127,7 @@ const IndividualEmployerProfile = () => {
             }}
           />
         )}
+
       </div>
     </>
   );

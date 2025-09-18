@@ -21,7 +21,8 @@ import { submitFeedback } from "../controllers/userController/submit-feedback/su
 import { viewApplicants } from "../controllers/userController/view-applicant/view-applicants.js";
 import { employerDashboard } from "../controllers/userController/employer-dashboard.js";
 import { rejectApplication } from "../controllers/userController/reject-application/reject-application.js";
-
+import {changeUserProfile} from '../middleware/upload-files.js'
+import { changeProfile } from '../controllers/userController/change-profile/change-profile.js'
 const router = express.Router();
 
 router.post("/register/manpower-provider", validateRegisterInput, registerUser);
@@ -32,15 +33,16 @@ router.post("/manpower-provider/job-post", authenticate, createJobPost)
 router.post("/manpower-provider/applications", authenticate, chatImageUpload, apply)
 router.post("/manpower-provider/messages/send", authenticate, chatImageUpload, replyMessage);
 router.get("/manpower-provider/conversations", authenticate, conversations)
-router.get("/manpower-provider/message-history/:conversation_id", messageHistory)
+router.get("/manpower-provider/message-history/:conversation_id", authenticate, messageHistory)
 router.patch("/manpower-provider/mark-as-seen", authenticate, markAsSeen);
-router.patch("/manpower-provider/:jobPostId/:status", updateJobPostStatus)
-router.delete("/manpower-provider/delete/jobpost/:jobPostId", softDeleteJobPost)
+router.patch("/manpower-provider/:jobPostId/:status", authenticate, updateJobPostStatus)
+router.delete("/manpower-provider/delete/jobpost/:jobPostId", authenticate, softDeleteJobPost)
 router.post("/manpower-provider/report-user", authenticate, reportUpload, reportUser);
 router.get("/manpower-provider/reported-users", authenticate, reportedUsers)
 router.post("/manpower-provider/feedback", authenticate, submitFeedback);
 router.get("/manpower-provider/applicants", authenticate, viewApplicants);
 router.get("/manpower-provider/dashboard", authenticate, employerDashboard);
 router.patch("/manpower-provider/applications/:applicationId/reject", authenticate, rejectApplication);
+router.patch("/manpower-provider/change-profile", authenticate, changeUserProfile, changeProfile);
 
 export default router;

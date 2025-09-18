@@ -31,9 +31,8 @@ export async function createReportsTable(connection: Pool | PoolConnection) {
 
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create reports table', { error });
-    throw error; // re-throw for upstream handling
+  } catch (error) {
+    throw error; 
   }
 }
 

@@ -14,8 +14,7 @@ export async function createFeedbackTable(connection: Pool | PoolConnection) {
   `;
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create feedback table', { error });
+  } catch (error) {
     throw error; 
   }
 }

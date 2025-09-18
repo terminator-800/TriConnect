@@ -58,7 +58,6 @@ export async function createJobPosts(connection: PoolConnection, jobPostData: Jo
             message: "Job post created successfully."
         };
     } catch (error: any) {
-        logger.error("Unexpected error in createJobPosts function", { error, jobPostData });
         return { error: "Database error occurred.", details: error.message };
     }
 }

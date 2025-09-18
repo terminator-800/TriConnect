@@ -16,6 +16,7 @@ type Role = typeof ROLE[keyof typeof ROLE];
 const baseUploadDir = './uploads';
 const chatUploadDir = path.join(baseUploadDir, 'chat');
 const reportUploadDir = path.join(baseUploadDir, 'reports');
+const profileUploadDir = path.join(baseUploadDir, 'profile');
 
 const roles: Role[] = [
     ROLE.JOBSEEKER,
@@ -35,11 +36,10 @@ roles.forEach(role => {
     if (!fs.existsSync(unknownDir)) fs.mkdirSync(unknownDir, { recursive: true });
 });
 
-// 3. Chat & report folders
-[chatUploadDir, reportUploadDir].forEach(dir => {
+// 3. Chat, report & profile folders
+[chatUploadDir, reportUploadDir, profileUploadDir].forEach(dir => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
-
 
 // === File Filter ===
 const imageOnlyFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
@@ -84,6 +84,12 @@ const makeStorage = (role: Role, nameField: string, fallbackName: string): Stora
         }
     });
 
+
+
+
+
+
+
 // === Chat Upload Storage ===
 const chatStorage = multer.diskStorage({
     destination: (req: Request, _file, cb) => {
@@ -110,6 +116,13 @@ const chatStorage = multer.diskStorage({
 
 const chatImageUpload = multer({ storage: chatStorage, fileFilter: imageOnlyFilter }).array('files', 10);
 
+
+
+
+
+
+
+
 // === Report Upload Storage ===
 let sharedTempFolderId: string | null = null;
 
@@ -129,6 +142,11 @@ const reportStorage = multer.diskStorage({
 });
 
 const reportUpload = multer({ storage: reportStorage, fileFilter: imageOnlyFilter }).array('proof_files', 5);
+
+
+
+
+
 
 // === Role-specific Upload Middleware ===
 const jobseekerUpload = multer({ storage: makeStorage(ROLE.JOBSEEKER, 'full_name', 'unknown_jobseeker'), fileFilter: imageOnlyFilter });
@@ -163,6 +181,53 @@ const uploadManpowerProviderFiles = manpowerProviderUpload.fields([
     { name: 'authorized_person_id', maxCount: 1 },
 ]);
 
+
+
+
+
+
+
+// === Profile Upload Storage ===
+const profileStorage = multer.diskStorage({
+    destination: (req: Request, _file, cb) => {
+        try {
+            const userId = (req.user as AuthenticatedUser)?.user_id;
+            if (!userId) return cb(new Error("Unauthorized: No user ID"), "");
+
+            // Correct path: uploads/profile/<userId>
+            const folderPath = path.join(profileUploadDir, String(userId));
+            fs.mkdirSync(folderPath, { recursive: true });
+
+            cb(null, folderPath);
+        } catch (err) {
+            cb(new Error("Failed to create profile folder"), undefined as unknown as string);
+        }
+    },
+    filename: (_req, file, cb) => {
+        const uniqueName = `profile_${Date.now()}${path.extname(file.originalname)}`;
+        cb(null, uniqueName);
+    }
+});
+
+
+const profileFilter = (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
+    if (file.mimetype.startsWith("image/")) {
+        cb(null, true);
+    } else {
+        cb(new Error("Only image files are allowed for profile picture!"));
+    }
+};
+
+// === Profile Upload Middleware ===
+const changeUserProfile = multer({
+    storage: profileStorage,
+    fileFilter: profileFilter,
+    limits: {
+        fileSize: 5 * 1024 * 1024, // 2MB
+    },
+}).single("profile");
+
+
 // === Exported Uploads ===
 export {
     uploadJobseekerFiles,
@@ -170,5 +235,6 @@ export {
     uploadIndividualEmployerFiles,
     uploadManpowerProviderFiles,
     chatImageUpload,
-    reportUpload
+    reportUpload,
+    changeUserProfile
 };

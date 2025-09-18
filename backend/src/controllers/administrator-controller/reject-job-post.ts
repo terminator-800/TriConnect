@@ -45,16 +45,18 @@ export const rejectJobPost = async (
 
     res.status(200).json({ message: result.message });
   } catch (error: any) {
-    logger.error("Unexpected error in rejectJobPost endpoint", { error: error, userId: req.user?.user_id, jobPostId });
+    logger.error("Unexpected error in rejectJobPost endpoint", {
+      user_id: req.user_id,
+      ip: req.ip,
+      message: error?.message || "Unknown error",
+      stack: error?.stack || "No stack trace",
+      name: error?.name || "UnknownError",
+      cause: error?.cause || "No cause",
+      error,
+    });
     res.status(500).json({ error: "Internal server error." });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection", { error: releaseError, userId: req.user?.user_id, jobPostId });
-      }
-    }
+    if (connection) connection.release();
   }
 };
 
@@ -64,7 +66,7 @@ async function rejectJobPostIfExists(
 ): Promise<RejectJobPostResult> {
   try {
     const jobPost = await getJobPostById(connection, Number(jobPostId));
-    
+
     if (!jobPost) {
       return { success: false, message: "Jobpost not found." };
     }
@@ -80,7 +82,6 @@ async function rejectJobPostIfExists(
 
     return { success: true, message: "Jobpost rejected successfully." };
   } catch (error) {
-    logger.error("Error rejecting job post in rejectJobPostIfExists", { error, jobPostId });
     throw error;
   }
 }

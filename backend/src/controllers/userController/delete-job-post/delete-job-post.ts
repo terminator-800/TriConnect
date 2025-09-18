@@ -61,15 +61,16 @@ export const softDeleteJobPost = async (req: Request, res: Response) => {
         return res.status(200).json({
             message: 'Job post marked as deleted. Will be removed after 1 month.',
         });
-    } catch (err) {
-        if (connection) {
-            try {
-                await connection.rollback();
-            } catch (rollbackError) {
-                logger.error('Failed to rollback transaction', { rollbackError, jobPostId, ip });
-            }
-        }
-        logger.error('Error soft deleting job post', { error: err, jobPostId, ip });
+    } catch (error: any) {
+        if (connection) await connection.rollback();
+        logger.error("Error soft deleting job post", {
+            error: error,
+            name: error?.name || "UnknownError",
+            message: error?.message || "No message",
+            stack: error?.stack || "No stack trace",
+            cause: error?.cause || "No cause",
+            ip,
+        });
         return res.status(500).json({ error: 'Internal server error' });
     } finally {
         try {

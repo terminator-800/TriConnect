@@ -69,7 +69,6 @@ export async function insertJobPost(connection: PoolConnection, data: JobPostInp
 
         return result.insertId;
     } catch (error) {
-        logger.error("Failed to insert job post", { error, data });
         throw new Error("Database error while inserting job post");
     }
 }

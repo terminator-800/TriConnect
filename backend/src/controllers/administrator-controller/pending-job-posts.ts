@@ -72,20 +72,18 @@ export const pendingJobPosts = async (req: Request, res: Response) => {
         const jobposts: PendingJobPost[] = await getPendingJobPosts(connection);
 
         res.status(200).json(jobposts);
-    } catch (error) {
+    } catch (error: any) {
         logger.error(`Unexpected error in pendingJobPosts) endpoint`, {
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
             error,
-            user_id: req.user?.user_id,
         });
         res.status(500).json({ message: "Failed to fetch job posts" });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-            } catch (releaseError) {
-                logger.error("Failed to release DB connection", { error: releaseError, userId: req.user?.user_id });
-            }
-        }
+        if (connection) connection.release();
     }
 };
 
@@ -185,7 +183,6 @@ async function getPendingJobPosts(connection: PoolConnection): Promise<PendingJo
             }
         });
     } catch (error) {
-        logger.error("Database query error in getPendingJobPosts at (pending-job-posts)", { error });
         throw error;
     }
 }

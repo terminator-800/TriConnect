@@ -78,7 +78,6 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
       return { path: '' };
     }
 
-
     // Upload the message
     const rawMessage = await handleMessageUpload(connection, {
       sender_id,
@@ -169,16 +168,17 @@ export const replyMessage = async (req: AuthenticatedRequest, res: Response) => 
       conversation_id: newMessage.conversation_id,
       file_url: newMessage.file_url || null,
     });
-  } catch (error) {
-    logger.error("Unexpected error in replyMessage handler", { error, sender_id, receiver_id, ip });
+  } catch (error: any) {
+    logger.error("Unexpected error in replyMessage handler", {
+      error,
+      ip,
+      name: error?.name,
+      message: error?.message,
+      stack: error?.stack,
+      cause: error?.cause
+    });
     res.status(500).json({ error: 'Internal server error' });
   } finally {
-    if (connection) {
-      try {
-        connection.release();
-      } catch (releaseError) {
-        logger.error("Failed to release DB connection", { error: releaseError, sender_id, ip });
-      }
-    }
+    if (connection) connection.release();
   }
 };

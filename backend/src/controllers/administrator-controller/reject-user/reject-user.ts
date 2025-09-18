@@ -2,7 +2,7 @@ import type { PoolConnection, RowDataPacket } from "mysql2/promise";
 import { deleteUserFilesAndFolders } from "./delete-folder.js";
 import { getRoleConfig, type Role } from "./reject-user-helper.js";
 import type { Request, Response } from "express";
-import { extractPublicIdFromUrl } from "./reject-user-helper.js"
+import { extractPublicIdFromUrl } from "../../../service/extract-public-id-url.js"
 import { deleteFromCloudinary } from "../../../utils/delete-from-cloudinary.js";
 import pool from "../../../config/database-connection.js";
 import logger from "../../../config/logger.js";
@@ -34,17 +34,18 @@ export const rejectUser = async (req: Request<RejectUserParams>, res: Response):
         logger.info(`User ${user_id} rejected successfully`);
         res.json({ success: true, message: result.message });
     } catch (error: any) {
-        logger.error(`Failed to reject: (User ID: ${user_id})`, { error });
+        logger.error(`Failed to reject: (User ID: ${user_id}) in reject user`, {
+            user_id: req.user_id,
+            ip: req.ip,
+            message: error?.message || "Unknown error",
+            stack: error?.stack || "No stack trace",
+            name: error?.name || "UnknownError",
+            cause: error?.cause || "No cause",
+            error,
+        });
         res.status(500).json({ message: "Internal server error." });
     } finally {
-        if (connection) {
-            try {
-                connection.release();
-                logger.debug(`Database connection released for user ${user_id}`);
-            } catch (releaseError: any) {
-                logger.error(`Failed to release database connection for user ${user_id}`, { releaseError });
-            }
-        }
+        if (connection) connection.release();
     }
 };
 
@@ -82,8 +83,8 @@ async function rejectUsers(connection: PoolConnection, user_id: number): Promise
                 try {
                     await deleteFromCloudinary(publicId);
                     logger.info(`Deleted ${field} for user ${user_id} from Cloudinary`, { publicId });
-                } catch (cloudError: any) {
-                    logger.error(`Failed to delete ${field} from Cloudinary for user ${user_id}`, { cloudError });
+                } catch (error: any) {
+                    logger.error(`Failed to delete ${field} from Cloudinary for user ${user_id}`, { error });
                 }
             }
         }
@@ -109,7 +110,6 @@ async function rejectUsers(connection: PoolConnection, user_id: number): Promise
             await connection.execute(resetQuery, [user_id]);
             logger.debug(`Reset fields for user ${user_id} in ${table}`, { resetFields });
         } catch (resetError: any) {
-            logger.error(`Failed to reset fields for user ${user_id} in ${table}`, { resetError });
             throw resetError;
         }
 
@@ -135,7 +135,6 @@ async function rejectUsers(connection: PoolConnection, user_id: number): Promise
             message: `${role} requirements rejected, files and folders removed, and rejection recorded.`,
         };
     } catch (error) {
-        logger.error(`Error in (rejectUsers) for user ${user_id}`, { error });
         throw error;
     }
 }

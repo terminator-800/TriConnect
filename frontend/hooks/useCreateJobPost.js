@@ -28,10 +28,10 @@ export const useCreateJobPost = (role, onSuccessCallback) => {
             const status = error.response?.status;
             const message = error.response?.data?.error;
 
-            if (status === 403 && message?.includes("maximum")) {
+            if (status === 400 && message?.includes("maximum")) {
                 alert("Monthly limit reached. Subscribe to extend to 10 job posts a month.");
             } else if (
-                (status === 403 || status === 409) &&
+                (status === 400 || status === 400) &&
                 message?.includes("only create up to")
             ) {
                 alert("You’ve reached the limit of 3 active job posts. Please remove an existing one or upgrade your plan to continue.");

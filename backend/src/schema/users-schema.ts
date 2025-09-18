@@ -16,6 +16,7 @@ export async function createUsersTable(connection: Pool | PoolConnection) {
       subscription_end DATE DEFAULT NULL,  
       email VARCHAR(100) NOT NULL UNIQUE,
       password VARCHAR(255) NOT NULL,
+      profile VARCHAR(255), 
 
       -- Token to manage single active session
       current_token VARCHAR(255) DEFAULT NULL,
@@ -28,11 +29,10 @@ export async function createUsersTable(connection: Pool | PoolConnection) {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
     );
   `;
-  
+
   try {
     await connection.execute(query);
-  } catch (error: unknown) {
-    logger.error('Failed to create users table', { error });
+  } catch (error) {
     throw error;
   }
 }
