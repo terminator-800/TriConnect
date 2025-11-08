@@ -14,6 +14,7 @@ import { dismissReport } from "../controllers/administrator-controller/dismiss-r
 import { usersFeedbacks } from "../controllers/administrator-controller/users-feedbacks.js";
 import { getUserProfile } from "../controllers/userController/user-profile/user-profile.js";
 import { authenticate } from "../middleware/authenticate.js";
+import { getDashboardSummary } from "../controllers/administrator-controller/get-chart-data/get-dashboard-summary.js";
 
 const router = express.Router();
 
@@ -31,5 +32,6 @@ router.get("/administrator/all-reported-users", authenticate, reportedUsers)
 router.post("/administrator/restrict-user", authenticate, restrictUser)
 router.post("/administrator/dismiss-report", authenticate, dismissReport)
 router.get("/administrator/user-feedbacks", authenticate, usersFeedbacks)
+router.get("/administrator/chart-data", authenticate, getDashboardSummary);
 
 export default router;

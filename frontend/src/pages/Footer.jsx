@@ -1,32 +1,41 @@
-import { Link } from "react-router-dom"
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
-
-    <div className="flex justify-between items-start bg-blue-900  pt-5 pb-5 pl-40 pr-40 border-t-2 border-gray-300 shadow-md text-gray-300">
-      <div className="flex flex-col gap-2">
-        <h1 className="text-2xl font-bold">Quick Links</h1>
-        <Link>Features</Link>
-        <Link>How it works</Link>
-        <Link>Why us</Link>
+    <footer className="bg-white text-black text-center py-6 border-t border-gray-300">
+      {/* Top links */}
+      <div className="flex justify-center space-x-4 mb-2">
+        <Link to="#" className="hover:underline font-semibold">About Us</Link>
+        <span>|</span>
+        <Link to="#" className="hover:underline font-semibold">How It Works</Link>
+        <span>|</span>
+        <Link to="#" className="hover:underline font-semibold">Why Us</Link>
+        <span>|</span>
+        <Link to="#" className="hover:underline font-semibold">Feedbacks</Link>
       </div>
 
-      <div className="gap-2 flex flex-col">
-        <h1 className="text-2xl font-bold">User Types</h1>
-        <p>Job Seekers</p>
-        <p>Employers</p>
-        <p>Manpower Providers</p>
+      {/* Contact info */}
+      <div className="flex justify-center items-center gap-3 text-sm mb-3">
+        <span className="text-blue-700">📧</span>
+        <a href="mailto:info@triconnect.com" className="text-blue-700 hover:underline">
+          info@triconnect.com
+        </a>
+        <span className="text-blue-700 ml-4">📞</span>
+        <a href="tel:+639123456789" className="text-blue-700 hover:underline">
+          +639123456789
+        </a>
       </div>
 
-      <div className="gap-2 flex flex-col">
-        <h1 className="text-2xl font-bold">Contact Us</h1>
-        <p>info@triconnect.com</p>
-        <p>+639123456789</p>
-        <p>City of Cabadbaran, Philippines</p>
-      </div>
+      {/* Divider */}
+      <div className="border-2 border-black w-[90%] mx-auto mb-3"></div>
 
-    </div>
-  )
-}
+      {/* Copyright */}
+      <p className="text-sm">
+        Copyright © 2025{" "}
+        <span className="text-blue-700 font-semibold">TriConnect</span> All Right Reserved.
+      </p>
+    </footer>
+  );
+};
 
-export default Footer
+export default Footer;

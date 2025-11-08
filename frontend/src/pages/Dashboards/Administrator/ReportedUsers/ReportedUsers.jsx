@@ -32,15 +32,27 @@ const ReportedUser = () => {
   return (
     <>
       <Sidebar />
-      <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50">
+      <div className="min-h-screen flex flex-col justify-between bg-linear-to-b from-white to-cyan-400 
+            2xl:pl-110
+            2xl:pr-50
+            lg:pl-70
+            lg:pr-10
+            md:pl-15
+            md:pr-15
+            max-[769px]:px-10
+             pt-50
+             ">
         <div>
+
+
+
           <h1 className="text-2xl font-bold text-blue-900">Reported Users</h1>
           <p className="text-gray-700 mt-1">Tagline</p>
 
+          {/* Scrollabe */}
           <div className="flex-1 mt-10">
-            <div className="overflow-hidden rounded-xl shadow bg-white">
-              <table className="w-full text-left">
-
+            <div className="overflow-x-auto rounded-xl shadow bg-white">
+              <table className="min-w-max w-full text-left">
                 <thead>
                   <tr className="bg-gray-400 text-gray-700 text-sm rounded-t-xl">
                     <th className="px-6 py-4">User Details</th>
@@ -52,7 +64,6 @@ const ReportedUser = () => {
                 </thead>
 
                 <tbody>
-
                   {isLoading && (
                     <tr>
                       <td colSpan="5" className="px-4 py-4 text-center text-gray-600">
@@ -76,13 +87,11 @@ const ReportedUser = () => {
                       </td>
                     </tr>
                   )}
-
+                  
                   {!isLoading && !isError && paginatedUsers.map((report) => (
                     <tr key={report.report_id} className="border-t border-gray-200">
                       {/* User Info */}
-                      <td className="px-6 py-5 flex items-center gap-3 italic">
-
-                        {/* PROFILES */}
+                      <td className="px-6 py-5 flex items-center gap-3 italic whitespace-nowrap">
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center text-sm font-medium text-gray-600">
                           {report.reported_user?.profile ? (
                             <img
@@ -94,19 +103,21 @@ const ReportedUser = () => {
                             getInitials(report.reported_user?.entity) || "N/A"
                           )}
                         </div>
-
                         <div>
                           <div className="font-semibold">{report.reported_user?.entity || 'N/A'}</div>
                         </div>
                       </td>
 
                       {/* User Type */}
-                      <td className={`px-6 py-5 capitalize text-sm font-bold italic ${roleColors[report.reported_user?.role] || 'text-gray-700'}`}>
+                      <td
+                        className={`px-6 py-5 capitalize text-sm font-bold italic ${roleColors[report.reported_user?.role] || 'text-gray-700'
+                          } whitespace-nowrap`}
+                      >
                         {report.reported_user?.role.replace('-', ' ')}
                       </td>
 
                       {/* Report Reason */}
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-5 whitespace-nowrap">
                         <div className="font-semibold">{report.reason}</div>
                         <div className="text-xs text-gray-500">
                           Reported by: {report.reporter?.name || report.reporter?.user_id || 'N/A'}
@@ -119,17 +130,19 @@ const ReportedUser = () => {
                       </td>
 
                       {/* Date */}
-                      <td className="px-6 py-5 text-sm text-gray-700">
+                      <td className="px-6 py-5 text-sm text-gray-700 whitespace-nowrap">
                         <span>{report.created_at || 'just now'}</span>
-
                       </td>
 
                       {/* Action */}
-                      <td className="px-6 py-5">
+                      <td className="px-6 py-5 whitespace-nowrap">
                         <button
                           disabled={!report.can_view}
                           onClick={() => setSelectedReport(report)}
-                          className={`px-5 py-1.5 rounded text-white text-sm font-medium ${report.can_view ? 'bg-blue-900 hover:bg-blue-800' : 'bg-gray-300 cursor-not-allowed'} cursor-pointer`}
+                          className={`px-5 py-1.5 rounded text-white text-sm font-medium ${report.can_view
+                            ? 'bg-blue-900 hover:bg-blue-800'
+                            : 'bg-gray-300 cursor-not-allowed'
+                            } cursor-pointer`}
                         >
                           View
                         </button>

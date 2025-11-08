@@ -31,6 +31,11 @@ import verified_check from './verified_check.svg';
 import report_user from './report_user.svg';
 import send from './send.svg';
 import change_profile from './change_profile.svg';
+import all_in_one_platform from './all_in_one_platform.svg';
+import custom_tools_for_everyone from './custom_tools_for_everyone.svg';
+import secure_reliable from './secure_reliable.svg';
+import user_friendly_interface from './user_friendly_interface.svg';
+import check from './check.svg';
 
 const icons = {
     find_agency,
@@ -66,6 +71,11 @@ const icons = {
     report_user,
     send,
     change_profile,
+    all_in_one_platform,
+    custom_tools_for_everyone,
+    secure_reliable,
+    user_friendly_interface,
+    check
 }
 
 export default icons;

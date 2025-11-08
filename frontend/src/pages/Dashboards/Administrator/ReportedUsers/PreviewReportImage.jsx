@@ -4,11 +4,11 @@ const PreviewReportImage = ({ imageUrl, onClose }) => {
   if (!imageUrl) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-opacity-60 z-[60]">
-      <div className="relative max-w-3xl w-full  border border-gray-300 rounded-lg">
+    <div className="fixed inset-0 flex items-center justify-center bg-opacity-60 z-60">
+      <div className="relative max-w-3xl w-full  border border-gray-300 rounded-lg mx-5">
         {/* Close Button */}
         <button
-          className="absolute top-4 right-4 cursor-pointer text-3xl font-bold"
+          className="absolute top-10 right-10 cursor-pointer text-3xl font-bold"
           onClick={onClose}
         >
           <img src={icons.close} alt="" />

@@ -30,11 +30,19 @@ const BrowseJob = () => {
         Browse job openings and apply to positions that fit you
       </p>
 
-      <div className="rounded-xl w-2xl bg-white pt-2 pb-2 pl-5 pr-5 shadow-md flex justify-between items-center mt-15">
+      <div className="rounded-xl bg-white pt-2 pb-2 pl-5 pr-5 shadow-md flex justify-between items-center mt-15
+        xl:w-2xl
+        max-[351px]:justify-center
+        max-[321px]:justify-evenly
+
+      ">
         <input
           type="text"
           placeholder="Search job titles"
-          className="outline-none"
+          className="outline-none
+                  max-[351px]:w-35
+
+          "
         />
         <button className="text-white bg-blue-900 rounded-xl pt-1 pb-1 pr-5 pl-5 cursor-pointer">
           Find jobs
@@ -52,13 +60,23 @@ const BrowseJob = () => {
               No approved job posts available.
             </p>
           ) : (
+            // Side with job posts
             paginatedPosts.map((post) => (
               <div
                 key={post.job_post_id}
                 onClick={() => setSelectedJobPost(post)}
                 className={`border border-gray-300 rounded-xl py-5 px-5 shadow-md cursor-pointer h-[23.3vh] max-h-[23.3vh] overflow-hidden
-                   ${selectedJobPost?.job_post_id === post.job_post_id ? 'bg-gray-200' : 'bg-white hover:bg-gray-100'}`}
+                  min-[1141px]:h-[23vh]
+                  max-[1025px]:h-[23vh]
+                  max-[769px]:h-[23vh]
+                   ${selectedJobPost?.job_post_id === post.job_post_id ? 'bg-gray-200' : 'bg-white hover:bg-gray-100'}
+                   `}
               >
+                {/* Hide Scrollbar */}
+                <style>
+                  {`div::-webkit-scrollbar { display: none }`}
+                </style>
+
                 <div className="mb-4">
                   <h3 className="text-xl font-bold truncate">
                     {post.job_title}
@@ -75,10 +93,10 @@ const BrowseJob = () => {
                   {post.job_type}
                 </span>
 
-                <div className="flex justify-between items-center mt-10">
+                <div className="flex justify-between items-center mx-auto mt-5">
                   <div className="flex space-x-1">
                     <img src={icons.location} alt="Location" />
-                    <p className="text-gray-500 truncate">{post.location}</p>
+                    <p className="text-gray-500 truncate max-w-10">{post.location}</p>
                   </div>
                   <span className="text-sm text-gray-500 ml-3 truncate">
                     Posted: {post.approved_at}
@@ -89,13 +107,18 @@ const BrowseJob = () => {
           )}
         </div>
 
-        <div className="w-full bg-gray-200 border border-gray-300 py-5 px-7 rounded-xl overflow-y-auto h-[100vh]">
+        <div className="w-full bg-gray-200 border border-gray-300 py-5 px-7 rounded-xl overflow-y-auto h-screen">
           {selectedJobPost ? (
             <>
-              <div className="flex gap-10 mb-10 mt-5 items-center">
+              <div className="flex gap-10 mb-10 mt-5 items-center
+                max-[426px]:flex-col
+              ">
 
                 {/* Profile && LOGO */}
-                <div className="w-30 h-30 rounded-full overflow-hidden shadow flex justify-center items-center bg-gray-300 border-2 border-gray-300">
+                <div className="w-30 h-30 rounded-full overflow-hidden shadow flex justify-center items-center bg-gray-300 border-2 border-gray-300
+                  max-[769px]:w-20 
+                  max-[769px]:h-20
+                ">
                   {selectedJobPost.profile ? (
                     <img
                       src={selectedJobPost.profile}
@@ -127,14 +150,23 @@ const BrowseJob = () => {
                 Apply Job
               </button>
 
-              <div className="flex font-bold justify-between mt-15 pr-60">
+              <div className="flex font-bold justify-between mt-15 pr-60
+              max-[1890px]:pr-60
+              min-[1821px]:pr-60
+
+              min-[1441px]:pr-25
+                max-[1441px]:pr-25
+              ">
                 <h1>Job Details</h1>
-                <h1>Contact Person</h1>
+                <h1 className="max-[1349px]:hidden min-[1442px]:block">Contact Person</h1>
               </div>
 
-              <div className="border-y-2 border-gray-300 flex justify-between pr-30">
+              <div className="border-y-2 border-gray-300 flex justify-between pr-30
+                max-[1441px]:pr-5
+                max-[1349px]:flex-col
+                 ">
                 <div className="flex flex-col gap-3 py-3">
-                  <p className="text-gray-700">
+                  <p className="text-gray-700 wrap-break-word whitespace-pre-wrap max-w-sm mr-10">
                     <strong>Location:</strong> {selectedJobPost.location}
                   </p>
                   <p className="text-gray-700">
@@ -146,13 +178,20 @@ const BrowseJob = () => {
                 </div>
 
                 <div className="py-3 flex flex-col gap-2">
+
+                  {/* Hide up until 1024px */}
+                  <div className="flex font-bold justify-between pr-60
+                      max-[1441px]:pr-35
+                   ">
+                    <h1 className="min-[1349px]:hidden">Contact Person</h1>
+
+                  </div>
+
                   <span className="text-gray-700">
                     <strong>Name:</strong>{' '}
-                    {selectedJobPost.authorized_person ||
-                      selectedJobPost.agency_authorized_person ||
-                      selectedJobPost.full_name ||
-                      unknown}
+                    {selectedJobPost.authorized_person || selectedJobPost.agency_authorized_person || selectedJobPost.full_name || unknown}
                   </span>
+
                   <span className="text-gray-700">
                     <strong>Posted:</strong>{' '}
                     {selectedJobPost.approved_at}
@@ -164,12 +203,12 @@ const BrowseJob = () => {
                 <span>
                   <strong>Job Description</strong>
                 </span>
-                <span className="text-gray-700 break-words whitespace-pre-wrap w-full">
+                <span className="text-gray-700 wrap-break-word whitespace-pre-wrap w-full">
                   {selectedJobPost.job_description}
                 </span>
               </div>
 
-              <p className="text-gray-700 mb-1">
+              <p className="text-gray-700 mb-1 wrap-break-word whitespace-pre-wrap">
                 <strong>Required Skill:</strong>{' '}
                 {selectedJobPost.required_skill}
               </p>

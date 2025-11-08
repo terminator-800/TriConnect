@@ -26,7 +26,9 @@ const RejectJobPost = ({ jobPost, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative border border-gray-300">
+      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative border border-gray-300
+      max-[426px]:mx-5">
+        
         <h2 className="text-xl font-bold mb-4 text-red-600 text-center">Reject Job Post</h2>
         <p className="text-gray-700 text-center mb-4">
           Are you sure you want to reject this jobpost? This action cannot be undone.

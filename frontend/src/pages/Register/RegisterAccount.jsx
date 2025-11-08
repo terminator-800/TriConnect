@@ -118,7 +118,7 @@ const RegisterAccount = () => {
   return (
     <>
       <Navbar userType={"register"} />
-      <div className='flex justify-center items-center h-screen bg-gradient-to-b from-white to-cyan-400 flex-col'>
+      <div className='flex justify-center items-center h-screen bg-linear-to-b from-white to-cyan-400 flex-col'>
         {type === business || type === individual ? (
           <h1 className="font-bold text-3xl text-left mb-5">
             Create an account as ({type === business ? "Business Type Employer" : "Individual Type Employer"})
@@ -132,8 +132,8 @@ const RegisterAccount = () => {
           </h1>
         )}
 
-        <div className='border pt-10 pb-10 pl-15 pr-15 rounded-md flex flex-col bg-white'>
-          <form onSubmit={handleRegister} className='flex  rounded-md bg-white flex-col w-3xl'>
+        <div className='border pt-10 pb-10 pl-15 pr-15 rounded-md flex flex-col bg-white max-[769px]:mx-15'>
+          <form onSubmit={handleRegister} className='flex  rounded-md bg-white flex-col xl:w-3xl lg:w-2xl md:w-md'>
 
             <label htmlFor="email" className='mt-2 font-bold '>Email Address</label>
             <input onChange={(e) => setEmail(e.target.value)} value={email} required name='email' id='name' type="email" placeholder='Enter your email address' className='outline-none border border-gray-400 rounded p-1 pl-3' />

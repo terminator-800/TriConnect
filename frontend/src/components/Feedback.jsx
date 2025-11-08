@@ -21,7 +21,9 @@ const Feedback = ({ onClose, role }) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50">
+    <div className="fixed inset-0 flex items-center justify-center z-50 
+                    max-[769px]:mx-5
+                   ">
       {/* Feedback modal */}
       <div className="relative bg-white pl-7 pr-7 pt-5 pb-5 rounded-xl shadow-lg w-[550px] z-10 border border-gray-300">
 

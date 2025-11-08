@@ -71,12 +71,20 @@ export async function getApplicantsByEmployer(
         WHEN u.role = 'jobseeker' THEN js.present_address
         WHEN u.role = 'manpower-provider' THEN mp.agency_address
         ELSE NULL
-      END AS location
+      END AS location,
+       c.conversation_id -- ✅ NEW: get conversation_id,
     FROM job_applications ja
     JOIN job_post jp ON jp.job_post_id = ja.job_post_id
     JOIN users u ON u.user_id = ja.applicant_id
     LEFT JOIN jobseeker js ON js.jobseeker_id = u.user_id
     LEFT JOIN manpower_provider mp ON mp.manpower_provider_id = u.user_id
+
+      -- ✅ NEW: Join conversations to find existing chat between applicant and employer
+      LEFT JOIN conversations c 
+        ON ( (c.user1_id = u.user_id AND c.user2_id = jp.user_id) 
+          OR (c.user2_id = u.user_id AND c.user1_id = jp.user_id) )
+
+          
     WHERE jp.user_id = ?
       AND ja.application_status != 'rejected'
     ORDER BY ja.applied_at DESC
@@ -114,6 +122,7 @@ export async function getApplicantsByEmployer(
         job_title: row.job_title,
         applicant_name: row.applicant_name,
         location: row.location || "-",
+        conversation_id: row.conversation_id,
       })),
     };
   } catch (error) {

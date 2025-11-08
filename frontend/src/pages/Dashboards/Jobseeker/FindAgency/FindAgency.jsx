@@ -6,6 +6,7 @@ import VerificationStatus from "../../../../pages/Dashboards/Jobseeker/Verificat
 import MessageAgency from "../../../../components/MessageAgency";
 import Sidebar from "../Sidebar";
 import Form from "../../../../pages/Dashboards/Jobseeker/Verification Form/Form";
+import Pagination from '../../../../components/Pagination';
 
 const FindAgency = () => {
   const {
@@ -69,7 +70,7 @@ const FindAgency = () => {
       <Sidebar />
 
       {showApply && selectedAgency && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-5 max-[769px]:px-5">
           <MessageAgency
             sender={profileData}
             receiver={selectedAgency}
@@ -94,7 +95,17 @@ const FindAgency = () => {
         />
       )}
 
-      <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 pb-32">
+      <div className="relative min-h-screen bg-linear-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 pb-32
+            2xl:pl-110
+            2xl:pr-50
+            lg:pl-70
+            lg:pr-10
+            md:pl-15
+            md:pr-15
+            max-[769px]:px-5
+            max-[426px]:px-2
+            ">
+
         {profileData?.is_verified ? (
           <>
             <h1 className="text-2xl font-bold text-blue-900">
@@ -110,16 +121,22 @@ const FindAgency = () => {
               <p className="mt-10 text-lg italic text-gray-500">No manpower providers found.</p>
             ) : (
               <>
-                <div className="grid grid-cols-2 gap-6 mt-15">
+                <div className="grid grid-cols-2 gap-6 mt-15
+                                max-[576px]:grid-cols-1"
+                  >
+
                   {currentAgencies.map((agency) => (
                     <div
                       key={agency.agency_id}
                       className="flex flex-col bg-white rounded-xl border border-gray-300 p-6 shadow-md"
                     >
-                      <div className="flex items-center gap-4">
+
+                      <div className="flex items-center gap-4
+                        max-[691px]:flex-col
+                        ">
 
                         {/* PROFILE */}
-                        <div className="w-14 h-14 rounded-full overflow-hidden flex-shrink-0">
+                        <div className="w-14 h-14 rounded-full overflow-hidden shrink-0">
                           {agency.profile ? (
                             <img
                               src={agency.profile}
@@ -138,7 +155,11 @@ const FindAgency = () => {
                           {agency.agency_name}
                         </h2>
                       </div>
-                      <div className="flex justify-between mt-6">
+
+                      <div className="flex justify-between mt-6
+                        max-[691px]:flex-col
+                        max-[691px]:gap-5
+                        ">
                         <button
                           onClick={() => openApply(agency)}
                           className="bg-blue-900 text-white px-10 py-2 rounded-md cursor-pointer"
@@ -153,54 +174,13 @@ const FindAgency = () => {
                   ))}
                 </div>
 
-                <div className="pl-60 absolute bottom-15 left-1/2 transform -translate-x-1/2 flex items-center gap-2 justify-center">
-                  <button
-                    onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
-                    disabled={currentPage === 1}
-                    className={`px-3 py-1 rounded ${currentPage === 1
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "text-blue-700 cursor-pointer"
-                      }`}
-                  >
-                    ◀
-                  </button>
-
-                  {(() => {
-                    let start = Math.max(1, currentPage - 1);
-                    let end = Math.min(start + 2, totalPages);
-                    if (end - start < 2 && start > 1) {
-                      start = Math.max(1, end - 2);
-                    }
-
-                    return Array.from({ length: end - start + 1 }, (_, i) => start + i).map(
-                      (page) => (
-                        <button
-                          key={page}
-                          onClick={() => setCurrentPage(page)}
-                          className={`px-3 py-1 rounded ${page === currentPage
-                            ? "bg-blue-700 text-white cursor-pointer"
-                            : "bg-gray-200 text-gray-700 cursor-pointer"
-                            }`}
-                        >
-                          {page}
-                        </button>
-                      )
-                    );
-                  })()}
-
-                  <button
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                    className={`px-3 py-1 rounded ${currentPage === totalPages
-                      ? "text-gray-500 cursor-not-allowed"
-                      : "text-blue-700 cursor-pointer"
-                      }`}
-                  >
-                    ▶
-                  </button>
-                </div>
+                {/* ✅ Added this section for pagination controls */}
+                <Pagination
+                  currentPage={currentPage}        
+                  totalPages={totalPages}          
+                  setCurrentPage={setCurrentPage}  
+                />
+                
               </>
             )}
           </>

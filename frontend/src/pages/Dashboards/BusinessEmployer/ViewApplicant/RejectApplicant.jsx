@@ -21,14 +21,14 @@ const RejectApplicant = ({ application, onClose }) => {
         </p>
         <div className="flex justify-end gap-2">
           <button
-            className="px-4 py-2 rounded-lg border border-gray-300"
+            className="px-4 py-2 rounded-lg border border-gray-300 cursor-pointer"
             onClick={onClose}
             disabled={rejectMutation.isLoading}
           >
             Cancel
           </button>
           <button
-            className="px-4 py-2 rounded-lg bg-red-600 text-white"
+            className="px-4 py-2 rounded-lg bg-red-600 text-white cursor-pointer"
             onClick={handleReject}
             disabled={rejectMutation.isLoading}
           >

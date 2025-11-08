@@ -82,7 +82,9 @@ const MessageInput = ({ selectedUser }) => {
           value={messageText}
           onChange={(e) => setMessageText(e.target.value)}
           disabled={!selectedUser}
-          className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none disabled:opacity-50 border-gray-300"
+          className="flex-1 border rounded-full px-4 py-2 text-sm focus:outline-none disabled:opacity-50 border-gray-300
+                      max-[600px]:w-32
+                      max-[500px]:w-10"
           placeholder="Type a message ...."
         />
 

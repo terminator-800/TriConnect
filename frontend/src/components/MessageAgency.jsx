@@ -80,8 +80,9 @@ const MessageAgency = ({ receiver, role, onClose }) => {
 
   return (
     <div className="bg-gray-300 w-full max-w-2xl py-5 px-10 rounded-xl border border-gray-500 shadow-lg">
+
       <div className="flex justify-between items-center border-b pb-3 mb-5 border-gray-500">
-        <h2 className="text-xl font-bold">
+        <h2 className="text-xl font-bold truncate">
           Message {receiver.agency_name || receiver.business_name || receiver.full_name || 'Agency'}
         </h2>
         <button
@@ -132,7 +133,10 @@ const MessageAgency = ({ receiver, role, onClose }) => {
         </div>
       </div>
 
-      <div className="flex justify-end gap-3 mt-4">
+      <div className="flex justify-end gap-3 mt-4
+          max-[769px]:flex-col max-[769px]:items-stretch
+                max-[426px]:flex-col max-[426px]:items-stretch
+      ">
         <button
           onClick={handleSubmit}
           disabled={isSubmitting || !message.trim()}

@@ -21,10 +21,10 @@ const EmployerType = () => {
   return (
     <>
       <Navbar userType={"register"} />
-      <div className='flex justify-center items-center h-screen flex-col bg-gradient-to-b from-white to-cyan-400'>
+      <div className='flex justify-center items-center h-screen flex-col bg-linear-to-b from-white to-cyan-400 max-[769px]:h-[150vh]'>
         <h1 className='text-center text-5xl'>SELECT EMPLOYER TYPE</h1>
         <p className='text-blue-900 text-2xl mb-5'>Select your user type to get started</p>
-        <div className='flex p-5 gap-20 text-2xl'>
+        <div className='flex p-5 gap-20 text-2xl max-[769px]:flex-col'>
           <div className={`rounded my-2 cursor-pointer ${isSelected === business ? "bg-red-500" : "bg-red-300"} w-60 text-center pt-60 pb-5 italic shadow-xl`}
             onClick={() => handleSelect(business)}
           >

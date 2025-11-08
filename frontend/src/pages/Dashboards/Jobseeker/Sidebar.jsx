@@ -8,6 +8,7 @@ import Feedback from '../../../components/Feedback';
 
 const Sidebar = () => {
   const [feedbackModalVisible, setFeedbackModalVisible] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -33,8 +34,20 @@ const Sidebar = () => {
         <Navbar userType={ROLE.JOBSEEKER} />
       </div>
 
+      {/* Toggle button (hamburger / close icon) */}
+      <button
+        className="block lg:hidden fixed top-[100px] left-4 z-50 bg-gray-800 text-white p-2 rounded-lg"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? '✖' : '☰'}
+      </button>
+
       {/* Sidebar */}
-      <div className="fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40">
+      <div
+        className={`fixed h-full bg-gray-400 text-white p-0 w-60 flex flex-col z-40 transform transition-transform duration-300
+                    ${isOpen ? 'translate-x-0 pt-10' : '-translate-x-full'} 
+                    lg:translate-x-0 lg:pt-0`}
+                    >
 
         <ul className="list-none p-0 space-y-4 flex-1 flex flex-col mb-6 mt-30">
 
@@ -77,7 +90,7 @@ const Sidebar = () => {
             </button>
           </li>
 
-          <li className="mt-0 flex justify-center">
+          <li className="mt-0 flex justify-center mb-4">
             <button
               onClick={handleLogout}
               className="text-black hover:text-gray-300 bg-transparent border-none cursor-pointer p-2 font-medium"

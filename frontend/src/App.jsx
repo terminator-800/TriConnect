@@ -1,5 +1,5 @@
-import { useEffect, useState, useRef, createContext, useContext } from "react";
 import { useGlobalNotifications } from "../hooks/useGlobalNotifications";
+import { AuthProvider, useAuth } from "../context/AuthContext";
 import { Routes, Route } from "react-router-dom";
 import { useSocket } from "../hooks/useSocket";
 import SocketStatus from "./components/SocketStatus";
@@ -10,7 +10,6 @@ import PrivateRoute from "./pages/Dashboards/PrivateRoute";
 import PublicRoute from "./pages/PublicRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import axios from "axios";
 
 // Profiles
 import JobseekerProfile from "./pages/Dashboards/Jobseeker/Profile/Profile";
@@ -54,42 +53,7 @@ import VerifiedJobPost from './pages/Dashboards/Administrator/VerifiedJobPost'
 import ReportedUsers from './pages/Dashboards/Administrator/ReportedUsers/ReportedUsers'
 import UserFeedback from './pages/Dashboards/Administrator/UserFeedback/UserFeedback'
 import ManpowerProviderJobPostDetails from "./pages/Dashboards/ManpowerProvider/JobPostDetails";
-
-// Auth Context
-const AuthContext = createContext();
-
-export const useAuth = () => useContext(AuthContext);
-
-const AuthProvider = ({ children }) => {
-  const [authData, setAuthData] = useState({ authenticated: null, role: null, userId: null });
-  const hasFetched = useRef(false);
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      if (hasFetched.current) return;
-      hasFetched.current = true;
-      try {
-        const { data } = await axios.get(`${import.meta.env.VITE_API_URL}/auth/verify-token`, {
-          withCredentials: true,
-        });
-        setAuthData({
-          authenticated: data.authenticated,
-          role: data.role,
-          userId: data.user,
-        });
-      } catch {
-        setAuthData({ authenticated: false, role: null, userId: null });
-      }
-    };
-    checkAuth();
-  }, []);
-
-  return (
-    <AuthContext.Provider value={authData}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+import AdministratorDashboard from "./pages/Dashboards/Administrator/Dashboard/AdministratorDashboard";
 
 // Remove SocketProvider's auth check and just use context
 const SocketProvider = ({ children }) => {
@@ -197,7 +161,7 @@ function App() {
 
             {/* Administrator */}
             <Route path="/administrator/*" element={<PrivateRoute />}>
-              {/* <Route  element={<AdministratorDashboard />} /> */}
+              <Route path="dashboard"  element={<AdministratorDashboard/>} />
               <Route path="verification" index element={<UserVerification />} />
               <Route path="verified" element={<VerifiedUser />} />
               <Route path="job-post-verification" element={<JobPostVerification />} />

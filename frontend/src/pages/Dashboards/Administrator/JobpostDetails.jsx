@@ -3,7 +3,7 @@ import { ROLE } from '../../../../utils/role';
 
 const JobpostDetails = ({ jobPost, onClose }) => {
     if (!jobPost) return null;
-    
+
     useEffect(() => {
         const originalStyle = window.getComputedStyle(document.body).overflow;
         document.body.style.overflow = 'hidden';
@@ -21,7 +21,21 @@ const JobpostDetails = ({ jobPost, onClose }) => {
 
     return (
         <div className="fixed inset-0 z-50 bg-opacity-50 flex items-center justify-center">
-            <div className="relative bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-[100vh] overflow-y-auto border border-gray-300">
+            <div className="relative bg-white p-8 rounded-xl shadow-lg w-full max-w-4xl max-h-screen h-[90vh] overflow-y-auto border border-gray-300
+            max-[991px]:mx-10
+            max-[861px]:mx-10
+            max-[426px]:mx-5
+            max-[321px]:mx-2
+            style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            ">
+                {/* Hide Scrollbar */}
+                <style>
+                    {`
+                        div::-webkit-scrollbar {
+                            display: none;
+                        }
+                        `}
+                </style>
 
                 <button
                     onClick={onClose}
@@ -32,9 +46,9 @@ const JobpostDetails = ({ jobPost, onClose }) => {
                 <h2 className="text-3xl font-bold mb-4 text-center">Job Post Details</h2>
                 <div className="justify-between my-4 space-y-5">
                     <p><span className='font-semibold'>Title:</span> {jobPost.job_title}</p>
-                    <p><span className='font-semibold'>Location:</span> {jobPost.location}</p>
+                    <p className="wrap-break-word whitespace-pre-wrap"><span className="font-semibold">Location:</span> {jobPost.location}</p>
                     <p><span className='font-semibold'>Job Type:</span> {jobPost.job_type}</p>
-                    <p><span className='font-semibold'>Required Skill:</span> {jobPost.required_skill}</p>
+                    <p className="wrap-break-word whitespace-pre-wrap"><span className="font-semibold">Required Skill:</span> {jobPost.required_skill}</p>
                     <p><span className='font-semibold'>Salary:</span> {jobPost.salary_range}</p>
                     <p>
                         <span className='font-semibold'>Verified:</span>{' '}
@@ -45,7 +59,7 @@ const JobpostDetails = ({ jobPost, onClose }) => {
                     </p>
                     <span className='font-semibold'>Description</span>
                     <hr className="mb-4 text-gray-300" />
-                    <p className="mt-5 break-words whitespace-pre-wrap">
+                    <p className="mt-5 wrap-break-word whitespace-pre-wrap">
                         {jobPost.job_description || 'N/A'}
                     </p>
                 </div>

@@ -17,7 +17,7 @@ const Apply = ({ employer, onClose }) => {
             document.body.style.overflow = 'auto';
         };
     }, []);
-    
+
     const mutation = useMutation({
         mutationFn: async ({ job_post_id, receiver_id, message, files }) => {
 
@@ -67,7 +67,7 @@ const Apply = ({ employer, onClose }) => {
     });
 
     const handleSubmit = () => {
-        
+
         if (!message.trim() && !files) {
             alert('Please enter a message or attach a file.');
             return;
@@ -84,11 +84,14 @@ const Apply = ({ employer, onClose }) => {
     const isSubmitting = mutation.isPending;
 
     return (
-        <div className="bg-gray-300 w-full max-w-2xl py-5 px-10 rounded-xl border border-gray-500 shadow-lg">
+        <div className="bg-gray-300 w-full max-w-2xl py-5 px-10 rounded-xl border border-gray-500 shadow-lg
+            max-[769px]:mx-5
+            ">
             <div className='flex justify-between items-center border-b pb-3 mb-5 border-gray-500'>
-                <h2 className="text-xl font-bold">
+                <h2 className="text-xl font-bold truncate max-w-[250px]">
                     Apply to {employer.business_name || employer.full_name || employer.agency_name || 'Employer'}
                 </h2>
+
                 <button
                     onClick={onClose}
                     className="text-gray-700 text-2xl rounded cursor-pointer"
@@ -139,14 +142,17 @@ const Apply = ({ employer, onClose }) => {
                 </label>
             </div>
 
-            <div className="flex justify-end gap-3 mt-4">
+            <div className="flex justify-end gap-3 mt-4
+                max-[769px]:flex-col max-[769px]:items-stretch
+                max-[426px]:flex-col max-[426px]:items-stretch
+                ">
                 <button
                     onClick={handleSubmit}
                     disabled={isSubmitting || !message.trim()}
                     className={`px-4 py-2 rounded-xl text-white cursor-pointer
                          ${isSubmitting
-                        ? 'bg-gray-500 cursor-not-allowed'
-                        : 'bg-blue-900 hover:bg-blue-800'
+                            ? 'bg-gray-500 cursor-not-allowed'
+                            : 'bg-blue-900 hover:bg-blue-800'
                         }`}
                 >
                     {isSubmitting ? 'Sending...' : 'Send Application'}

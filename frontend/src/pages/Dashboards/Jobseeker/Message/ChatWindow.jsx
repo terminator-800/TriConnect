@@ -21,7 +21,7 @@ const ChatWindow = ({ selectedUser }) => {
   const { conversation_id = null } = selectedUser || {};
 
   const { data: messages = [], isLoading, isError } = useMessageHistory(ROLE.JOBSEEKER, conversation_id);
-  
+
   // Initialize socket connection
   useSocket(currentUserId, ROLE.JOBSEEKER);
 
@@ -81,7 +81,21 @@ const ChatWindow = ({ selectedUser }) => {
   }, [messages.length]);
 
   return (
-    <div className="flex-1 overflow-y-auto p-6 bg-white">
+    // 🆕 Added fixed width (max-w-[800px]) and full height scrollable area (overflow-y-auto)
+    <div
+      className="flex-1 overflow-y-auto bg-white 
+    
+    rounded-lg
+    scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 
+    max-[769px]:max-w-[60vw]
+    max-[660px]:max-w-[55vw]
+    max-[426px]:max-w-[50vw]
+    max-[426px]:pr-0
+    max-[769px]:p-0
+    max-[769px]:m-0
+
+    "
+    >
       {isLoading && <div className="text-gray-400 text-center">Loading messages...</div>}
       {isError && <div className="text-red-500 text-center">Failed to load messages.</div>}
       {!isLoading && !isError && messages.length === 0 && (
@@ -89,8 +103,15 @@ const ChatWindow = ({ selectedUser }) => {
       )}
 
       <div className="flex-1 bg-white flex flex-col">
-        <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col justify-end min-h-[50vh]">
-          <ul className="flex flex-col space-y-4">
+        <div className="flex-1 overflow-y-auto px-2 py-4 flex flex-col justify-end min-h-[50vh]
+          
+          max-[769px]:px-2
+          max-[769px]:py-0
+           max-[426px]:px-2
+           max-[376px]:px-2
+        ">
+          <ul className="flex flex-col space-y-4
+          ">
             {messages.map((msg, index) => {
               const isSender = Number(msg.sender_id) === Number(currentUserId);
               const senderAvatar = selectedUser?.authorized_profile;
@@ -108,7 +129,7 @@ const ChatWindow = ({ selectedUser }) => {
 
                   {/* AUTHORIZED PERSONEL */}
                   {!isSender && (
-                    <div className="flex-shrink-0 w-8 h-8 rounded-full mr-2 text-xs font-semibold overflow-hidden flex items-center justify-center bg-gray-400 text-white">
+                    <div className="shrink-0 w-8 h-8 rounded-full mr-2 text-xs font-semibold overflow-hidden flex items-center justify-center bg-gray-400 text-white">
                       {senderAvatar ? (
                         <img
                           src={senderAvatar}
@@ -122,7 +143,9 @@ const ChatWindow = ({ selectedUser }) => {
                   )}
 
 
-                  <div className="flex flex-col items-start">
+                  <div className="flex flex-col items-start 
+                    
+                  ">
                     <div className={`max-w-xs px-4 py-2 rounded-lg text-sm ${bubbleStyle}`}>
                       {msg.message_type === 'file' && msg.file_url && (
                         <img
@@ -132,14 +155,22 @@ const ChatWindow = ({ selectedUser }) => {
                           onClick={() => setPreviewImage(`${msg.file_url}`)}
                         />
                       )}
-                      <div className="break-words whitespace-pre-wrap">
+                      <div className="wrap-break-word whitespace-pre-
+                        max-[769px]:max-w-50
+                        max-[601px]:max-w-40
+                        max-[426px]:max-w-25
+                        max-[511px]:max-w-25
+                        max-[376px]:max-w-15
+                        max-[321px]:max-w-5
+
+                      ">
                         <div>{msg.message_text || 'No message yet'}</div>
                       </div>
                     </div>
 
                     <div
                       className={`text-xs mt-1 ${isSender ? 'text-right self-end text-gray-500' : 'text-left self-start text-gray-500'}`}
-                    >
+                     >
                       <div>sent {msg.created_at}</div>
                       {isLastSenderMessage && !!msg.is_read && (
                         <div className="text-xs text-blue-500 mt-1">Seen</div>

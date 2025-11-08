@@ -38,7 +38,16 @@ const UserFeedback = () => {
   return (
     <>
       <Sidebar />
-      <div className="relative min-h-screen bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 flex flex-col">
+      <div className="min-h-screen flex flex-col justify-between bg-linear-to-b from-white to-cyan-400 
+            2xl:pl-110
+            2xl:pr-50
+            lg:pl-70
+            lg:pr-10
+            md:pl-15
+            md:pr-15
+            max-[769px]:px-10
+             pt-50
+             ">
         <h1 className="text-2xl font-bold text-blue-900">User Feedback</h1>
         <p className="mt-2">
           Review and manage feedback submitted by TriConnect users
@@ -47,33 +56,29 @@ const UserFeedback = () => {
         <div className="w-full rounded mt-15 flex flex-col flex-1">
           {/* Table Section */}
           <div className="overflow-x-auto flex-1">
-            <table className="min-w-full border border-gray-300 rounded-lg overflow-hidden">
+            <table className="min-w-max w-full border border-gray-300 rounded-lg overflow-hidden text-left">
               <thead className="bg-gray-300 text-left">
                 <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-sm font-semibold text-gray-700 whitespace-nowrap">
                     User Details
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-sm font-semibold text-gray-700 whitespace-nowrap">
                     User Type
                   </th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">
+                  <th className="px-6 py-3 text-sm font-semibold text-gray-700 whitespace-nowrap">
                     Date Submitted
                   </th>
-                  <th className="px-6 py-3"></th>
+                  <th className="px-6 py-3 whitespace-nowrap"></th>
                 </tr>
               </thead>
 
               <tbody className="bg-white divide-y divide-gray-200">
-
                 {currentItems.map((fb) => (
-
-                  <tr key={fb.id}>
-
-                    <td className="px-6 py-4 flex items-center">
-
+                  <tr key={fb.id} className="border-t border-gray-200">
+                    <td className="px-6 py-4 flex items-center gap-3 whitespace-nowrap">
                       {/* PROFILE / INITIALS */}
-                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-3 overflow-hidden">
-                        {fb.profile ? ( 
+                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden">
+                        {fb.profile ? (
                           <img
                             src={fb.profile}
                             alt={fb.user_name || "User"}
@@ -81,7 +86,7 @@ const UserFeedback = () => {
                           />
                         ) : (
                           <span className="text-xs font-bold text-gray-600 italic">
-                            {fb.initials || "n/a"} 
+                            {fb.initials || "n/a"}
                           </span>
                         )}
                       </div>
@@ -89,11 +94,13 @@ const UserFeedback = () => {
                       <span className="font-semibold italic">{fb.name}</span>
                     </td>
 
-                    <td className={`px-6 py-4 font-bold text-sm italic ${fb.color}`}>
+                    <td className={`px-6 py-4 font-bold text-sm italic ${fb.color} whitespace-nowrap`}>
                       {ROLE_LABELS[fb.type]}
                     </td>
-                    <td className="px-6 py-4 text-gray-500">{fb.date}</td>
-                    <td className="px-6 py-4 text-right">
+
+                    <td className="px-6 py-4 text-gray-500 whitespace-nowrap">{fb.date}</td>
+
+                    <td className="px-6 py-4 text-right whitespace-nowrap">
                       <button
                         onClick={() => setSelectedFeedback(fb)}
                         className="px-4 py-2 rounded bg-blue-900 text-white hover:bg-blue-800 cursor-pointer"
@@ -102,7 +109,6 @@ const UserFeedback = () => {
                       </button>
                     </td>
                   </tr>
-
                 ))}
 
                 {/* Show empty row if no users */}
@@ -113,7 +119,6 @@ const UserFeedback = () => {
                     </td>
                   </tr>
                 )}
-
               </tbody>
             </table>
           </div>
@@ -127,6 +132,7 @@ const UserFeedback = () => {
             />
           </div>
         </div>
+
       </div>
 
 

@@ -28,9 +28,18 @@ const FindJob = () => {
     <>
       {/*  */}
       <Sidebar />
-      <div className="relative min-h-screen  bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 pb-15">
+      <div className="relative min-h-screen bg-linear-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 pb-15
+            2xl:pl-110
+            2xl:pr-50
+            lg:pl-70
+            lg:pr-10
+            md:pl-15
+            md:pr-15
+            max-[769px]:px-5
+            max-[426px]:px-2
+      ">
         {profileData.is_verified ? (
-          <BrowseJob/>
+          <BrowseJob />
         ) : profileData.is_rejected ? (
           <div className="bg-white shadow-md rounded-3xl p-6 w-full max-w-7xl border border-gray-300 px-20">
             <VerificationStatus profileData={profileData} openForm={openForm} />

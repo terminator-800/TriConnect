@@ -19,10 +19,10 @@ const UserVerification = () => {
     const [currentPage, setCurrentPage] = useState(1);
 
     const {
-        data: users = [],
-        isLoading: loading,
-        isError,
-        error,
+    data: users = [],
+    isLoading: loading,
+    isError,
+    error,
     } = useSubmittedUsers(ROLE.ADMINISTRATOR);
 
     useEffect(() => {
@@ -42,7 +42,16 @@ const UserVerification = () => {
     return (
         <>
             <Sidebar />
-            <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50">
+            <div className="min-h-screen flex flex-col justify-between bg-linear-to-b from-white to-cyan-400 
+            2xl:pl-110
+            2xl:pr-50
+            lg:pl-70
+            lg:pr-10
+            md:pl-15
+            md:pr-15
+            max-[769px]:px-10
+             pt-50
+             ">
                 <h1 className="text-2xl font-bold text-blue-900">User Verification</h1>
                 <p className="mt-2">
                     Review and verify users to allow platform access
@@ -58,33 +67,48 @@ const UserVerification = () => {
                             No users submitted requirements.
                         </p>
                     ) : (
-                        <div className="mt-10 flex-1">
+                        // Scrollable Table
+                        <div className="mt-10 flex-1 overflow-x-auto">
                             <table className="min-w-full divide-y divide-gray-200 border border-gray-300 rounded-lg overflow-hidden">
                                 <thead className="bg-gray-400">
                                     <tr>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">User Details</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Type</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Submitted Documents</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Date</th>
-                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700">Actions</th>
+                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            User Details
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            Type
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            Submitted Documents
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            Date
+                                        </th>
+                                        <th className="px-6 py-3 text-left text-sm font-semibold text-gray-700 whitespace-nowrap">
+                                            Actions
+                                        </th>
                                     </tr>
                                 </thead>
+
                                 <tbody className="bg-white divide-y divide-gray-200">
                                     {users.map((user) => (
                                         <tr key={user.user_id}>
-
-                                            {/* Names */}
+                                            {/* Name */}
                                             <td className="px-6 py-4 text-sm font-bold italic text-gray-800">
                                                 {user.full_name || user.business_name || user.agency_name || 'N/A'}
                                             </td>
 
-                                            {/* ROLE */}
+                                            {/* Role */}
                                             <td
-                                                className={`px-6 py-4 text-sm font-bold italic ${user.role === ROLE.JOBSEEKER ? 'text-blue-600'
-                                                    : user.role === ROLE.BUSINESS_EMPLOYER ? 'text-green-500'
-                                                        : user.role === ROLE.MANPOWER_PROVIDER ? 'text-orange-500'
-                                                            : user.role === ROLE.INDIVIDUAL_EMPLOYER ? 'text-yellow-500'
-                                                                : 'text-gray-500'
+                                                className={`px-6 py-4 text-sm font-bold italic ${user.role === ROLE.JOBSEEKER
+                                                        ? 'text-blue-600'
+                                                        : user.role === ROLE.BUSINESS_EMPLOYER
+                                                            ? 'text-green-500'
+                                                            : user.role === ROLE.MANPOWER_PROVIDER
+                                                                ? 'text-orange-500'
+                                                                : user.role === ROLE.INDIVIDUAL_EMPLOYER
+                                                                    ? 'text-yellow-500'
+                                                                    : 'text-gray-500'
                                                     }`}
                                             >
                                                 {ROLE_LABELS[user.role] || user.role}
@@ -96,24 +120,18 @@ const UserVerification = () => {
                                                     {documentMap[user.role]?.map(({ key, label }) => (
                                                         <button
                                                             key={key}
-                                                            onClick={() =>
-                                                                setPreviewImage({ src: getImagePath(user, user[key]), label })
-                                                            }
+                                                            onClick={() => setPreviewImage({ src: getImagePath(user, user[key]), label })}
                                                             className="bg-gray-300 px-2 py-1 text-xs rounded hover:bg-gray-400 cursor-pointer"
                                                         >
                                                             {label}
                                                         </button>
-
                                                     ))}
-
                                                 </div>
                                             </td>
 
                                             {/* Date */}
                                             <td className="px-6 py-4 text-sm text-gray-800">
-                                                <span className="text-gray-500 text-sm">
-                                                    {user.created_at}
-                                                </span>
+                                                <span className="text-gray-500 text-sm">{user.created_at}</span>
                                             </td>
 
                                             {/* Buttons */}

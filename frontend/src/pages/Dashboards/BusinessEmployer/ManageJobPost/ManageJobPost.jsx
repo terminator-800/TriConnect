@@ -52,7 +52,16 @@ const ManageJobPost = () => {
     return (
         <>
             <Sidebar />
-            <div className="relative min-h-[140vh] bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 p-10">
+            <div className="relative min-h-[140vh] bg-linear-to-b from-white to-cyan-400 pl-110 pr-50 pt-50 p-10
+                            2xl:pl-110
+                            2xl:pr-50
+                            lg:pl-70
+                            lg:pr-10
+                            md:pl-15
+                            md:pr-15
+                            max-[769px]:px-10"
+            >
+
                 {employer.is_verified ? (
                     <>
                         <header>
@@ -102,7 +111,7 @@ const ManageJobPost = () => {
                 <ConfirmDeleteJobPost
                     data={state.deleteTargetJob}
                     onClose={closeDeleteModal}
-                    role={ROLE.BUSINESS_EMPLOYER} 
+                    role={ROLE.BUSINESS_EMPLOYER}
                 />
             )}
 

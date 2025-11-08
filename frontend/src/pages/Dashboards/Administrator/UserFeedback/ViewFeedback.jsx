@@ -17,7 +17,11 @@ const ViewFeedback = ({ feedback, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl w-full relative border border-gray-300">
+            <div className="bg-white p-8 rounded-2xl shadow-lg max-w-2xl w-full relative border border-gray-300
+                max-[700px]:mx-10
+                max-[426px]:mx-5
+                max-[321px]:mx-2
+            ">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl cursor-pointer"

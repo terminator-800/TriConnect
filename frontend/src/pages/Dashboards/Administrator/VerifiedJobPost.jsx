@@ -8,7 +8,7 @@ import icons from '../../../assets/svg/Icons'
 
 const VerifiedJobPost = () => {
   const { data: verifiedJobPosts = [], isLoading, isError } = useVerifiedJobPosts();
-  
+
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedJobPost, setSelectedJobPost] = useState(null)
 
@@ -48,7 +48,16 @@ const VerifiedJobPost = () => {
   return (
     <>
       <Sidebar />
-      <div className="min-h-screen flex flex-col justify-between bg-gradient-to-b from-white to-cyan-400 pl-110 pr-50 pt-50">
+      <div className="min-h-screen flex flex-col justify-between bg-linear-to-b from-white to-cyan-400 
+            2xl:pl-110
+            2xl:pr-50
+            lg:pl-70
+            lg:pr-10
+            md:pl-15
+            md:pr-15
+            max-[769px]:px-10
+             pt-50
+             ">
 
         <div>
           <h1 className="text-2xl font-bold text-blue-900">Verified Job Post</h1>
@@ -59,45 +68,47 @@ const VerifiedJobPost = () => {
           {verifiedJobPosts.length === 0 ? (
             <p className="text-gray-500 italic text-lg">No verified job posts available.</p>
           ) : (
-            <div className="flex flex-col space-y-6">
+            <div className="flex flex-col space-y-6 overflow-x-auto">
               {currentPosts.map((job) => (
                 <div
                   key={job.job_post_id}
-                  className="bg-white rounded-lg shadow-md p-6 flex justify-between border border-gray-300"
-                  style={{ minHeight: '140px' }}
+                  className="bg-white rounded-lg shadow-md p-6 flex justify-between border border-gray-300 
+                 min-w-[700px] max-[768px]:min-w-[550px] max-[425px]:min-w-[380px] whitespace-nowrap relative"
+                  style={{ minHeight: '160px' }}
                 >
                   {/* Left side info */}
-                  <div>
+                  <div className="flex flex-col">
                     <h2 className="text-2xl font-bold text-black">{job.job_title}</h2>
-                    <p className={`text-sm font-bold italic flex items-center gap-2 ${getRoleColor(job.role)}`}>
+                    <p className={`text-sm font-bold italic flex items-center flex-wrap gap-2 ${getRoleColor(job.role)}`}>
                       {ROLE_LABELS[job.role] || job.role}
                       <span className="mx-1 text-gray-500">|</span>
-                      <span role="img" aria-label="location">
-                        <img src={icons.location} alt="location" className="w-6" />
-                      </span>
+                      <img src={icons.location} alt="location" className="w-5" />
                       <span className="text-gray-600">{job.location}</span>
                     </p>
 
                     <button
                       onClick={() => handleViewDetails(job)}
-                      className="mt-4 bg-gray-200 text-gray-700 px-4 py-2 rounded cursor-pointer text-sm hover:bg-gray-300"
+                      className="mt-4 bg-gray-200 text-gray-700 px-4 py-2 rounded cursor-pointer text-sm hover:bg-gray-300 w-fit"
                     >
                       View Job Post
                     </button>
                   </div>
 
                   {/* Right side (Verified info) */}
-                  <div className="flex flex-col justify-between items-end">
-                    <span className="bg-green-100 text-green-800 text-sm px-4 py-1 rounded-full font-medium flex items-center">
-                      <img src={icons.verified_check} alt="verified" className="w-6" /> Verified
+                  <div className="absolute top-6 right-6 flex flex-col items-end justify-between h-[calc(100%-3rem)]">
+                    <span className="bg-green-100 text-green-800 text-sm px-4 py-1 rounded-full font-medium flex items-center gap-1">
+                      <img src={icons.verified_check} alt="verified" className="w-5" />
+                      Verified
                     </span>
-                    <span className="text-gray-500">
-                      Verified on {job.approved_at} at{' '}
+                    <span className="text-gray-500 text-sm text-right whitespace-normal">
+                      Verified on {job.approved_at}
                     </span>
                   </div>
                 </div>
               ))}
             </div>
+
+
           )}
         </div>
 
@@ -116,7 +127,7 @@ const VerifiedJobPost = () => {
             onClose={handleCloseDetails}
           />
         )}
-      </div>
+      </div >
     </>
   )
 }

@@ -44,7 +44,9 @@ const ReportUser = ({ reportedUser, conversationId, onClose, role }) => {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50">
-            <div className="bg-white p-6 rounded-lg w-full max-w-lg relative border border-gray-300">
+            <div className="bg-white p-6 rounded-lg w-full max-w-lg relative border border-gray-300
+                            max-[769px]:mx-5
+                            ">
                 <button
                     onClick={onClose}
                     className="absolute top-2 right-2 text-gray-600 hover:text-black text-lg font-bold cursor-pointer"
@@ -133,7 +135,9 @@ const ReportUser = ({ reportedUser, conversationId, onClose, role }) => {
                                 <button
                                     type="submit"
                                     disabled={isPending}
-                                    className={`ml-auto ${isPending
+                                    className={`ml-auto
+                                        max-[376px]:ml-0
+                                        ${isPending
                                         ? "bg-blue-400 cursor-not-allowed"
                                         : "bg-blue-800 hover:bg-blue-900"
                                         } text-white px-6 py-2 rounded-md transition`}

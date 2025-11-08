@@ -9,6 +9,8 @@ import Pagination from '../../../../components/Pagination';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../Verification Form/Form';
+import ContactApplicantLayout from '../../../../components/ContactApplicant/ContactApplicantLayout'
+import ViewProfile from '../../../../components/ViewProfile';
 
 const ViewApplicant = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -16,8 +18,17 @@ const ViewApplicant = () => {
   const { data, isLoading, error } = useApplicants({ page: currentPage, pageSize, role: ROLE.INDIVIDUAL_EMPLOYER });
   const [openMenuId, setOpenMenuId] = useState(null);
   const [showForm, setShowForm] = useState(false);
+
+  // Reject Applicant
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState(null);
+
+  // Contact Applicant
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedContactApplicant, setSelectedContactApplicant] = useState(null);
+  // View Profile
+  const [showProfileModal, setShowProfileModal] = useState(false);
+  const [selectedApplicant, setSelectedApplicant] = useState(null);
 
   const {
     data: profileData,
@@ -100,13 +111,31 @@ const ViewApplicant = () => {
 
                             {openMenuId === applicant.application_id && (
                               <ApplicantMenu
+
+                                // Reject Applicant
                                 onRejectClick={() => {
                                   setSelectedApplication(applicant);
                                   setShowRejectModal(true);
                                   setOpenMenuId(null);
                                 }}
+
+                                // View Profile
+                                onViewProfileClick={() => {
+                                  setSelectedApplicant(applicant);
+                                  setShowProfileModal(true);
+                                  setOpenMenuId(null);
+                                }}
+
+                                // Message Applicant
+                                onMessageClick={() => {
+                                  setSelectedContactApplicant(applicant);
+                                  setShowContactModal(true);
+                                  setOpenMenuId(null);
+                                }}
                               />
+
                             )}
+
                           </td>
                         </tr>
                       ))}
@@ -135,7 +164,7 @@ const ViewApplicant = () => {
             setCurrentPage={setCurrentPage}
           />
         </div>
-        
+
       </div>
 
       {showForm && (
@@ -154,6 +183,29 @@ const ViewApplicant = () => {
           onClose={() => {
             setShowRejectModal(false);
             setSelectedApplication(null);
+          }}
+        />
+      )}
+
+      {/* View Applicant Modal */}
+      {showProfileModal && selectedApplicant && (
+        <ViewProfile
+          applicant={selectedApplicant}
+          onClose={() => {
+            setShowProfileModal(false);
+            setSelectedApplicant(null);
+          }}
+        />
+      )}
+
+      {/* Contact Applicant Modal */}
+      {showContactModal && selectedContactApplicant && (
+        <ContactApplicantLayout
+          applicant={selectedContactApplicant}
+          role={ROLE.BUSINESS_EMPLOYER}
+          onClose={() => {
+            setShowContactModal(false);
+            setSelectedContactApplicant(null);
           }}
         />
       )}

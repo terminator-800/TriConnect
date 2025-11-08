@@ -25,7 +25,9 @@ const ViewReportedUser = ({ report, onClose }) => {
         <>
             {/* Main Modal */}
             <div className="fixed inset-0 flex items-center justify-center bg-opacity-40 z-50">
-                <div className="bg-white w-[500px] max-w-full rounded-xl shadow-lg p-6 relative border border-gray-300">
+                <div className="bg-white w-[500px] max-w-full rounded-xl shadow-lg p-6 relative border border-gray-300
+                    max-[526px]:mx-5
+                ">
                     {/* Header */}
                     <div className="bg-blue-900 text-white px-4 py-3 rounded-t-xl -mx-6 -mt-6 mb-4 flex justify-between items-center">
                         <h2 className="text-lg font-bold">Report Details</h2>
@@ -106,7 +108,9 @@ const ViewReportedUser = ({ report, onClose }) => {
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="flex justify-between mt-6">
+                    <div className="flex justify-between mt-6
+                        max-[351px]:gap-2
+                    ">
                         <button
                             className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
                             onClick={() =>

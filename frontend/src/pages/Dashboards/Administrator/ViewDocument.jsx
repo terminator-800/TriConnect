@@ -16,7 +16,11 @@ const ViewDocument = ({ user, onClose }) => {
 
     return (
         <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
-            <div className="bg-white p-8 rounded-2xl shadow-lg max-w-3xl w-full h-[85vh] overflow-y-auto relative border border-gray-300 hide-scrollbar">
+            <div className="bg-white p-8 rounded-2xl shadow-lg w-full h-[85vh] overflow-y-auto relative border border-gray-300 hide-scrollbar 
+            max-w-3xl
+            max-[769px]:mx-10
+            max-[321px]:mx-2
+            ">
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-gray-500 hover:text-black text-2xl cursor-pointer"
@@ -24,7 +28,7 @@ const ViewDocument = ({ user, onClose }) => {
                     &times;
                 </button>
                 <h2 className="text-2xl font-bold mb-4 text-center">User Information</h2>
-                <div className="grid grid-cols-2 gap-4 text-sm mb-6">
+                <div className="grid grid-cols-2 gap-4 text-sm mb-6 wrap-break-word whitespace-normal">
                     {infoToShow.map(({ key, label }) => (
                         <div key={key}>
                             <span className="font-semibold">{label}:</span> {user[key] || 'N/A'}
@@ -36,7 +40,7 @@ const ViewDocument = ({ user, onClose }) => {
                 {documentsToShow.length === 0 ? (
                     <p className="text-center text-gray-500">No documents available for this user.</p>
                 ) : (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 max-[640px]:grid-cols-1 gap-4">
                         {documentsToShow.map(({ key, label }) => {
                             const fileUrl = getImagePath(user, user[key]);
                             return fileUrl ? (
@@ -63,6 +67,7 @@ const ViewDocument = ({ user, onClose }) => {
                             );
                         })}
                     </div>
+
                 )}
             </div>
         </div>

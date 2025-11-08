@@ -26,7 +26,9 @@ const Verify = ({ onClose, user }) => {
 
   return (
     <div className="fixed inset-0 bg-opacity-50 z-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative border border-gray-300">
+      <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md w-full relative border border-gray-300
+      max-[426px]:mx-5
+      ">
         {/* Close Button */}
         <button
           onClick={onClose}

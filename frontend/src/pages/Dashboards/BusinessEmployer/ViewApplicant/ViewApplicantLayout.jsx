@@ -10,6 +10,7 @@ import Pagination from '../../../../components/Pagination';
 import Sidebar from '../Sidebar';
 import icons from '../../../../assets/svg/Icons';
 import Form from '../VerificationForm/Form';
+import ContactApplicantLayout from '../../../../components/ContactApplicant/ContactApplicantLayout'
 
 const ViewApplicant = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -22,9 +23,14 @@ const ViewApplicant = () => {
   const [selectedApplication, setSelectedApplication] = useState(null);
 
 
+  // ✅ New states for contact modal
+  const [showContactModal, setShowContactModal] = useState(false);
+  const [selectedContactApplicant, setSelectedContactApplicant] = useState(null);
+
   // View Applicant
   const [showProfileModal, setShowProfileModal] = useState(false);
   const [selectedApplicant, setSelectedApplicant] = useState(null);
+
   const {
     data: profileData,
     isLoading: loadingProfile,
@@ -120,6 +126,13 @@ const ViewApplicant = () => {
                                   setShowProfileModal(true);
                                   setOpenMenuId(null);
                                 }}
+
+                                // Message Applicant
+                                onMessageClick={() => {
+                                  setSelectedContactApplicant(applicant);
+                                  setShowContactModal(true);
+                                  setOpenMenuId(null);
+                                }}
                               />
 
                             )}
@@ -144,7 +157,7 @@ const ViewApplicant = () => {
 
         </div>
 
-          {/* Pagination */}
+        {/* Pagination */}
         <div className="mt-10 mb-10">
           <Pagination
             currentPage={currentPage}
@@ -155,7 +168,7 @@ const ViewApplicant = () => {
 
       </div>
 
-          {/* Verification Form */}
+      {/* Verification Form */}
       {showForm && (
         <Form
           onClose={closeForm}
@@ -184,6 +197,18 @@ const ViewApplicant = () => {
           onClose={() => {
             setShowProfileModal(false);
             setSelectedApplicant(null);
+          }}
+        />
+      )}
+
+      {/* Contact Applicant Modal */}
+      {showContactModal && selectedContactApplicant && (
+        <ContactApplicantLayout
+          applicant={selectedContactApplicant}
+          role={ROLE.BUSINESS_EMPLOYER}
+          onClose={() => {
+            setShowContactModal(false);
+            setSelectedContactApplicant(null);
           }}
         />
       )}
