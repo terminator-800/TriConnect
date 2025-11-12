@@ -36,6 +36,7 @@ import custom_tools_for_everyone from './custom_tools_for_everyone.svg';
 import secure_reliable from './secure_reliable.svg';
 import user_friendly_interface from './user_friendly_interface.svg';
 import check from './check.svg';
+import bg_gradient from './bg_gradient.svg';
 
 const icons = {
     find_agency,
@@ -75,7 +76,8 @@ const icons = {
     custom_tools_for_everyone,
     secure_reliable,
     user_friendly_interface,
-    check
+    check,
+    bg_gradient
 }
 
 export default icons;
